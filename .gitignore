@@ -39,3 +39,4 @@ mvnw.cmd
 
 ## .gradle
 .gradle
+out/

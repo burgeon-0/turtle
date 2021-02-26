@@ -1,11 +1,10 @@
 <idea-plugin>
-    <id>org.burgeen.turtle</id>
-    <name>Plugin display name here</name>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <id>org.burgeon.turtle</id>
+    <name>Turtle</name>
+    <vendor email="376052450@qq.com" url="https://github.com/burgeon-0/turtle">Burgeon</vendor>
 
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+    Java API documents and test cases generation tools.
     ]]></description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
@@ -19,6 +18,17 @@
     </extensions>
 
     <actions>
-        <!-- Add your actions here -->
+        <!-- Tools菜单、项目右键菜单、编辑器右键菜单 -->
+        <group id="org.burgeon.turtle.collect.idea.action.ApiActionGroup"
+               text="API" icon="/icons/api.png" popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <action id="org.burgeon.turtle.collect.idea.action.ExportApiBlueprintAction"
+                    class="org.burgeon.turtle.collect.idea.action.ExportApiBlueprintAction"
+                    text="导出API Blueprint文档">
+            </action>
+            <separator/>
+        </group>
     </actions>
 </idea-plugin>

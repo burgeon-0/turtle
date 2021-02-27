@@ -4,7 +4,7 @@
 
 本项目的主要目的，是提供一个生成API文档和测试用例的工具，其总体架构如下：
 
-![image](https://github.com/burgeon-0/turtle/master/assets/architecture.png)
+![image](https://github.com/burgeon-0/turtle/blob/master/assets/architecture.png)
 
 - 通过IDE的Plugin获取代码源文件；
 - 通过Processor进行处理，其中Analyser进行源数据分析、Collector进行API数据收集，得到完整的API信息，再由Notifier通知Exporter进行导出；

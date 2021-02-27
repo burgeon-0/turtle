@@ -1,7 +1,7 @@
 package org.burgeon.turtle.collect;
 
-import org.burgeon.turtle.core.data.api.Application;
-import org.burgeon.turtle.core.data.source.Group;
+import org.burgeon.turtle.core.model.api.Application;
+import org.burgeon.turtle.core.model.source.Group;
 import org.burgeon.turtle.core.process.Collector;
 
 /**

@@ -1,6 +1,6 @@
 package org.burgeon.turtle.collect.idea.process;
 
-import org.burgeon.turtle.core.data.api.Application;
+import org.burgeon.turtle.core.model.api.Application;
 import org.burgeon.turtle.core.event.DefaultCodes;
 import org.burgeon.turtle.core.event.ExportEvent;
 import org.burgeon.turtle.core.process.Notifier;

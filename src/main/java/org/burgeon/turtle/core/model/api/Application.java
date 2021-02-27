@@ -1,36 +1,36 @@
-package org.burgeon.turtle.core.data.source;
+package org.burgeon.turtle.core.model.api;
 
 import lombok.Data;
 
 import java.util.List;
 
 /**
- * 项目
+ * 应用
  *
  * @author luxiaocong
- * @createdOn 2021/2/27
+ * @createdOn 2021/2/26
  */
 @Data
-public class Group {
+public class Application {
 
     /**
-     * 项目名称
+     * 应用名称
      */
     private String name;
 
     /**
-     * 项目描述
+     * 应用描述
      */
     private String description;
 
     /**
-     * 项目根路径
+     * 应用根路径
      */
     private String host;
 
     /**
-     * 项目Java源文件
+     * HTTP接口
      */
-    private List<JavaClass> javaClasses;
+    private List<HttpApi> httpApis;
 
 }

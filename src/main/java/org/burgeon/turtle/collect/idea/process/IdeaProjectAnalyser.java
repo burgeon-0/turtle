@@ -9,7 +9,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiManager;
 import org.burgeon.turtle.collect.Constants;
-import org.burgeon.turtle.core.data.source.Group;
+import org.burgeon.turtle.core.model.source.Group;
 import org.burgeon.turtle.core.process.Analyser;
 import org.jetbrains.annotations.NotNull;
 

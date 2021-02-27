@@ -1,7 +1,7 @@
 package org.burgeon.turtle.core.event;
 
 import lombok.Data;
-import org.burgeon.turtle.core.model.Project;
+import org.burgeon.turtle.core.data.api.Application;
 
 /**
  * 导出事件
@@ -23,9 +23,9 @@ public class ExportEvent {
     private int[] targetCodes;
 
     /**
-     * 导出项目
+     * 导出应用
      */
-    private Project project;
+    private Application application;
 
     /**
      * 是否包含目标编码
@@ -33,7 +33,7 @@ public class ExportEvent {
      * @param targetCode
      * @return
      */
-    public boolean containTargetCode(int targetCode) {
+    public boolean containsTargetCode(int targetCode) {
         for (int code : targetCodes) {
             if (code == targetCode) {
                 return true;

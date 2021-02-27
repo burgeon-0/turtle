@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 导出事件支撑组件
+ * 导出事件管理器
  *
  * @author luxiaocong
  * @createdOn 2021/2/26
@@ -14,20 +14,11 @@ public class ExportEventSupport {
     private static List<ExportListener> exportListeners = new ArrayList<>();
 
     /**
-     * 查询导出事件监听器
-     *
-     * @return
-     */
-    public static List<ExportListener> findExportListener() {
-        return exportListeners;
-    }
-
-    /**
      * 添加导出事件监听器
      *
      * @param exportListener
      */
-    public static void addExportListener(ExportListener exportListener) {
+    public static synchronized void addExportListener(ExportListener exportListener) {
         exportListeners.add(exportListener);
     }
 
@@ -36,8 +27,30 @@ public class ExportEventSupport {
      *
      * @param exportListener
      */
-    public static void removeExportListener(ExportListener exportListener) {
+    public static synchronized void removeExportListener(ExportListener exportListener) {
         exportListeners.remove(exportListener);
+    }
+
+    /**
+     * 查询导出事件监听器
+     *
+     * @return
+     */
+    public static List<ExportListener> getExportListeners() {
+        return exportListeners;
+    }
+
+    /**
+     * 判断是否已经包含该事件监听器
+     *
+     * @param exportListener
+     * @return
+     */
+    public static boolean contains(ExportListener exportListener) {
+        if (exportListeners.contains(exportListener)) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -47,7 +60,7 @@ public class ExportEventSupport {
      */
     public static void fireExportEvent(ExportEvent exportEvent) {
         for (ExportListener exportListener : exportListeners) {
-            exportListener.action(exportEvent);
+            exportListener.dispatch(exportEvent);
         }
     }
 

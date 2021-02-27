@@ -1,6 +1,6 @@
 package org.burgeon.turtle.core.process;
 
-import org.burgeon.turtle.core.data.source.Group;
+import org.burgeon.turtle.core.model.source.Group;
 
 /**
  * 分析器

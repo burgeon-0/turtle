@@ -1,8 +1,14 @@
 package org.burgeon.turtle.core.process;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.burgeon.turtle.core.data.source.Group;
 import org.burgeon.turtle.core.event.ExportEvent;
 import org.burgeon.turtle.core.event.ExportEventSupport;
-import org.burgeon.turtle.core.model.Project;
+import org.burgeon.turtle.core.data.api.Application;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 处理器
@@ -10,31 +16,48 @@ import org.burgeon.turtle.core.model.Project;
  * @author luxiaocong
  * @createdOn 2021/2/26
  */
-public abstract class Processor {
+public class Processor {
+
+    @Setter
+    @Getter
+    private Analyser analyser;
+
+    @Getter
+    private List<Collector> collectors = new ArrayList<>();
+
+    @Setter
+    @Getter
+    private Notifier notifier;
 
     /**
-     * 项目
-     */
-    private Project project;
-
-    /**
-     * 处理
+     * 添加收集器
      *
-     * @param project
-     * @return
+     * @param collector
      */
-    protected abstract ExportEvent internalProcess(Project project);
+    public void addCollector(Collector collector) {
+        collectors.add(collector);
+    }
+
+    /**
+     * 移除收集器
+     *
+     * @param collector
+     */
+    public void removeCollector(Collector collector) {
+        collectors.remove(collector);
+    }
 
     /**
      * 处理
      */
     public void process() {
-        if (project == null) {
-            project = new Project();
+        Application application = new Application();
+        Group group = analyser.analyse();
+        for (Collector collector : collectors) {
+            collector.collect(application, group);
         }
-        ExportEvent exportEvent = internalProcess(project);
+        ExportEvent exportEvent = notifier.notice(application);
         ExportEventSupport.fireExportEvent(exportEvent);
-        project = null;
     }
 
 }

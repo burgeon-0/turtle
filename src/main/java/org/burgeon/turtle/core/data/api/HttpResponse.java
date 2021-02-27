@@ -1,26 +1,31 @@
-package org.burgeon.turtle.core.model;
+package org.burgeon.turtle.core.data.api;
 
 import lombok.Data;
 
 import java.util.List;
 
 /**
- * HTTP请求
+ * HTTP返回
  *
  * @author luxiaocong
  * @createdOn 2021/2/26
  */
 @Data
-public class HttpRequest {
+public class HttpResponse {
 
     /**
-     * HTTP请求头
+     * HTTP返回头
      */
     private List<HttpHeader> headers;
 
     /**
-     * HTTP请求body
+     * HTTP返回body
      */
     private List<Parameter> body;
+
+    /**
+     * HTTP状态码
+     */
+    private int status;
 
 }

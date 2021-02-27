@@ -23,11 +23,13 @@ public class ApiBlueprintExporter extends ExportListener {
     }
 
     @Override
+    public int targetCode() {
+        return DefaultCodes.TARGET_CODE_BLUEPRINT;
+    }
+
+    @Override
     public void action(ExportEvent exportEvent) {
-        log.debug("收到导出事件: {} to {}", exportEvent.getSourceCode(), exportEvent.getTargetCodes());
-        if (exportEvent.containTargetCode(DefaultCodes.TARGET_CODE_BLUEPRINT)) {
-            log.debug("导出API Blueprint文档");
-        }
+        log.debug("Export API Blueprint docs.");
     }
 
 }

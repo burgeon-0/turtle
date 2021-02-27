@@ -1,4 +1,4 @@
-package org.burgeon.turtle.core.model;
+package org.burgeon.turtle.core.data.api;
 
 import lombok.Data;
 

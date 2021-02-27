@@ -1,6 +1,6 @@
 package org.burgeon.turtle.core.process;
 
-import org.burgeon.turtle.core.model.api.Application;
+import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.event.ExportEvent;
 
 /**
@@ -14,9 +14,9 @@ public interface Notifier {
     /**
      * 通知器将结果通知出来，供导出器处理
      *
-     * @param application
+     * @param apiProject
      * @return
      */
-    ExportEvent notice(Application application);
+    ExportEvent notice(ApiProject apiProject);
 
 }

@@ -1,6 +1,7 @@
 package org.burgeon.turtle.core.model.source;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  * @createdOn 2021/2/27
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class JavaClass extends JavaType {
 
     private JavaComment comment;

@@ -2,10 +2,10 @@ package org.burgeon.turtle.core.process;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.burgeon.turtle.core.model.source.Group;
+import org.burgeon.turtle.core.model.api.ApiProject;
+import org.burgeon.turtle.core.model.source.SourceProject;
 import org.burgeon.turtle.core.event.ExportEvent;
 import org.burgeon.turtle.core.event.ExportEventSupport;
-import org.burgeon.turtle.core.model.api.Application;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,12 +51,12 @@ public class Processor {
      * 处理
      */
     public void process() {
-        Application application = new Application();
-        Group group = analyser.analyse();
+        SourceProject sourceProject = analyser.analyse();
+        ApiProject apiProject = new ApiProject();
         for (Collector collector : collectors) {
-            collector.collect(application, group);
+            collector.collect(apiProject, sourceProject);
         }
-        ExportEvent exportEvent = notifier.notice(application);
+        ExportEvent exportEvent = notifier.notice(apiProject);
         ExportEventSupport.fireExportEvent(exportEvent);
     }
 

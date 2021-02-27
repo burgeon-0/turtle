@@ -29,7 +29,7 @@ public class ApiBlueprintExporter extends ExportListener {
 
     @Override
     public void action(ExportEvent exportEvent) {
-        log.debug("Export API Blueprint docs.");
+        log.info("Export API Blueprint docs.");
     }
 
 }

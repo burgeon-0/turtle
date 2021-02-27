@@ -5,26 +5,26 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * 应用
+ * API项目
  *
  * @author luxiaocong
  * @createdOn 2021/2/26
  */
 @Data
-public class Application {
+public class ApiProject {
 
     /**
-     * 应用名称
+     * 项目名称
      */
     private String name;
 
     /**
-     * 应用描述
+     * 项目描述
      */
     private String description;
 
     /**
-     * 应用根路径
+     * 项目根路径
      */
     private String host;
 

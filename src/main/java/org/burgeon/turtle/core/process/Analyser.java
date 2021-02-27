@@ -1,6 +1,6 @@
 package org.burgeon.turtle.core.process;
 
-import org.burgeon.turtle.core.model.source.Group;
+import org.burgeon.turtle.core.model.source.SourceProject;
 
 /**
  * 分析器
@@ -15,6 +15,6 @@ public interface Analyser {
      *
      * @return
      */
-    Group analyse();
+    SourceProject analyse();
 
 }

@@ -1,7 +1,7 @@
 package org.burgeon.turtle.collect;
 
-import org.burgeon.turtle.core.model.api.Application;
-import org.burgeon.turtle.core.model.source.Group;
+import org.burgeon.turtle.core.model.api.ApiProject;
+import org.burgeon.turtle.core.model.source.SourceProject;
 import org.burgeon.turtle.core.process.Collector;
 
 /**
@@ -13,7 +13,7 @@ import org.burgeon.turtle.core.process.Collector;
 public class DefaultCollector implements Collector {
 
     @Override
-    public void collect(Application application, Group group) {
+    public void collect(ApiProject apiProject, SourceProject sourceProject) {
 
     }
 

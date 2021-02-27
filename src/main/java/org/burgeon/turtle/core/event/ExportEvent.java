@@ -1,7 +1,7 @@
 package org.burgeon.turtle.core.event;
 
 import lombok.Data;
-import org.burgeon.turtle.core.model.api.Application;
+import org.burgeon.turtle.core.model.api.ApiProject;
 
 /**
  * 导出事件
@@ -23,9 +23,9 @@ public class ExportEvent {
     private int[] targetCodes;
 
     /**
-     * 导出应用
+     * 导出项目
      */
-    private Application application;
+    private ApiProject apiProject;
 
     /**
      * 是否包含目标编码

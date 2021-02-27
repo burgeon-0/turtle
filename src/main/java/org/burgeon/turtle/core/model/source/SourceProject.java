@@ -5,13 +5,13 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * 项目
+ * 源文件项目
  *
  * @author luxiaocong
  * @createdOn 2021/2/27
  */
 @Data
-public class Group {
+public class SourceProject {
 
     /**
      * 项目名称

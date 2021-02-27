@@ -8,8 +8,10 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiManager;
+import lombok.extern.slf4j.Slf4j;
 import org.burgeon.turtle.collect.Constants;
-import org.burgeon.turtle.core.model.source.Group;
+import org.burgeon.turtle.core.model.source.SourceProject;
+import org.burgeon.turtle.core.model.source.JavaClass;
 import org.burgeon.turtle.core.process.Analyser;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,6 +25,7 @@ import java.util.List;
  * @author luxiaocong
  * @createdOn 2021/2/27
  */
+@Slf4j
 public class IdeaProjectAnalyser implements Analyser {
 
     private Project project;
@@ -35,12 +38,26 @@ public class IdeaProjectAnalyser implements Analyser {
     }
 
     @Override
-    public Group analyse() {
+    public SourceProject analyse() {
+        SourceProject sourceProject = new SourceProject();
+        sourceProject.setName(project.getName());
+        List<JavaClass> javaClasses = new ArrayList<>();
+        sourceProject.setJavaClasses(javaClasses);
+
         List<PsiClass> psiClasses = getPsiClasses();
         for (PsiClass psiClass : psiClasses) {
-            System.out.println(psiClass.getName());
+            log.info("PsiClass's name: {}", psiClass.getName());
+
+            JavaSourceBuilder javaSourceBuilder = new JavaSourceBuilder(psiClass);
+            JavaClass javaClass = javaSourceBuilder.buildClass()
+                    .buildFields()
+                    .buildMethods()
+                    .buildAnnotations()
+                    .buildComment()
+                    .build();
+            javaClasses.add(javaClass);
         }
-        return null;
+        return sourceProject;
     }
 
     /**

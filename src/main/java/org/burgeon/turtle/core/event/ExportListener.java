@@ -31,7 +31,7 @@ public abstract class ExportListener {
      * @param exportEvent
      */
     public void dispatch(ExportEvent exportEvent) {
-        log.debug("Receive an export event: from {} to {}.",
+        log.info("Receive an export event: from {} to {}.",
                 exportEvent.getSourceCode(), exportEvent.getTargetCodes());
         if (exportEvent.containsTargetCode(targetCode())) {
             action(exportEvent);

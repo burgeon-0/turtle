@@ -1,6 +1,6 @@
 package org.burgeon.turtle.collect.idea.process;
 
-import org.burgeon.turtle.core.model.api.Application;
+import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.event.DefaultCodes;
 import org.burgeon.turtle.core.event.ExportEvent;
 import org.burgeon.turtle.core.process.Notifier;
@@ -14,11 +14,11 @@ import org.burgeon.turtle.core.process.Notifier;
 public class ApiBlueprintNotifier implements Notifier {
 
     @Override
-    public ExportEvent notice(Application application) {
+    public ExportEvent notice(ApiProject apiProject) {
         ExportEvent exportEvent = new ExportEvent();
         exportEvent.setSourceCode(DefaultCodes.SOURCE_CODE_IDEA);
         exportEvent.setTargetCodes(new int[]{DefaultCodes.TARGET_CODE_BLUEPRINT});
-        exportEvent.setApplication(application);
+        exportEvent.setApiProject(apiProject);
         return exportEvent;
     }
 

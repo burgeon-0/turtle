@@ -6,8 +6,8 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import lombok.extern.slf4j.Slf4j;
-import org.burgeon.turtle.collect.idea.process.ApiBlueprintNotifier;
 import org.burgeon.turtle.collect.DefaultCollector;
+import org.burgeon.turtle.collect.idea.process.ApiBlueprintNotifier;
 import org.burgeon.turtle.collect.idea.process.IdeaProjectAnalyser;
 import org.burgeon.turtle.core.process.Analyser;
 import org.burgeon.turtle.core.process.Collector;
@@ -25,7 +25,7 @@ public class ApiBlueprintExportAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        log.debug("Receive an [Export API Blueprint] action.");
+        log.info("Receive an [Export API Blueprint] action.");
 
         // 获取项目
         Project project = AnAction.getEventProject(e);

@@ -3,8 +3,6 @@ package org.burgeon.turtle.core.model.source;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.List;
-
 /**
  * Java源文件信息
  *
@@ -17,7 +15,7 @@ public class JavaClass extends JavaType {
 
     private JavaComment comment;
 
-    private List<JavaAnnotation> annotations;
+    private JavaAnnotation[] annotations;
 
     private String packageName;
 
@@ -26,9 +24,11 @@ public class JavaClass extends JavaType {
     private String name;
 
     /**
+     * TODO
+     * <p>
      * 对于set、list、map，存在泛型类型
      */
-    private List<JavaClass> genericClasses;
+    private JavaClass[] genericClasses;
 
     private boolean isClass;
 
@@ -40,14 +40,15 @@ public class JavaClass extends JavaType {
 
     private JavaClass superClass;
 
-    private List<JavaClass> interfaces;
+    private JavaClass[] interfaces;
 
-    private List<JavaMethod> constructors;
+    // TODO
+    private JavaMethod[] constructors;
 
-    private List<JavaField> fields;
+    private JavaField[] fields;
 
-    private List<JavaMethod> methods;
+    private JavaMethod[] methods;
 
-    private List<JavaClass> innerClasses;
+    private JavaClass[] innerClasses;
 
 }

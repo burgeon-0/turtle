@@ -2,8 +2,6 @@ package org.burgeon.turtle.core.model.source;
 
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * Java注解
  *
@@ -15,10 +13,10 @@ public class JavaAnnotation {
 
     private JavaComment comment;
 
-    private List<JavaAnnotation> annotations;
+    private JavaAnnotation[] annotations;
 
     private String name;
 
-    private List<JavaMethod> methods;
+    private JavaMethod[] methods;
 
 }

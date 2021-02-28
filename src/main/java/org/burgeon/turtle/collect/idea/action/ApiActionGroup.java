@@ -13,6 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ApiActionGroup extends DefaultActionGroup {
 
+    /**
+     * 点击菜单的时候触发
+     *
+     * @param e
+     */
     @Override
     public void actionPerformed(AnActionEvent e) {
         log.info("Receive an [API] action.");

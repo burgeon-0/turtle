@@ -11,6 +11,8 @@ import lombok.Data;
 @Data
 public class JavaComment {
 
-    private String content;
+    private String text;
+
+    private JavaCommentTag[] tags;
 
 }

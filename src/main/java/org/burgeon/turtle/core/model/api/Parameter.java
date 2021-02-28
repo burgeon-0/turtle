@@ -2,8 +2,6 @@ package org.burgeon.turtle.core.model.api;
 
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * 参数
  *
@@ -43,6 +41,6 @@ public class Parameter {
      *
      * @see ParameterType
      */
-    private List<Parameter> childParameters;
+    private Parameter[] childParameters;
 
 }

@@ -2,8 +2,6 @@ package org.burgeon.turtle.core.model.source;
 
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * Java属性信息
  *
@@ -15,7 +13,7 @@ public class JavaField {
 
     private JavaComment comment;
 
-    private List<JavaAnnotation> annotations;
+    private JavaAnnotation[] annotations;
 
     private JavaModifier modifier;
 

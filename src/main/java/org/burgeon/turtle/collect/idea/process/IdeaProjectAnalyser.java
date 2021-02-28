@@ -10,13 +10,12 @@ import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiManager;
 import lombok.extern.slf4j.Slf4j;
 import org.burgeon.turtle.collect.Constants;
-import org.burgeon.turtle.core.model.source.SourceProject;
 import org.burgeon.turtle.core.model.source.JavaClass;
+import org.burgeon.turtle.core.model.source.SourceProject;
 import org.burgeon.turtle.core.process.Analyser;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -39,24 +38,30 @@ public class IdeaProjectAnalyser implements Analyser {
 
     @Override
     public SourceProject analyse() {
+        long startTime = System.currentTimeMillis();
+
         SourceProject sourceProject = new SourceProject();
         sourceProject.setName(project.getName());
         List<JavaClass> javaClasses = new ArrayList<>();
         sourceProject.setJavaClasses(javaClasses);
 
-        List<PsiClass> psiClasses = getPsiClasses();
-        for (PsiClass psiClass : psiClasses) {
-            log.info("PsiClass's name: {}", psiClass.getName());
+        List<PsiJavaFile> psiJavaFiles = getPsiJavaFiles();
+        for (PsiJavaFile psiJavaFile : psiJavaFiles) {
+            log.info("PsiJavaFile: {}.{}", psiJavaFile.getPackageName(), psiJavaFile.getName());
 
-            JavaSourceBuilder javaSourceBuilder = new JavaSourceBuilder(psiClass);
-            JavaClass javaClass = javaSourceBuilder.buildClass()
-                    .buildFields()
-                    .buildMethods()
-                    .buildAnnotations()
-                    .buildComment()
-                    .build();
-            javaClasses.add(javaClass);
+            for (PsiClass psiClass : psiJavaFile.getClasses()) {
+                JavaSourceBuilder javaSourceBuilder = new JavaSourceBuilder(psiJavaFile, psiClass);
+                JavaClass javaClass = javaSourceBuilder.buildClass()
+                        .buildComment()
+                        .buildAnnotations()
+                        .buildMethods()
+                        .buildFields()
+                        .build();
+                javaClasses.add(javaClass);
+            }
         }
+
+        log.info("Analyse finished, use {} ms", System.currentTimeMillis() - startTime);
         return sourceProject;
     }
 
@@ -65,20 +70,20 @@ public class IdeaProjectAnalyser implements Analyser {
      *
      * @return
      */
-    private List<PsiClass> getPsiClasses() {
+    private List<PsiJavaFile> getPsiJavaFiles() {
         PsiManager psiManager = PsiManager.getInstance(project);
-        List<PsiClass> psiClasses = new ArrayList<>();
+        List<PsiJavaFile> psiJavaFiles = new ArrayList<>();
         VfsUtilCore.visitChildrenRecursively(virtualFile, new VirtualFileVisitor<VirtualFile>() {
             @Override
             public boolean visitFile(@NotNull VirtualFile file) {
                 if (!file.isDirectory() && file.getName().endsWith(Constants.JAVA_FILE_SUFFIX)) {
                     PsiFile psiFile = psiManager.findFile(file);
-                    psiClasses.addAll(Arrays.asList(((PsiJavaFile) psiFile).getClasses()));
+                    psiJavaFiles.add((PsiJavaFile) psiFile);
                 }
                 return true;
             }
         });
-        return psiClasses;
+        return psiJavaFiles;
     }
 
 }

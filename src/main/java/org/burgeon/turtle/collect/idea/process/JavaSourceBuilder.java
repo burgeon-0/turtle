@@ -1,16 +1,15 @@
 package org.burgeon.turtle.collect.idea.process;
 
 import com.intellij.lang.jvm.JvmModifier;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiJavaFile;
+import com.intellij.lang.jvm.annotation.JvmAnnotationAttribute;
+import com.intellij.psi.*;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.javadoc.PsiDocTag;
 import org.apache.commons.lang3.StringUtils;
-import org.burgeon.turtle.core.model.source.JavaClass;
-import org.burgeon.turtle.core.model.source.JavaComment;
-import org.burgeon.turtle.core.model.source.JavaCommentTag;
-import org.burgeon.turtle.core.model.source.JavaModifier;
-import org.fest.util.Arrays;
+import org.burgeon.turtle.collect.idea.utils.ExpressionResolveUtils;
+import org.burgeon.turtle.core.model.source.*;
+
+import java.util.List;
 
 /**
  * Java源文件构建器
@@ -93,14 +92,14 @@ public class JavaSourceBuilder {
      * @return
      */
     private JavaClass[] buildInterfaces() {
-        PsiClass[] interfaces = psiClass.getInterfaces();
-        if (interfaces == null) {
+        PsiClass[] psiInterfaces = psiClass.getInterfaces();
+        if (psiInterfaces == null) {
             return null;
         }
 
-        JavaClass[] javaClasses = new JavaClass[interfaces.length];
-        for (int i = 0; i < interfaces.length; i++) {
-            PsiClass psiInterface = interfaces[i];
+        JavaClass[] javaClasses = new JavaClass[psiInterfaces.length];
+        for (int i = 0; i < psiInterfaces.length; i++) {
+            PsiClass psiInterface = psiInterfaces[i];
             JavaClass javaClass = buildJavaClass(psiInterface);
             javaClasses[i] = javaClass;
         }
@@ -151,14 +150,13 @@ public class JavaSourceBuilder {
      */
     public JavaSourceBuilder buildComment() {
         PsiDocComment psiDocComment = psiClass.getDocComment();
-        if (psiDocComment != null && StringUtils.isNotBlank(psiDocComment.getText())) {
+        if (psiDocComment != null) {
             JavaComment javaComment = new JavaComment();
             javaComment.setText(psiDocComment.getText());
 
             PsiDocTag[] psiDocTags = psiDocComment.getTags();
-            if (!Arrays.isNullOrEmpty(psiDocTags)) {
+            if (psiDocTags != null) {
                 JavaCommentTag[] javaCommentTags = new JavaCommentTag[psiDocTags.length];
-                javaComment.setTags(javaCommentTags);
                 for (int i = 0; i < psiDocTags.length; i++) {
                     PsiDocTag psiDocTag = psiDocTags[i];
                     JavaCommentTag javaCommentTag = new JavaCommentTag();
@@ -167,6 +165,7 @@ public class JavaSourceBuilder {
                     javaCommentTag.setValue(getCommentTagValue(javaCommentTag.getName(), text));
                     javaCommentTags[i] = javaCommentTag;
                 }
+                javaComment.setTags(javaCommentTags);
             }
             javaClass.setComment(javaComment);
         }
@@ -199,7 +198,87 @@ public class JavaSourceBuilder {
      * @return
      */
     public JavaSourceBuilder buildAnnotations() {
+        PsiAnnotation[] psiAnnotations = psiClass.getAnnotations();
+        if (psiAnnotations != null) {
+            JavaAnnotation[] javaAnnotations = new JavaAnnotation[psiAnnotations.length];
+            for (int i = 0; i < psiAnnotations.length; i++) {
+                PsiAnnotation psiAnnotation = psiAnnotations[i];
+                JavaAnnotation javaAnnotation = buildJavaAnnotation(psiAnnotation);
+                javaAnnotations[i] = javaAnnotation;
+            }
+            javaClass.setAnnotations(javaAnnotations);
+        }
         return this;
+    }
+
+    /**
+     * 构建JavaAnnotation
+     *
+     * @param psiAnnotation
+     * @return
+     */
+    private JavaAnnotation buildJavaAnnotation(PsiAnnotation psiAnnotation) {
+        JavaAnnotation javaAnnotation = new JavaAnnotation();
+        javaAnnotation.setName(psiAnnotation.getNameReferenceElement().getReferenceName());
+
+        List<JvmAnnotationAttribute> jvmAnnotationAttributes = psiAnnotation.getAttributes();
+        if (jvmAnnotationAttributes != null) {
+            JavaAnnotationAttribute[] javaAnnotationAttributes =
+                    new JavaAnnotationAttribute[jvmAnnotationAttributes.size()];
+            for (int i = 0; i < jvmAnnotationAttributes.size(); i++) {
+                JvmAnnotationAttribute jvmAnnotationAttribute = jvmAnnotationAttributes.get(i);
+                JavaAnnotationAttribute javaAnnotationAttribute = new JavaAnnotationAttribute();
+                String attributeName = jvmAnnotationAttribute.getAttributeName();
+                Object[] attributeValues = getJavaAnnotationAttributeValues(psiAnnotation, attributeName);
+                javaAnnotationAttribute.setName(attributeName);
+                javaAnnotationAttribute.setValues(attributeValues);
+                javaAnnotationAttributes[i] = javaAnnotationAttribute;
+            }
+            javaAnnotation.setAttributes(javaAnnotationAttributes);
+        }
+        return javaAnnotation;
+    }
+
+    /**
+     * 获取JavaAnnotation属性的值
+     *
+     * @param psiAnnotation
+     * @param attributeName
+     * @return
+     */
+    private Object[] getJavaAnnotationAttributeValues(PsiAnnotation psiAnnotation, String attributeName) {
+        PsiAnnotationMemberValue psiAnnotationMemberValue = psiAnnotation.findAttributeValue(attributeName);
+        if (psiAnnotationMemberValue instanceof PsiArrayInitializerMemberValue) {
+            PsiArrayInitializerMemberValue psiArrayInitializerMemberValue = (PsiArrayInitializerMemberValue)
+                    psiAnnotationMemberValue;
+            PsiAnnotationMemberValue[] psiAnnotationMemberValues = psiArrayInitializerMemberValue
+                    .getInitializers();
+            Object[] attributeValues = new Object[psiAnnotationMemberValues.length];
+            for (int i = 0; i < psiAnnotationMemberValues.length; i++) {
+                attributeValues[i] = getJavaAnnotationAttributeValue(psiAnnotationMemberValues[i]);
+            }
+            return attributeValues;
+        } else {
+            Object attributeValue = getJavaAnnotationAttributeValue(psiAnnotationMemberValue);
+            return new Object[]{attributeValue};
+        }
+    }
+
+    /**
+     * 获取JavaAnnotation属性的值
+     *
+     * @param psiAnnotationMemberValue
+     * @return
+     */
+    private Object getJavaAnnotationAttributeValue(PsiAnnotationMemberValue psiAnnotationMemberValue) {
+        Object attributeValue = StringUtils.deleteWhitespace(psiAnnotationMemberValue.getText());
+        if (psiAnnotationMemberValue instanceof PsiExpression) {
+            Object value = ExpressionResolveUtils.resolve((PsiExpression) psiAnnotationMemberValue);
+            if (value != null) {
+                attributeValue = value;
+            }
+        }
+        return attributeValue;
     }
 
     /**

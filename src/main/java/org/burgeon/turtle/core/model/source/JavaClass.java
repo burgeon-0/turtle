@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * Java源文件信息
+ * Java类
  *
  * @author luxiaocong
  * @createdOn 2021/2/27
@@ -42,7 +42,6 @@ public class JavaClass extends JavaType {
 
     private JavaClass[] interfaces;
 
-    // TODO
     private JavaMethod[] constructors;
 
     private JavaField[] fields;

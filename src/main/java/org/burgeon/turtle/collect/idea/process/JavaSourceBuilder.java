@@ -1,6 +1,7 @@
 package org.burgeon.turtle.collect.idea.process;
 
 import com.intellij.lang.jvm.JvmModifier;
+import com.intellij.lang.jvm.JvmParameter;
 import com.intellij.lang.jvm.annotation.JvmAnnotationAttribute;
 import com.intellij.psi.*;
 import com.intellij.psi.javadoc.PsiDocComment;
@@ -9,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.burgeon.turtle.collect.idea.utils.ExpressionResolveUtils;
 import org.burgeon.turtle.core.model.source.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,7 +40,7 @@ public class JavaSourceBuilder {
     public JavaSourceBuilder buildClass() {
         javaClass = new JavaClass();
         javaClass.setPackageName(psiJavaFile.getPackageName());
-        javaClass.setModifier(buildModifier());
+        javaClass.setModifier(buildModifier(psiClass));
         javaClass.setName(psiClass.getName());
         javaClass.setClass(!psiClass.isInterface() && !psiClass.isAnnotationType() && !psiClass.isEnum());
         javaClass.setInterface(psiClass.isInterface());
@@ -46,29 +48,9 @@ public class JavaSourceBuilder {
         javaClass.setEnum(psiClass.isEnum());
         javaClass.setSuperClass(buildSupperClass());
         javaClass.setInterfaces(buildInterfaces());
-        javaClass.setInnerClasses(buildAllInnerClass());
+        javaClass.setInnerClasses(buildInnerClass());
+        javaClass.setConstructors(buildConstructors());
         return this;
-    }
-
-    /**
-     * 构建修饰符
-     *
-     * @return
-     */
-    private JavaModifier buildModifier() {
-        JavaModifier javaModifier = new JavaModifier();
-        javaModifier.setPublic(psiClass.hasModifier(JvmModifier.PUBLIC));
-        javaModifier.setPrivate(psiClass.hasModifier(JvmModifier.PRIVATE));
-        javaModifier.setProtected(psiClass.hasModifier(JvmModifier.PROTECTED));
-        javaModifier.setStatic(psiClass.hasModifier(JvmModifier.STATIC));
-        javaModifier.setFinal(psiClass.hasModifier(JvmModifier.FINAL));
-        javaModifier.setSynchronized(psiClass.hasModifier(JvmModifier.SYNCHRONIZED));
-        javaModifier.setVolatile(psiClass.hasModifier(JvmModifier.VOLATILE));
-        javaModifier.setTransient(psiClass.hasModifier(JvmModifier.TRANSIENT));
-        javaModifier.setNative(psiClass.hasModifier(JvmModifier.NATIVE));
-        javaModifier.setAbstract(psiClass.hasModifier(JvmModifier.ABSTRACT));
-        javaModifier.setStrict(psiClass.hasModifier(JvmModifier.STRICTFP));
-        return javaModifier;
     }
 
     /**
@@ -111,8 +93,8 @@ public class JavaSourceBuilder {
      *
      * @return
      */
-    private JavaClass[] buildAllInnerClass() {
-        PsiClass[] psiInnerClasses = psiClass.getAllInnerClasses();
+    private JavaClass[] buildInnerClass() {
+        PsiClass[] psiInnerClasses = psiClass.getInnerClasses();
         if (psiInnerClasses == null) {
             return null;
         }
@@ -124,6 +106,26 @@ public class JavaSourceBuilder {
             javaClasses[i] = javaClass;
         }
         return javaClasses;
+    }
+
+    /**
+     * 构建构造方法
+     *
+     * @return
+     */
+    private JavaMethod[] buildConstructors() {
+        PsiMethod[] constructors = psiClass.getConstructors();
+        if (constructors == null) {
+            return null;
+        }
+
+        JavaMethod[] javaMethods = new JavaMethod[constructors.length];
+        for (int i = 0; i < constructors.length; i++) {
+            PsiMethod psiMethod = constructors[i];
+            JavaMethod javaMethod = buildJavaMethod(psiMethod);
+            javaMethods[i] = javaMethod;
+        }
+        return javaMethods;
     }
 
     /**
@@ -150,36 +152,141 @@ public class JavaSourceBuilder {
      */
     public JavaSourceBuilder buildComment() {
         PsiDocComment psiDocComment = psiClass.getDocComment();
-        if (psiDocComment != null) {
-            JavaComment javaComment = new JavaComment();
-            javaComment.setText(psiDocComment.getText());
+        javaClass.setComment(buildJavaComment(psiDocComment));
+        return this;
+    }
 
-            PsiDocTag[] psiDocTags = psiDocComment.getTags();
-            if (psiDocTags != null) {
-                JavaCommentTag[] javaCommentTags = new JavaCommentTag[psiDocTags.length];
-                for (int i = 0; i < psiDocTags.length; i++) {
-                    PsiDocTag psiDocTag = psiDocTags[i];
-                    JavaCommentTag javaCommentTag = new JavaCommentTag();
-                    javaCommentTag.setName(psiDocTag.getName());
-                    String text = psiDocTag.getText();
-                    javaCommentTag.setValue(getCommentTagValue(javaCommentTag.getName(), text));
-                    javaCommentTags[i] = javaCommentTag;
+    /**
+     * 构建注解
+     *
+     * @return
+     */
+    public JavaSourceBuilder buildAnnotations() {
+        PsiAnnotation[] psiAnnotations = psiClass.getAnnotations();
+        javaClass.setAnnotations(buildJavaAnnotations(psiAnnotations));
+        return this;
+    }
+
+    /**
+     * 构建方法
+     *
+     * @return
+     */
+    public JavaSourceBuilder buildMethods() {
+        PsiMethod[] psiMethods = psiClass.getMethods();
+        if (psiMethods != null) {
+            List<PsiMethod> psiMemberMethods = new ArrayList<>();
+            for (PsiMethod psiMethod : psiMethods) {
+                if (psiMethod.getReturnType() != null) {
+                    psiMemberMethods.add(psiMethod);
                 }
-                javaComment.setTags(javaCommentTags);
             }
-            javaClass.setComment(javaComment);
+
+            JavaMethod[] javaMethods = new JavaMethod[psiMemberMethods.size()];
+            for (int i = 0; i < psiMemberMethods.size(); i++) {
+                PsiMethod psiMethod = psiMemberMethods.get(i);
+                JavaMethod javaMethod = buildJavaMethod(psiMethod);
+                javaMethods[i] = javaMethod;
+            }
+            javaClass.setMethods(javaMethods);
         }
         return this;
     }
 
     /**
-     * 获取注释标签的值
+     * 构建属性
+     *
+     * @return
+     */
+    public JavaSourceBuilder buildFields() {
+        PsiField[] psiFields = psiClass.getFields();
+        if (psiFields != null) {
+            JavaField[] javaFields = new JavaField[psiFields.length];
+            for (int i = 0; i < psiFields.length; i++) {
+                PsiField psiField = psiFields[i];
+                JavaField javaField = new JavaField();
+                PsiDocComment psiDocComment = psiField.getDocComment();
+                javaField.setComment(buildJavaComment(psiDocComment));
+                PsiAnnotation[] psiAnnotations = psiField.getAnnotations();
+                javaField.setAnnotations(buildJavaAnnotations(psiAnnotations));
+                javaField.setModifier(buildModifier(psiField));
+                javaField.setName(psiField.getName());
+                PsiType psiType = psiField.getType();
+                javaField.setType(buildJavaType(psiType));
+                javaFields[i] = javaField;
+            }
+            javaClass.setFields(javaFields);
+        }
+        return this;
+    }
+
+    /**
+     * 完成构建
+     *
+     * @return
+     */
+    public JavaClass build() {
+        return javaClass;
+    }
+
+    /**
+     * 构建修饰符
+     *
+     * @return
+     */
+    private JavaModifier buildModifier(PsiModifierListOwner psiModifierListOwner) {
+        JavaModifier javaModifier = new JavaModifier();
+        javaModifier.setPublic(psiModifierListOwner.hasModifier(JvmModifier.PUBLIC));
+        javaModifier.setPrivate(psiModifierListOwner.hasModifier(JvmModifier.PRIVATE));
+        javaModifier.setProtected(psiModifierListOwner.hasModifier(JvmModifier.PROTECTED));
+        javaModifier.setStatic(psiModifierListOwner.hasModifier(JvmModifier.STATIC));
+        javaModifier.setFinal(psiModifierListOwner.hasModifier(JvmModifier.FINAL));
+        javaModifier.setSynchronized(psiModifierListOwner.hasModifier(JvmModifier.SYNCHRONIZED));
+        javaModifier.setVolatile(psiModifierListOwner.hasModifier(JvmModifier.VOLATILE));
+        javaModifier.setTransient(psiModifierListOwner.hasModifier(JvmModifier.TRANSIENT));
+        javaModifier.setNative(psiModifierListOwner.hasModifier(JvmModifier.NATIVE));
+        javaModifier.setAbstract(psiModifierListOwner.hasModifier(JvmModifier.ABSTRACT));
+        javaModifier.setStrict(psiModifierListOwner.hasModifier(JvmModifier.STRICTFP));
+        return javaModifier;
+    }
+
+    /**
+     * 构建JavaComment
+     *
+     * @param psiDocComment
+     * @return
+     */
+    private JavaComment buildJavaComment(PsiDocComment psiDocComment) {
+        if (psiDocComment == null) {
+            return null;
+        }
+
+        JavaComment javaComment = new JavaComment();
+        javaComment.setText(psiDocComment.getText());
+        PsiDocTag[] psiDocTags = psiDocComment.getTags();
+        if (psiDocTags != null) {
+            JavaCommentTag[] javaCommentTags = new JavaCommentTag[psiDocTags.length];
+            for (int i = 0; i < psiDocTags.length; i++) {
+                PsiDocTag psiDocTag = psiDocTags[i];
+                JavaCommentTag javaCommentTag = new JavaCommentTag();
+                javaCommentTag.setName(psiDocTag.getName());
+                String text = psiDocTag.getText();
+                javaCommentTag.setValue(getJavaCommentTagValue(javaCommentTag.getName(), text));
+                javaCommentTags[i] = javaCommentTag;
+            }
+            javaComment.setTags(javaCommentTags);
+        }
+        return javaComment;
+    }
+
+    /**
+     * 获取JavaComment标签值
      *
      * @param tagName
      * @param text
      * @return
      */
-    private String getCommentTagValue(String tagName, String text) {
+    private String getJavaCommentTagValue(String tagName, String text) {
         String value;
         int firstIndex = text.indexOf(tagName) + tagName.length();
         int lastIndex = text.indexOf("\n");
@@ -193,22 +300,23 @@ public class JavaSourceBuilder {
     }
 
     /**
-     * 构建注解
+     * 构建JavaAnnotation
      *
+     * @param psiAnnotations
      * @return
      */
-    public JavaSourceBuilder buildAnnotations() {
-        PsiAnnotation[] psiAnnotations = psiClass.getAnnotations();
+    private JavaAnnotation[] buildJavaAnnotations(PsiAnnotation[] psiAnnotations) {
         if (psiAnnotations != null) {
-            JavaAnnotation[] javaAnnotations = new JavaAnnotation[psiAnnotations.length];
-            for (int i = 0; i < psiAnnotations.length; i++) {
-                PsiAnnotation psiAnnotation = psiAnnotations[i];
-                JavaAnnotation javaAnnotation = buildJavaAnnotation(psiAnnotation);
-                javaAnnotations[i] = javaAnnotation;
-            }
-            javaClass.setAnnotations(javaAnnotations);
+            return null;
         }
-        return this;
+
+        JavaAnnotation[] javaAnnotations = new JavaAnnotation[psiAnnotations.length];
+        for (int i = 0; i < psiAnnotations.length; i++) {
+            PsiAnnotation psiAnnotation = psiAnnotations[i];
+            JavaAnnotation javaAnnotation = buildJavaAnnotation(psiAnnotation);
+            javaAnnotations[i] = javaAnnotation;
+        }
+        return javaAnnotations;
     }
 
     /**
@@ -240,7 +348,7 @@ public class JavaSourceBuilder {
     }
 
     /**
-     * 获取JavaAnnotation属性的值
+     * 获取JavaAnnotation属性值
      *
      * @param psiAnnotation
      * @param attributeName
@@ -265,7 +373,7 @@ public class JavaSourceBuilder {
     }
 
     /**
-     * 获取JavaAnnotation属性的值
+     * 获取JavaAnnotation属性值
      *
      * @param psiAnnotationMemberValue
      * @return
@@ -282,30 +390,44 @@ public class JavaSourceBuilder {
     }
 
     /**
-     * 构建方法
+     * 构建JavaMethod
      *
+     * @param psiMethod
      * @return
      */
-    public JavaSourceBuilder buildMethods() {
-        return this;
+    private JavaMethod buildJavaMethod(PsiMethod psiMethod) {
+        JavaMethod javaMethod = new JavaMethod();
+        PsiDocComment psiDocComment = psiMethod.getDocComment();
+        javaMethod.setComment(buildJavaComment(psiDocComment));
+        PsiAnnotation[] psiAnnotations = psiMethod.getAnnotations();
+        javaMethod.setAnnotations(buildJavaAnnotations(psiAnnotations));
+        javaMethod.setModifier(buildModifier(psiMethod));
+        javaMethod.setName(psiMethod.getName());
+        PsiType psiType = psiMethod.getReturnType();
+        javaMethod.setReturnType(buildJavaType(psiType));
+        JvmParameter[] psiParameters = psiMethod.getParameters();
+        javaMethod.setParameters(buildJavaMethodParameters(psiParameters));
+        return javaMethod;
     }
 
     /**
-     * 构建属性
+     * 构建JavaType
      *
+     * @param psiType
      * @return
      */
-    public JavaSourceBuilder buildFields() {
-        return this;
+    private JavaType buildJavaType(PsiType psiType) {
+        return null;
     }
 
     /**
-     * 完成构建
+     * 构建JavaMethod参数
      *
+     * @param psiParameters
      * @return
      */
-    public JavaClass build() {
-        return javaClass;
+    private JavaMethodParameter[] buildJavaMethodParameters(JvmParameter[] psiParameters) {
+        return null;
     }
 
 }

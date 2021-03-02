@@ -3,15 +3,13 @@ package org.burgeon.turtle.core.model.source;
 import lombok.Data;
 
 /**
- * Java属性
+ * Java方法参数
  *
  * @author luxiaocong
- * @createdOn 2021/2/27
+ * @createdOn 2021/3/2
  */
 @Data
-public class JavaField {
-
-    private JavaComment comment;
+public class JavaMethodParameter {
 
     private JavaAnnotation[] annotations;
 

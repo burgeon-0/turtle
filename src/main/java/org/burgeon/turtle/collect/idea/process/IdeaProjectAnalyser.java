@@ -45,6 +45,11 @@ public class IdeaProjectAnalyser implements Analyser {
         List<JavaClass> javaClasses = new ArrayList<>();
         sourceProject.setJavaClasses(javaClasses);
 
+        // TODO 提高分析效率，思路如下：
+        // 1. 使用多线程，充分利用多核CPU的能力
+        // 2. 预分析，项目启动时预先分析，项目文件变更时重新分析变更文件
+        // 3. 去掉不必要的分析，如：对superClass、interfaces、innerClasses等的分析【经测试，发现作用不大；发现现象：第一次加载慢，后面越来越快】
+        // 4. 改变分析策略，只分析存在目标注解的类，如：只分析存在@RestController等注解的类
         List<PsiJavaFile> psiJavaFiles = getPsiJavaFiles();
         for (PsiJavaFile psiJavaFile : psiJavaFiles) {
             log.info("PsiJavaFile: {}.{}", psiJavaFile.getPackageName(), psiJavaFile.getName());

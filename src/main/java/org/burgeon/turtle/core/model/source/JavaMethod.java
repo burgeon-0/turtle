@@ -3,7 +3,7 @@ package org.burgeon.turtle.core.model.source;
 import lombok.Data;
 
 /**
- * Java方法信息
+ * Java方法
  *
  * @author luxiaocong
  * @createdOn 2021/2/27
@@ -19,8 +19,8 @@ public class JavaMethod {
 
     private String name;
 
-    private JavaClass returnType;
+    private JavaType returnType;
 
-    private JavaClass[] parameterTypes;
+    private JavaMethodParameter[] parameters;
 
 }

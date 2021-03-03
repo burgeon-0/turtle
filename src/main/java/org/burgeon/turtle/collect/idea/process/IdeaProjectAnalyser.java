@@ -55,7 +55,7 @@ public class IdeaProjectAnalyser implements Analyser {
             log.info("PsiJavaFile: {}.{}", psiJavaFile.getPackageName(), psiJavaFile.getName());
 
             for (PsiClass psiClass : psiJavaFile.getClasses()) {
-                JavaSourceBuilder javaSourceBuilder = new JavaSourceBuilder(psiJavaFile, psiClass);
+                JavaSourceBuilder javaSourceBuilder = new JavaSourceBuilder(project, psiJavaFile, psiClass);
                 JavaClass javaClass = javaSourceBuilder.buildClass()
                         .buildComment()
                         .buildAnnotations()

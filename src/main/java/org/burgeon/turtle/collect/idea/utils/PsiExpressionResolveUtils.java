@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * @author luxiaocong
  * @createdOn 2021/3/1
  */
-public class ExpressionResolveUtils {
+public class PsiExpressionResolveUtils {
 
     private static ScriptEngine jse = new ScriptEngineManager().getEngineByName("JavaScript");
 

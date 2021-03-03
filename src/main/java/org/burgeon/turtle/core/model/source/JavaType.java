@@ -27,6 +27,8 @@ public class JavaType {
 
     private boolean isChar;
 
+    private boolean isVoid;
+
     /**
      * Java基础类型：byte、short、int、long、float、double、boolean、char
      */
@@ -39,12 +41,15 @@ public class JavaType {
 
     private boolean isArray;
 
+    /**
+     * 数组维度
+     */
+    private int arrayDimension;
+
     private boolean isSet;
 
     private boolean isList;
 
     private boolean isMap;
-
-    private boolean isVoid;
 
 }

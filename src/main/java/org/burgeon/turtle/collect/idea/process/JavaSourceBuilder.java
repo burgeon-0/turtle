@@ -3,11 +3,13 @@ package org.burgeon.turtle.collect.idea.process;
 import com.intellij.lang.jvm.JvmModifier;
 import com.intellij.lang.jvm.JvmParameter;
 import com.intellij.lang.jvm.annotation.JvmAnnotationAttribute;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.javadoc.PsiDocTag;
 import org.apache.commons.lang3.StringUtils;
-import org.burgeon.turtle.collect.idea.utils.ExpressionResolveUtils;
+import org.burgeon.turtle.collect.idea.utils.JavaTypeUtils;
+import org.burgeon.turtle.collect.idea.utils.PsiExpressionResolveUtils;
 import org.burgeon.turtle.core.model.source.*;
 
 import java.util.ArrayList;
@@ -21,13 +23,16 @@ import java.util.List;
  */
 public class JavaSourceBuilder {
 
+    private Project project;
+
     private PsiJavaFile psiJavaFile;
 
     private PsiClass psiClass;
 
     private JavaClass javaClass;
 
-    public JavaSourceBuilder(PsiJavaFile psiJavaFile, PsiClass psiClass) {
+    public JavaSourceBuilder(Project project, PsiJavaFile psiJavaFile, PsiClass psiClass) {
+        this.project = project;
         this.psiJavaFile = psiJavaFile;
         this.psiClass = psiClass;
     }
@@ -135,7 +140,7 @@ public class JavaSourceBuilder {
      * @return
      */
     private JavaClass buildJavaClass(PsiClass psiClass) {
-        JavaSourceBuilder javaSourceBuilder = new JavaSourceBuilder(psiJavaFile, psiClass);
+        JavaSourceBuilder javaSourceBuilder = new JavaSourceBuilder(project, psiJavaFile, psiClass);
         JavaClass javaClass = javaSourceBuilder.buildClass()
                 .buildComment()
                 .buildAnnotations()
@@ -381,7 +386,7 @@ public class JavaSourceBuilder {
     private Object getJavaAnnotationAttributeValue(PsiAnnotationMemberValue psiAnnotationMemberValue) {
         Object attributeValue = StringUtils.deleteWhitespace(psiAnnotationMemberValue.getText());
         if (psiAnnotationMemberValue instanceof PsiExpression) {
-            Object value = ExpressionResolveUtils.resolve((PsiExpression) psiAnnotationMemberValue);
+            Object value = PsiExpressionResolveUtils.resolve((PsiExpression) psiAnnotationMemberValue);
             if (value != null) {
                 attributeValue = value;
             }
@@ -411,23 +416,45 @@ public class JavaSourceBuilder {
     }
 
     /**
-     * 构建JavaType
-     *
-     * @param psiType
-     * @return
-     */
-    private JavaType buildJavaType(PsiType psiType) {
-        return null;
-    }
-
-    /**
      * 构建JavaMethod参数
      *
      * @param psiParameters
      * @return
      */
     private JavaMethodParameter[] buildJavaMethodParameters(JvmParameter[] psiParameters) {
+        if (psiParameters == null) {
+            return null;
+        }
         return null;
+    }
+
+    /**
+     * 构建JavaType
+     *
+     * @param psiType
+     * @return
+     */
+    private JavaType buildJavaType(PsiType psiType) {
+        if (psiType == null) {
+            return null;
+        }
+
+        JavaType javaType = new JavaType();
+        String text = psiType.getCanonicalText();
+        javaType.setByte(JavaTypeUtils.isByte(text));
+        javaType.setShort(JavaTypeUtils.isShort(text));
+        javaType.setInt(JavaTypeUtils.isInt(text));
+        javaType.setLong(JavaTypeUtils.isLong(text));
+        javaType.setFloat(JavaTypeUtils.isFloat(text));
+        javaType.setDouble(JavaTypeUtils.isDouble(text));
+        javaType.setBoolean(JavaTypeUtils.isBoolean(text));
+        javaType.setChar(JavaTypeUtils.isChar(text));
+        javaType.setPrimitive(JavaTypeUtils.isPrimitive(text));
+        javaType.setVoid(JavaTypeUtils.isVoid(text));
+        javaType.setObject(!javaType.isPrimitive());
+        javaType.setArray(JavaTypeUtils.isArray(text));
+        javaType.setArrayDimension(JavaTypeUtils.getArrayDimension(text));
+        return javaType;
     }
 
 }

@@ -17,3 +17,10 @@
 选择`Edit Configurations...` -> 点击`Logs` -> 点击`+` -> `Log File Location:`找到`当前项目目录/build/idea-sandbox/system/log/idea.log` -> 点击`OK` -> 点击`Apply`，配置成功即可看到打印的日志。
 
 [IntelliJ IDEA官方解析](https://intellij-support.jetbrains.com/hc/en-us/community/posts/203855890-com-intellij-openapi-diagnostic-Logger-debug-statements-are-not-visible-in-the-console)
+
+## 保留分支，以新思路重新设计
+
+- 将代码推送到分支：1.0.0-SNAPSHOT，以保留现有代码；
+- 按照新的思路设计代码（plugin（idea ...）、core（analyser、collector、notifier）、export（api blueprint ...）），继续迭代；
+- 旧的方式会将IDEA的PSI文件转换成自定义的Java文件结构，费时费力，且跟IDE耦合过深，不易扩展；
+- 新的方式IDE只需要提供源文件目录以及UI扩展点，由本系统进行编译加载（maven、gradle），再进行分析。

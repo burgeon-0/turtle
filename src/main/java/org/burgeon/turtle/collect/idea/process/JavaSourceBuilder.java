@@ -217,6 +217,7 @@ public class JavaSourceBuilder {
                 javaField.setModifier(buildModifier(psiField));
                 javaField.setName(psiField.getName());
                 PsiType psiType = psiField.getType();
+                printPsiClass(psiType);
                 javaField.setType(buildJavaType(psiType));
                 javaFields[i] = javaField;
             }
@@ -409,6 +410,7 @@ public class JavaSourceBuilder {
         javaMethod.setModifier(buildModifier(psiMethod));
         javaMethod.setName(psiMethod.getName());
         PsiType psiType = psiMethod.getReturnType();
+        printPsiClass(psiType);
         javaMethod.setReturnType(buildJavaType(psiType));
         JvmParameter[] psiParameters = psiMethod.getParameters();
         javaMethod.setParameters(buildJavaMethodParameters(psiParameters));
@@ -455,6 +457,30 @@ public class JavaSourceBuilder {
         javaType.setArray(JavaTypeUtils.isArray(text));
         javaType.setArrayDimension(JavaTypeUtils.getArrayDimension(text));
         return javaType;
+    }
+
+    /**
+     * 输出PsiClass信息，以供分析
+     *
+     * @param psiType
+     */
+    private void printPsiClass(PsiType psiType) {
+        if (psiType == null) {
+            System.out.println("PsiType is null!");
+            return;
+        }
+
+        if (!(psiType instanceof PsiClassType)) {
+            System.out.println("PsiType is not PsiClassType!");
+            return;
+        }
+
+        PsiClass psiClass = ((PsiClassType) psiType).resolve();
+        if (psiClass != null) {
+            System.out.println("PsiClass: " + psiClass.getQualifiedName());
+        } else {
+            System.out.println("None psiClass! " + psiType.getCanonicalText());
+        }
     }
 
 }

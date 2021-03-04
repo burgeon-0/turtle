@@ -31,6 +31,6 @@ public class SourceProject {
     /**
      * 项目Java源文件
      */
-    private List<JavaClass> javaClasses;
+    private List<Class> classes;
 
 }

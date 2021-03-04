@@ -1,4 +1,4 @@
-package org.burgeon.turtle.collect.idea.action;
+package org.burgeon.turtle.plugin.idea.action;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;

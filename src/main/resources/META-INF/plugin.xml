@@ -19,12 +19,12 @@
 
     <actions>
         <!-- Tools菜单、项目右键菜单 -->
-        <group id="org.burgeon.turtle.collect.idea.action.ApiActionGroup"
+        <group id="org.burgeon.turtle.plugin.idea.action.ApiActionGroup"
                text="Turtle" icon="/icons/turtle.png" popup="true">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
-            <action id="org.burgeon.turtle.collect.idea.action.ApiBlueprintExportAction"
-                    class="org.burgeon.turtle.collect.idea.action.ApiBlueprintExportAction"
+            <action id="org.burgeon.turtle.plugin.idea.action.ApiBlueprintExportAction"
+                    class="org.burgeon.turtle.plugin.idea.action.ApiBlueprintExportAction"
                     text="导出API Blueprint文档">
             </action>
             <separator/>

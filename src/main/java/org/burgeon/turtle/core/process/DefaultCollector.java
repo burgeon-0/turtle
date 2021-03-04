@@ -1,8 +1,7 @@
-package org.burgeon.turtle.collect;
+package org.burgeon.turtle.core.process;
 
 import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.model.source.SourceProject;
-import org.burgeon.turtle.core.process.Collector;
 
 /**
  * 默认收集器

@@ -1,4 +1,4 @@
-package org.burgeon.turtle.collect.idea.config;
+package org.burgeon.turtle.plugin.idea.config;
 
 import org.burgeon.turtle.core.event.ExportEventSupport;
 import org.burgeon.turtle.export.blueprint.ApiBlueprintExporter;

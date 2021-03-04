@@ -1,4 +1,4 @@
-package org.burgeon.turtle.collect.idea.process;
+package org.burgeon.turtle.plugin.idea.process;
 
 import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.event.DefaultCodes;

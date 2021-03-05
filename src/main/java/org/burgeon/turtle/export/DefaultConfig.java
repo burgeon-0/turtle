@@ -1,15 +1,15 @@
-package org.burgeon.turtle.plugin.idea.config;
+package org.burgeon.turtle.export;
 
 import org.burgeon.turtle.core.event.ExportEventSupport;
 import org.burgeon.turtle.export.blueprint.ApiBlueprintExporter;
 
 /**
- * 导出器配置
+ * 导出器默认配置
  *
  * @author luxiaocong
- * @createdOn 2021/2/26
+ * @createdOn 2021/3/5
  */
-public class ExporterConfig {
+public class DefaultConfig {
 
     /**
      * 初始化配置

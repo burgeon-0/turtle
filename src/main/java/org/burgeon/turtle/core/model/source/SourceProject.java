@@ -2,6 +2,7 @@ package org.burgeon.turtle.core.model.source;
 
 import lombok.Data;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -29,7 +30,12 @@ public class SourceProject {
     private String host;
 
     /**
-     * 项目Java源文件
+     * Java源文件
+     */
+    private List<File> files;
+
+    /**
+     * class文件
      */
     private List<Class> classes;
 

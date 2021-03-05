@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'application'
     id 'org.jetbrains.intellij' version '0.6.5'
 }
 
@@ -7,15 +8,33 @@ group 'org.burgeon'
 version '1.0.1'
 
 sourceCompatibility = 1.8
+mainClassName = 'org.burgeon.turtle.Bootstrap'
+
+task createProperties(dependsOn: processResources) {
+    doLast {
+        new File("$buildDir/resources/main/version.properties").withWriter { w ->
+            Properties p = new Properties()
+            p['version'] = project.version.toString()
+            p.store w, null
+        }
+    }
+}
+
+classes {
+    dependsOn createProperties
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testCompile 'junit:junit:4.12'
     implementation 'org.projectlombok:lombok:1.18.16'
     annotationProcessor 'org.projectlombok:lombok:1.18.16'
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
+    implementation 'commons-cli:commons-cli:1.4'
+    testCompile 'junit:junit:4.12'
 }
 
 intellij {

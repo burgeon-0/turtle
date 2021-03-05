@@ -3,11 +3,11 @@ package org.burgeon.turtle.plugin.idea.action;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.burgeon.turtle.plugin.idea.config.ExporterConfig;
-import org.burgeon.turtle.plugin.idea.process.ApiBlueprintNotifier;
 import org.burgeon.turtle.core.process.DefaultProcessor;
 import org.burgeon.turtle.core.process.Notifier;
 import org.burgeon.turtle.core.process.Processor;
+import org.burgeon.turtle.export.DefaultConfig;
+import org.burgeon.turtle.plugin.idea.notifier.IdeaApiBlueprintNotifier;
 
 /**
  * 菜单[导出API Blueprint文档]
@@ -25,8 +25,8 @@ public class ApiBlueprintExportAction extends AnAction {
      */
     @Override
     public void update(AnActionEvent e) {
-        ExporterConfig exporterConfig = new ExporterConfig();
-        exporterConfig.init();
+        DefaultConfig config = new DefaultConfig();
+        config.init();
     }
 
     /**
@@ -40,7 +40,7 @@ public class ApiBlueprintExportAction extends AnAction {
 
         // 进行处理
         Processor processor = new DefaultProcessor();
-        Notifier notifier = new ApiBlueprintNotifier();
+        Notifier notifier = new IdeaApiBlueprintNotifier();
         processor.setNotifier(notifier);
         processor.process();
     }

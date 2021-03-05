@@ -1,7 +1,7 @@
 package org.burgeon.turtle.export.blueprint;
 
 import lombok.extern.slf4j.Slf4j;
-import org.burgeon.turtle.core.event.DefaultCodes;
+import org.burgeon.turtle.core.event.EventTarget;
 import org.burgeon.turtle.core.event.ExportEvent;
 import org.burgeon.turtle.core.event.ExportListener;
 
@@ -24,7 +24,7 @@ public class ApiBlueprintExporter extends ExportListener {
 
     @Override
     public int targetCode() {
-        return DefaultCodes.TARGET_CODE_BLUEPRINT;
+        return EventTarget.BLUEPRINT.getCode();
     }
 
     @Override

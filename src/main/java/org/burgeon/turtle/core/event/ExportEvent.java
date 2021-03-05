@@ -28,7 +28,7 @@ public class ExportEvent {
     private ApiProject apiProject;
 
     /**
-     * 是否包含目标编码
+     * 是否包含事件目标编码
      *
      * @param targetCode
      * @return

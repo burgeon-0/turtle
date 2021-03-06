@@ -3,8 +3,11 @@ package org.burgeon.turtle.core.process;
 import lombok.extern.slf4j.Slf4j;
 import org.burgeon.turtle.core.model.source.SourceProject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * 默认分析器：先分析是什么类型的项目，再由具体的项目分析器进行分析
+ * 默认分析器：先分析是什么类型的项目，再使用具体的项目分析策略进行分析
  *
  * @author luxiaocong
  * @createdOn 2021/3/4
@@ -12,11 +15,16 @@ import org.burgeon.turtle.core.model.source.SourceProject;
 @Slf4j
 public class DefaultAnalyser implements Analyser {
 
-    private MavenProjectAnalyser mavenProjectAnalyser = new MavenProjectAnalyser();
+    private Map<String, AnalysisStrategy> analysisStrategyMap = new HashMap<>();
+    private MavenProjectAnalysisStrategy mavenProjectAnalysisStrategy = new MavenProjectAnalysisStrategy();
+    private GradleProjectAnalysisStrategy gradleProjectAnalysisStrategy = new GradleProjectAnalysisStrategy();
+    private CustomProjectAnalysisStrategy customProjectAnalysisStrategy = new CustomProjectAnalysisStrategy();
 
-    private GradleProjectAnalyser gradleProjectAnalyser = new GradleProjectAnalyser();
-
-    private CustomProjectAnalyser customProjectAnalyser = new CustomProjectAnalyser();
+    {
+        analysisStrategyMap.put(mavenProjectAnalysisStrategy.name(), mavenProjectAnalysisStrategy);
+        analysisStrategyMap.put(gradleProjectAnalysisStrategy.name(), gradleProjectAnalysisStrategy);
+        analysisStrategyMap.put(customProjectAnalysisStrategy.name(), customProjectAnalysisStrategy);
+    }
 
     @Override
     public SourceProject analyse() {

@@ -11,14 +11,14 @@ import java.util.List;
  */
 public class ExportEventSupport {
 
-    private static List<ExportListener> exportListeners = new ArrayList<>();
+    private static List<BaseExportListener> exportListeners = new ArrayList<>();
 
     /**
      * 添加导出事件监听器
      *
      * @param exportListener
      */
-    public static synchronized void addExportListener(ExportListener exportListener) {
+    public static synchronized void addExportListener(BaseExportListener exportListener) {
         exportListeners.add(exportListener);
     }
 
@@ -27,7 +27,7 @@ public class ExportEventSupport {
      *
      * @param exportListener
      */
-    public static synchronized void removeExportListener(ExportListener exportListener) {
+    public static synchronized void removeExportListener(BaseExportListener exportListener) {
         exportListeners.remove(exportListener);
     }
 
@@ -36,7 +36,7 @@ public class ExportEventSupport {
      *
      * @return
      */
-    public static List<ExportListener> getExportListeners() {
+    public static List<BaseExportListener> getExportListeners() {
         return exportListeners;
     }
 
@@ -46,7 +46,7 @@ public class ExportEventSupport {
      * @param exportListener
      * @return
      */
-    public static boolean contains(ExportListener exportListener) {
+    public static boolean contains(BaseExportListener exportListener) {
         if (exportListeners.contains(exportListener)) {
             return true;
         }
@@ -59,7 +59,7 @@ public class ExportEventSupport {
      * @param exportEvent
      */
     public static void fireExportEvent(ExportEvent exportEvent) {
-        for (ExportListener exportListener : exportListeners) {
+        for (BaseExportListener exportListener : exportListeners) {
             exportListener.dispatch(exportEvent);
         }
     }

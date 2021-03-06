@@ -3,7 +3,7 @@ package org.burgeon.turtle;
 import org.apache.commons.cli.*;
 import org.burgeon.turtle.bootstrap.BootstrapException;
 import org.burgeon.turtle.bootstrap.notifier.BootstrapApiBlueprintNotifier;
-import org.burgeon.turtle.bootstrap.notifier.BootstrapJMeterNotifier;
+import org.burgeon.turtle.bootstrap.notifier.BootstrapJmeterNotifier;
 import org.burgeon.turtle.bootstrap.notifier.BootstrapPostmanNotifier;
 import org.burgeon.turtle.common.Constants;
 import org.burgeon.turtle.common.VersionHelper;
@@ -66,7 +66,7 @@ public class Bootstrap {
                     String export = line.getOptionValue(OPTION_E);
                     execute(export);
                 } else {
-                    info("Param: -e is required");
+                    info("Argument: -e is required");
                 }
             }
         } catch (Exception e) {
@@ -90,9 +90,9 @@ public class Bootstrap {
         options.addOption(property);
         options.addOption(OPTION_H, "help", false, "Display help information");
         options.addOption(OPTION_V, "version", false, "Display version information");
-        options.addOption(OPTION_I, "input", true, "Specify the source directory");
-        options.addOption(OPTION_O, "output", true, "Specify the target directory");
-        options.addOption(OPTION_C, "classpath", true, "Specify the jar file's classpath");
+        options.addOption(OPTION_I, "input", true, "Assigning source directory");
+        options.addOption(OPTION_O, "output", true, "Assigning target directory");
+        options.addOption(OPTION_C, "classpath", true, "Assigning jar file's classpath");
         options.addOption(OPTION_E, "export", true, "blueprint | postman | jmeter");
         return options;
     }
@@ -117,7 +117,6 @@ public class Bootstrap {
                 }
             }
         }
-
     }
 
     /**
@@ -162,7 +161,7 @@ public class Bootstrap {
         } else if (EventTarget.fromName(export) == EventTarget.POSTMAN) {
             notifier = new BootstrapPostmanNotifier();
         } else if (EventTarget.fromName(export) == EventTarget.JMETER) {
-            notifier = new BootstrapJMeterNotifier();
+            notifier = new BootstrapJmeterNotifier();
         }
         processor.setNotifier(notifier);
         processor.process();

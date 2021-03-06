@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
  * @createdOn 2021/2/26
  */
 @Slf4j
-public abstract class ExportListener {
+public abstract class BaseExportListener {
 
     /**
      * 适配的目标编码

@@ -2,13 +2,10 @@ package org.burgeon.turtle.core.process;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.burgeon.turtle.core.model.api.ApiProject;
-import org.burgeon.turtle.core.model.source.SourceProject;
 import org.burgeon.turtle.core.event.ExportEvent;
 import org.burgeon.turtle.core.event.ExportEventSupport;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.burgeon.turtle.core.model.api.ApiProject;
+import org.burgeon.turtle.core.model.source.SourceProject;
 
 /**
  * 处理器
@@ -22,12 +19,22 @@ public class Processor {
     @Getter
     private Analyser analyser;
 
-    @Getter
-    private List<Collector> collectors = new ArrayList<>();
+    private CollectorPipeline collectorPipeline = new CollectorPipeline();
 
     @Setter
     @Getter
     private Notifier notifier;
+
+    /**
+     * 处理
+     */
+    public void process() {
+        SourceProject sourceProject = analyser.analyse();
+        ApiProject apiProject = new ApiProject();
+        collectorPipeline.collect(apiProject, sourceProject);
+        ExportEvent exportEvent = notifier.notice(apiProject);
+        ExportEventSupport.fireExportEvent(exportEvent);
+    }
 
     /**
      * 添加收集器
@@ -35,7 +42,7 @@ public class Processor {
      * @param collector
      */
     public void addCollector(Collector collector) {
-        collectors.add(collector);
+        collectorPipeline.addCollector(collector);
     }
 
     /**
@@ -44,20 +51,7 @@ public class Processor {
      * @param collector
      */
     public void removeCollector(Collector collector) {
-        collectors.remove(collector);
-    }
-
-    /**
-     * 处理
-     */
-    public void process() {
-        SourceProject sourceProject = analyser.analyse();
-        ApiProject apiProject = new ApiProject();
-        for (Collector collector : collectors) {
-            collector.collect(apiProject, sourceProject);
-        }
-        ExportEvent exportEvent = notifier.notice(apiProject);
-        ExportEventSupport.fireExportEvent(exportEvent);
+        collectorPipeline.removeCollector(collector);
     }
 
 }

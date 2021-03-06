@@ -16,7 +16,8 @@ public interface Collector {
      *
      * @param apiProject
      * @param sourceProject
+     * @param context
      */
-    void collect(ApiProject apiProject, SourceProject sourceProject);
+    void collect(ApiProject apiProject, SourceProject sourceProject, CollectorContext context);
 
 }

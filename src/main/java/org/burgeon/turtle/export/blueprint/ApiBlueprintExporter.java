@@ -3,7 +3,7 @@ package org.burgeon.turtle.export.blueprint;
 import lombok.extern.slf4j.Slf4j;
 import org.burgeon.turtle.core.event.EventTarget;
 import org.burgeon.turtle.core.event.ExportEvent;
-import org.burgeon.turtle.core.event.ExportListener;
+import org.burgeon.turtle.core.event.BaseExportListener;
 
 /**
  * 导出API Blueprint文档
@@ -12,14 +12,14 @@ import org.burgeon.turtle.core.event.ExportListener;
  * @createdOn 2021/2/26
  */
 @Slf4j
-public class ApiBlueprintExporter extends ExportListener {
+public class ApiBlueprintExporter extends BaseExportListener {
 
-    private static final ApiBlueprintExporter instance = new ApiBlueprintExporter();
+    private static final ApiBlueprintExporter INSTANCE = new ApiBlueprintExporter();
 
     private ApiBlueprintExporter() {}
 
     public static ApiBlueprintExporter getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Override

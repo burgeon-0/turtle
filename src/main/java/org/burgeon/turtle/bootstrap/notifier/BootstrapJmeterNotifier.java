@@ -12,7 +12,7 @@ import org.burgeon.turtle.core.process.Notifier;
  * @author luxiaocong
  * @createdOn 2021/3/4
  */
-public class BootstrapJMeterNotifier implements Notifier {
+public class BootstrapJmeterNotifier implements Notifier {
 
     @Override
     public ExportEvent notice(ApiProject apiProject) {

@@ -8,6 +8,37 @@ package org.burgeon.turtle.core.model.api;
  */
 public enum HttpMethod {
 
-    GET, POST, PUT, DELETE, HEAD, OPTIONS, TRACE, PATCH
+    /**
+     * HTTP GET
+     */
+    GET,
+    /**
+     * HTTP POST
+     */
+    POST,
+    /**
+     * HTTP PUT
+     */
+    PUT,
+    /**
+     * HTTP DELETE
+     */
+    DELETE,
+    /**
+     * HTTP HEAD
+     */
+    HEAD,
+    /**
+     * HTTP OPTIONS
+     */
+    OPTIONS,
+    /**
+     * HTTP TRACE
+     */
+    TRACE,
+    /**
+     * HTTP PATCH
+     */
+    PATCH
 
 }

@@ -30,11 +30,11 @@ public enum EventTarget {
     private int code;
     private String name;
 
-    private static final Map<String, EventTarget> valuesMap = new HashMap(values().length);
+    private static final Map<String, EventTarget> VALUES_MAP = new HashMap<>(values().length);
 
     static {
         for (EventTarget eventTarget : values()) {
-            valuesMap.put(eventTarget.name, eventTarget);
+            VALUES_MAP.put(eventTarget.name, eventTarget);
         }
     }
 
@@ -50,7 +50,7 @@ public enum EventTarget {
      * @return
      */
     public static boolean contains(String name) {
-        EventTarget eventTarget = valuesMap.get(name);
+        EventTarget eventTarget = VALUES_MAP.get(name);
         if (eventTarget != null) {
             return true;
         }
@@ -64,7 +64,7 @@ public enum EventTarget {
      * @return
      */
     public static EventTarget fromName(String name) {
-        return valuesMap.get(name);
+        return VALUES_MAP.get(name);
     }
 
 }

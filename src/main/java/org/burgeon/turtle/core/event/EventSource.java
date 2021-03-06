@@ -34,11 +34,11 @@ public enum EventSource {
     private int code;
     private String name;
 
-    private static final Map<String, EventSource> valuesMap = new HashMap(values().length);
+    private static final Map<String, EventSource> VALUES_MAP = new HashMap<>(values().length);
 
     static {
         for (EventSource eventSource : values()) {
-            valuesMap.put(eventSource.name, eventSource);
+            VALUES_MAP.put(eventSource.name, eventSource);
         }
     }
 
@@ -54,7 +54,7 @@ public enum EventSource {
      * @return
      */
     public static boolean contains(String name) {
-        EventSource eventSource = valuesMap.get(name);
+        EventSource eventSource = VALUES_MAP.get(name);
         if (eventSource != null) {
             return true;
         }
@@ -68,7 +68,7 @@ public enum EventSource {
      * @return
      */
     public static EventSource fromName(String name) {
-        return valuesMap.get(name);
+        return VALUES_MAP.get(name);
     }
 
 }

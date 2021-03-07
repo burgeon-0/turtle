@@ -34,6 +34,7 @@ public abstract class BaseExportListener {
         log.info("Receive an export event: from {} to {}.",
                 exportEvent.getSourceCode(), exportEvent.getTargetCodes());
         if (exportEvent.containsTargetCode(targetCode())) {
+            log.info("Dispatch to {}.", targetCode());
             action(exportEvent);
         }
     }

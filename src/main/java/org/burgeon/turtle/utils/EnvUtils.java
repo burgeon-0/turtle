@@ -1,6 +1,6 @@
 package org.burgeon.turtle.utils;
 
-import org.jetbrains.annotations.NotNull;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 环境配置工具类
@@ -17,7 +17,7 @@ public class EnvUtils {
      * @param def
      * @return
      */
-    public static byte getByteProperty(@NotNull String key, byte def) {
+    public static byte getByteProperty(String key, byte def) {
         String val = getStringProperty(key);
         try {
             return Byte.parseByte(val);
@@ -33,7 +33,7 @@ public class EnvUtils {
      * @param def
      * @return
      */
-    public static short getShortProperty(@NotNull String key, short def) {
+    public static short getShortProperty(String key, short def) {
         String val = getStringProperty(key);
         try {
             return Short.parseShort(val);
@@ -49,7 +49,7 @@ public class EnvUtils {
      * @param def
      * @return
      */
-    public static int getIntProperty(@NotNull String key, int def) {
+    public static int getIntProperty(String key, int def) {
         String val = getStringProperty(key);
         try {
             return Integer.parseInt(val);
@@ -65,7 +65,7 @@ public class EnvUtils {
      * @param def
      * @return
      */
-    public static long getLongProperty(@NotNull String key, long def) {
+    public static long getLongProperty(String key, long def) {
         String val = getStringProperty(key);
         try {
             return Long.parseLong(val);
@@ -81,7 +81,7 @@ public class EnvUtils {
      * @param def
      * @return
      */
-    public static float getFloatProperty(@NotNull String key, float def) {
+    public static float getFloatProperty(String key, float def) {
         String val = getStringProperty(key);
         try {
             return Float.parseFloat(val);
@@ -97,7 +97,7 @@ public class EnvUtils {
      * @param def
      * @return
      */
-    public static double getDoubleProperty(@NotNull String key, double def) {
+    public static double getDoubleProperty(String key, double def) {
         String val = getStringProperty(key);
         try {
             return Double.parseDouble(val);
@@ -113,7 +113,7 @@ public class EnvUtils {
      * @param def
      * @return
      */
-    public static boolean getBooleanProperty(@NotNull String key, boolean def) {
+    public static boolean getBooleanProperty(String key, boolean def) {
         String val = getStringProperty(key);
         if (val == null) {
             return def;
@@ -127,7 +127,7 @@ public class EnvUtils {
      * @param key
      * @return
      */
-    public static String getStringProperty(@NotNull String key) {
+    public static String getStringProperty(String key) {
         return System.getProperty(key);
     }
 
@@ -138,8 +138,29 @@ public class EnvUtils {
      * @param def
      * @return
      */
-    public static String getStringProperty(@NotNull String key, String def) {
+    public static String getStringProperty(String key, String def) {
         return System.getProperty(key, def);
+    }
+
+    /**
+     * 获取String数组类型的系统配置
+     *
+     * @param key
+     * @param separator
+     * @return
+     */
+    public static String[] getStringArrayProperty(String key, String separator) {
+        String val = getStringProperty(key);
+        if (val == null) {
+            return null;
+        }
+
+        String[] arr = val.split(separator);
+        String[] results = new String[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            results[i] = StringUtils.trim(arr[i]);
+        }
+        return results;
     }
 
 }

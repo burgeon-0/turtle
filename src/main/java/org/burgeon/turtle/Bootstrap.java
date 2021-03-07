@@ -11,7 +11,7 @@ import org.burgeon.turtle.core.event.EventTarget;
 import org.burgeon.turtle.core.process.DefaultProcessor;
 import org.burgeon.turtle.core.process.Notifier;
 import org.burgeon.turtle.core.process.Processor;
-import org.burgeon.turtle.export.DefaultConfig;
+import org.burgeon.turtle.export.DefaultExporterConfig;
 
 import java.util.Properties;
 
@@ -23,7 +23,8 @@ import java.util.Properties;
  */
 public class Bootstrap {
 
-    private static final String OPTION_D = "D";
+    private static final String OPTION_UD = "D";
+    private static final String OPTION_D = "d";
     private static final String OPTION_H = "h";
     private static final String OPTION_V = "v";
     private static final String OPTION_I = "i";
@@ -48,6 +49,8 @@ public class Bootstrap {
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
+            // init debug properties
+            initDebugProperties(line);
 
             if (line.getOptions().length == 0 || line.hasOption(OPTION_H)) {
                 // display help information
@@ -81,13 +84,14 @@ public class Bootstrap {
      */
     private static Options buildOptions() {
         Options options = new Options();
-        Option property = Option.builder(OPTION_D)
+        Option property = Option.builder(OPTION_UD)
                 .argName("property=value")
                 .valueSeparator()
                 .numberOfArgs(2)
                 .desc("Use value for given property")
                 .build();
         options.addOption(property);
+        options.addOption(OPTION_D, "debug", false, "Turn on debug mode");
         options.addOption(OPTION_H, "help", false, "Display help information");
         options.addOption(OPTION_V, "version", false, "Display version information");
         options.addOption(OPTION_I, "input", true, "Assigning source directory");
@@ -98,13 +102,24 @@ public class Bootstrap {
     }
 
     /**
+     * 初始化debug配置
+     *
+     * @param line
+     */
+    private static void initDebugProperties(CommandLine line) {
+        if (line.hasOption(OPTION_D)) {
+            System.setProperty(Constants.DEBUG, "true");
+        }
+    }
+
+    /**
      * 初始化compile配置
      *
      * @param line
      */
     private static void initCompileProperties(CommandLine line) {
-        if (line.hasOption(OPTION_D)) {
-            Properties properties = line.getOptionProperties(OPTION_D);
+        if (line.hasOption(OPTION_UD)) {
+            Properties properties = line.getOptionProperties(OPTION_UD);
             if (properties != null) {
                 if (properties.getProperty(Constants.COMPILE_ORDER) != null) {
                     System.setProperty(Constants.COMPILE_ORDER, properties.getProperty(Constants.COMPILE_ORDER));
@@ -150,8 +165,8 @@ public class Bootstrap {
             throw new BootstrapException("Unknown export type: " + export);
         }
 
-        DefaultConfig config = new DefaultConfig();
-        config.init();
+        DefaultExporterConfig exporterConfig = new DefaultExporterConfig();
+        exporterConfig.init();
 
         // 进行处理
         Processor processor = new DefaultProcessor();

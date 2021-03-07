@@ -1,7 +1,9 @@
 package org.burgeon.turtle.core.process;
 
 import lombok.extern.slf4j.Slf4j;
+import org.burgeon.turtle.common.Constants;
 import org.burgeon.turtle.core.model.source.SourceProject;
+import org.burgeon.turtle.utils.EnvUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +31,24 @@ public class DefaultAnalyser implements Analyser {
     @Override
     public SourceProject analyse() {
         log.info("Start to analyse...");
+
+        // 若指定了编译模式，则使用指定的策略进行分析
+        String mode = EnvUtils.getStringProperty(Constants.COMPILE_MODE);
+        if (mode != null) {
+            AnalysisStrategy analysisStrategy = analysisStrategyMap.get(mode);
+            if (analysisStrategy == null) {
+                log.error("Unknown compile mode: {}.", mode);
+                return null;
+            }
+            return analysisStrategy.analyse();
+        }
+
+        String[] order = EnvUtils.getStringArrayProperty(Constants.COMPILE_ORDER, Constants.SEPARATOR_COMMA);
+        if (order == null) {
+            log.error("Compile order can not be null.");
+            return null;
+        }
+
         return null;
     }
 

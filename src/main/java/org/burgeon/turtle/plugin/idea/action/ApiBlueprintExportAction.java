@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.burgeon.turtle.core.process.DefaultProcessor;
 import org.burgeon.turtle.core.process.Notifier;
 import org.burgeon.turtle.core.process.Processor;
-import org.burgeon.turtle.export.DefaultConfig;
+import org.burgeon.turtle.export.DefaultExporterConfig;
 import org.burgeon.turtle.plugin.idea.notifier.IdeaApiBlueprintNotifier;
 
 /**
@@ -18,6 +18,9 @@ import org.burgeon.turtle.plugin.idea.notifier.IdeaApiBlueprintNotifier;
 @Slf4j
 public class ApiBlueprintExportAction extends AnAction {
 
+    private DefaultExporterConfig exporterConfig = new DefaultExporterConfig();
+    private Boolean init = false;
+
     /**
      * 每次调出菜单的时候触发
      *
@@ -25,8 +28,10 @@ public class ApiBlueprintExportAction extends AnAction {
      */
     @Override
     public void update(AnActionEvent e) {
-        DefaultConfig config = new DefaultConfig();
-        config.init();
+        if (!init) {
+            exporterConfig.init();
+            init = true;
+        }
     }
 
     /**

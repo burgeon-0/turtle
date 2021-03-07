@@ -17,5 +17,11 @@ public class Constants {
     public static final String CUSTOM_SOURCE_PATH = "custom.sourcepath";
     public static final String CUSTOM_TARGET_PATH = "custom.targetpath";
     public static final String CUSTOM_CLASSPATH = "custom.classpath";
+    public static final String DEBUG = "debug";
+
+    /**
+     * 逗号分隔符
+     */
+    public static final String SEPARATOR_COMMA = ",";
 
 }

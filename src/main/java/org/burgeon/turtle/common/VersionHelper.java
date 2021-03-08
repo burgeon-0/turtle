@@ -19,27 +19,22 @@ public class VersionHelper {
 
     public static final String VERSION;
 
+    // version file path: ./build/resources/main/conf/version or ./conf/version
     static {
-        Properties versionProperties = new Properties();
+        String filePath = EnvUtils.getStringProperty(Constants.TURTLE_HOME)
+                + EnvUtils.getStringProperty(Constants.CONF_PATH) + "/version";
         InputStream inputStream = null;
-        if (EnvUtils.getBooleanProperty(Constants.DEBUG, false)) {
-            try {
-                inputStream = new FileInputStream("build/resources/main/conf/version");
-            } catch (FileNotFoundException e) {
-                log.error("File not found: turtle/build/resources/main/conf/version.");
-            }
-        } else {
-            try {
-                inputStream = new FileInputStream("../conf/version");
-            } catch (FileNotFoundException e) {
-                log.error("File not found: turtle/conf/version.");
-            }
+        try {
+            inputStream = new FileInputStream(filePath);
+        } catch (FileNotFoundException e) {
+            log.error("File not found: {}.", filePath);
         }
 
+        Properties versionProperties = new Properties();
         try {
             versionProperties.load(inputStream);
         } catch (Exception e) {
-            log.error("Could not load version file.");
+            log.error("Could not load version file: {}.", filePath);
         }
 
         VERSION = versionProperties.getProperty("version", "unknown");

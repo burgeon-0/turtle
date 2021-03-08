@@ -9,6 +9,11 @@ package org.burgeon.turtle.common;
 public class Constants {
 
     /**
+     * turtle安装目录key
+     */
+    public static final String TURTLE_HOME = "TURTLE_HOME";
+
+    /**
      * 配置key
      */
     public static final String COMPILE_ORDER = "compile.order";
@@ -17,6 +22,7 @@ public class Constants {
     public static final String CUSTOM_SOURCE_PATH = "custom.sourcepath";
     public static final String CUSTOM_TARGET_PATH = "custom.targetpath";
     public static final String CUSTOM_CLASSPATH = "custom.classpath";
+    public static final String CONF_PATH = "confpath";
     public static final String DEBUG = "debug";
 
     /**

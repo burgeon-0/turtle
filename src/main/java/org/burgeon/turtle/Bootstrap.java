@@ -49,8 +49,8 @@ public class Bootstrap {
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
-            // init debug properties
-            initDebugProperties(line);
+            // init priority properties
+            initPriorityProperties(line);
 
             if (line.getOptions().length == 0 || line.hasOption(OPTION_H)) {
                 // display help information
@@ -102,11 +102,34 @@ public class Bootstrap {
     }
 
     /**
-     * 初始化debug配置
+     * 初始化需要优先初始化的配置
      *
      * @param line
      */
-    private static void initDebugProperties(CommandLine line) {
+    private static void initPriorityProperties(CommandLine line) {
+        if (System.getenv(Constants.TURTLE_HOME) != null) {
+            System.setProperty(Constants.TURTLE_HOME, System.getenv(Constants.TURTLE_HOME));
+        } else {
+            String homePath = System.getProperty("user.dir");
+            String binPath = "/bin";
+            if (homePath.endsWith(binPath)) {
+                homePath = homePath.substring(0, homePath.length() - binPath.length());
+            }
+            System.setProperty(Constants.TURTLE_HOME, homePath);
+        }
+        boolean setConfPath = false;
+        if (line.hasOption(OPTION_UD)) {
+            Properties properties = line.getOptionProperties(OPTION_UD);
+            if (properties != null) {
+                if (properties.getProperty(Constants.CONF_PATH) != null) {
+                    System.setProperty(Constants.CONF_PATH, properties.getProperty(Constants.CONF_PATH));
+                    setConfPath = true;
+                }
+            }
+        }
+        if (!setConfPath) {
+            System.setProperty(Constants.CONF_PATH, "/conf");
+        }
         if (line.hasOption(OPTION_D)) {
             System.setProperty(Constants.DEBUG, "true");
         }

@@ -6,6 +6,7 @@ import org.burgeon.turtle.bootstrap.notifier.BootstrapApiBlueprintNotifier;
 import org.burgeon.turtle.bootstrap.notifier.BootstrapJmeterNotifier;
 import org.burgeon.turtle.bootstrap.notifier.BootstrapPostmanNotifier;
 import org.burgeon.turtle.common.Constants;
+import org.burgeon.turtle.common.PropertiesInitializer;
 import org.burgeon.turtle.common.VersionHelper;
 import org.burgeon.turtle.core.event.EventTarget;
 import org.burgeon.turtle.core.process.DefaultProcessor;
@@ -49,7 +50,7 @@ public class Bootstrap {
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
-            // init priority properties
+            // 初始化需要优先初始化的配置：如项目根路径、Debug配置等
             initPriorityProperties(line);
 
             if (line.getOptions().length == 0 || line.hasOption(OPTION_H)) {
@@ -60,11 +61,15 @@ public class Bootstrap {
                 // display version information
                 info("Turtle version " + VersionHelper.VERSION);
             } else {
-                // init properties
+                // 初始化配置文件中的配置
+                PropertiesInitializer.init();
+
+                // 初始化运行时指定的配置
+                // 配置文件中的配置，会被运行时指定的配置覆盖
                 initCompileProperties(line);
                 initCustomProperties(line);
 
-                // execute
+                // 执行核心操作
                 if (line.hasOption(OPTION_E)) {
                     String export = line.getOptionValue(OPTION_E);
                     execute(export);

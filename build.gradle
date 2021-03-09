@@ -11,7 +11,7 @@ mainClassName = 'org.burgeon.turtle.Bootstrap'
 
 task createProperties(dependsOn: processResources) {
     doLast {
-        new File("$buildDir/resources/main/conf/version").withWriter { w ->
+        new File("$buildDir/resources/main/version").withWriter { w ->
             Properties p = new Properties()
             p['version'] = project.version.toString()
             p.store w, null

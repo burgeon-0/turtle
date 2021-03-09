@@ -2,6 +2,7 @@ package org.burgeon.turtle.common;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -16,8 +17,13 @@ public class VersionHelper {
     public static final String VERSION;
 
     static {
-        // version file path: turtle/build/resources/main/conf/version or turtle/conf/version
-        Properties versionProperties = PropertiesLoader.loadProperties("version");
+        InputStream inputStream = VersionHelper.class.getClassLoader().getResourceAsStream("version");
+        Properties versionProperties = new Properties();
+        try {
+            versionProperties.load(inputStream);
+        } catch (Exception e) {
+            log.error("Could not load version file.", e);
+        }
         VERSION = versionProperties.getProperty("version", "unknown");
     }
 

@@ -30,7 +30,7 @@ public class DefaultAnalyser implements Analyser {
 
     @Override
     public SourceProject analyse() {
-        log.info("Start to analyse...");
+        log.debug("Start to analyse...");
 
         // 若指定了编译模式，则使用指定的策略进行分析
         String mode = EnvUtils.getStringProperty(Constants.COMPILE_MODE);

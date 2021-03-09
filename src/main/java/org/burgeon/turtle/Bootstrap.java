@@ -137,6 +137,7 @@ public class Bootstrap {
         }
         if (line.hasOption(OPTION_D)) {
             System.setProperty(Constants.DEBUG, "true");
+            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "debug");
         }
     }
 

@@ -20,7 +20,7 @@ public class ApiActionGroup extends DefaultActionGroup {
      */
     @Override
     public void actionPerformed(AnActionEvent e) {
-        log.info("Receive an [API] action.");
+        log.debug("Receive an [API] action.");
     }
 
 }

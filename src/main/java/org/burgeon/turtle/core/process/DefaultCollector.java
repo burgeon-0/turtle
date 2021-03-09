@@ -15,7 +15,7 @@ public class DefaultCollector implements Collector {
 
     @Override
     public void collect(ApiProject apiProject, SourceProject sourceProject, CollectorContext context) {
-        log.info("Collect by default collector.");
+        log.debug("Collect by default collector.");
         context.collectNext(apiProject, sourceProject);
     }
 

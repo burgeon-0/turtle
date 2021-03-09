@@ -6,7 +6,7 @@ import org.burgeon.turtle.bootstrap.notifier.BootstrapApiBlueprintNotifier;
 import org.burgeon.turtle.bootstrap.notifier.BootstrapJmeterNotifier;
 import org.burgeon.turtle.bootstrap.notifier.BootstrapPostmanNotifier;
 import org.burgeon.turtle.common.Constants;
-import org.burgeon.turtle.common.PropertiesInitializer;
+import org.burgeon.turtle.common.ConfigInitializer;
 import org.burgeon.turtle.common.VersionHelper;
 import org.burgeon.turtle.core.event.EventTarget;
 import org.burgeon.turtle.core.process.DefaultProcessor;
@@ -51,7 +51,7 @@ public class Bootstrap {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
             // 初始化需要优先初始化的配置：如项目根路径、Debug配置等
-            initPriorityProperties(line);
+            initPriorityConfig(line);
 
             if (line.getOptions().length == 0 || line.hasOption(OPTION_H)) {
                 // display help information
@@ -62,12 +62,12 @@ public class Bootstrap {
                 info("Turtle version " + VersionHelper.VERSION);
             } else {
                 // 初始化配置文件中的配置
-                PropertiesInitializer.init();
+                ConfigInitializer.init();
 
                 // 初始化运行时指定的配置
                 // 配置文件中的配置，会被运行时指定的配置覆盖
-                initCompileProperties(line);
-                initCustomProperties(line);
+                initCompileConfig(line);
+                initCustomConfig(line);
 
                 // 执行核心操作
                 if (line.hasOption(OPTION_E)) {
@@ -111,7 +111,7 @@ public class Bootstrap {
      *
      * @param line
      */
-    private static void initPriorityProperties(CommandLine line) {
+    private static void initPriorityConfig(CommandLine line) {
         if (System.getenv(Constants.TURTLE_HOME) != null) {
             System.setProperty(Constants.TURTLE_HOME, System.getenv(Constants.TURTLE_HOME));
         } else {
@@ -146,7 +146,7 @@ public class Bootstrap {
      *
      * @param line
      */
-    private static void initCompileProperties(CommandLine line) {
+    private static void initCompileConfig(CommandLine line) {
         if (line.hasOption(OPTION_UD)) {
             Properties properties = line.getOptionProperties(OPTION_UD);
             if (properties != null) {
@@ -168,7 +168,7 @@ public class Bootstrap {
      *
      * @param line
      */
-    private static void initCustomProperties(CommandLine line) {
+    private static void initCustomConfig(CommandLine line) {
         if (line.hasOption(OPTION_I)) {
             String sourcePath = line.getOptionValue(OPTION_I);
             System.setProperty(Constants.CUSTOM_SOURCE_PATH, sourcePath);

@@ -8,7 +8,7 @@ import java.util.Properties;
  * @author luxiaocong
  * @createdOn 2021/3/9
  */
-public class PropertiesInitializer {
+public class ConfigInitializer {
 
     /**
      * 初始化项目配置

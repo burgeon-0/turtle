@@ -43,9 +43,10 @@ public class DefaultAnalyser implements Analyser {
             return analysisStrategy.analyse();
         }
 
+        // 没有指定编译模式，或指定的策略分析失败，则编译顺序是必须指定的
         String[] order = EnvUtils.getStringArrayProperty(Constants.COMPILE_ORDER, Constants.SEPARATOR_COMMA);
         if (order == null) {
-            log.error("Compile order can not be null.");
+            log.error("Not found compile order.");
             return null;
         }
 

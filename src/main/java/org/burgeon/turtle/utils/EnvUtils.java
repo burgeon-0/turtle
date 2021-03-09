@@ -1,7 +1,5 @@
 package org.burgeon.turtle.utils;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * 环境配置工具类
  *
@@ -158,7 +156,7 @@ public class EnvUtils {
         String[] arr = val.split(separator);
         String[] results = new String[arr.length];
         for (int i = 0; i < arr.length; i++) {
-            results[i] = StringUtils.trim(arr[i]);
+            results[i] = arr[i].trim();
         }
         return results;
     }

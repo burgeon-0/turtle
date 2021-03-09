@@ -26,6 +26,12 @@ public class Constants {
     public static final String CUSTOM_CLASSPATH = "custom.classpath";
 
     /**
+     * 默认配置，在配置文件加载不到的时候应用，如：作为IDEA插件的时候
+     */
+    public static final String[] DEFALUT_COMPILE_ORDER = new String[]{"maven", "gradle", "custom"};
+    public static final String DEFALUT_COMPILE_GUARANTEE = "can_skip";
+
+    /**
      * 逗号分隔符
      */
     public static final String SEPARATOR_COMMA = ",";

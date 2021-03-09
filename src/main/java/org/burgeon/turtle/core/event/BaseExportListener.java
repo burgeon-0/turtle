@@ -31,10 +31,10 @@ public abstract class BaseExportListener {
      * @param exportEvent
      */
     public void dispatch(ExportEvent exportEvent) {
-        log.info("Receive an export event: from {} to {}.",
+        log.debug("Receive an export event: from {} to {}.",
                 exportEvent.getSourceCode(), exportEvent.getTargetCodes());
         if (exportEvent.containsTargetCode(targetCode())) {
-            log.info("Dispatch to {}.", targetCode());
+            log.debug("Dispatch to {}.", targetCode());
             action(exportEvent);
         }
     }

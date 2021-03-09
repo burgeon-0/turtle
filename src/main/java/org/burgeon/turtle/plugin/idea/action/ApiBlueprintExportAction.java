@@ -41,7 +41,7 @@ public class ApiBlueprintExportAction extends AnAction {
      */
     @Override
     public void actionPerformed(AnActionEvent e) {
-        log.info("Receive an [Export API Blueprint] action.");
+        log.debug("Receive an [Export API Blueprint] action.");
 
         // 进行处理
         Processor processor = new DefaultProcessor();

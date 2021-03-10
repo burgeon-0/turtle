@@ -16,7 +16,7 @@ public class CustomProjectAnalysisStrategy implements AnalysisStrategy {
     }
 
     @Override
-    public SourceProject analyse() {
+    public SourceProject analyse() throws AnalysisException {
         return null;
     }
 

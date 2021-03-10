@@ -32,23 +32,59 @@ public class DefaultAnalyser implements Analyser {
     public SourceProject analyse() {
         log.debug("Start to analyse...");
 
-        // 若指定了编译模式，则使用指定的策略进行分析
+        // 若指定了编译模式，则使用指定的编译模式对应的策略进行分析
         String mode = EnvUtils.getStringProperty(Constants.COMPILE_MODE);
         if (mode != null) {
-            AnalysisStrategy analysisStrategy = analysisStrategyMap.get(mode);
-            if (analysisStrategy == null) {
-                log.error("Unknown compile mode: {}.", mode);
-                return null;
-            }
-            return analysisStrategy.analyse();
+            return analyseByMode(mode);
         }
 
-        // 没有指定编译模式，或指定的策略分析失败，则编译顺序是必须指定的
+        // 没有指定编译模式，尝试按顺序使用不同的策略进行分析
         String[] order = EnvUtils.getStringArrayProperty(Constants.COMPILE_ORDER, Constants.SEPARATOR_COMMA);
         if (order == null) {
             order = Constants.DEFALUT_COMPILE_ORDER;
         }
+        return analyseByOrder(order);
+    }
 
+    /**
+     * 按指定编译模式对应的策略进行分析
+     *
+     * @param mode
+     * @return
+     */
+    private SourceProject analyseByMode(String mode) {
+        AnalysisStrategy analysisStrategy = analysisStrategyMap.get(mode);
+        if (analysisStrategy == null) {
+            log.error("Unknown compile mode: {}.", mode);
+            return null;
+        }
+        try {
+            return analysisStrategy.analyse();
+        } catch (AnalysisException e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 按顺序使用不同的策略进行分析，直到其中一个成功或全部失败为止
+     *
+     * @param order
+     * @return
+     */
+    private SourceProject analyseByOrder(String[] order) {
+        for (String name : order) {
+            AnalysisStrategy analysisStrategy = analysisStrategyMap.get(name);
+            if (analysisStrategy == null) {
+                log.error("Unknown compile name: {}.", name);
+                continue;
+            }
+            try {
+                return analysisStrategy.analyse();
+            } catch (AnalysisException e) {
+                log.error(e.getMessage());
+            }
+        }
         return null;
     }
 

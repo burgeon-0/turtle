@@ -21,7 +21,8 @@ public interface AnalysisStrategy {
      * 经过分析，得到项目和源文件信息
      *
      * @return
+     * @throws AnalysisException
      */
-    SourceProject analyse();
+    SourceProject analyse() throws AnalysisException;
 
 }

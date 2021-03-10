@@ -112,6 +112,7 @@ public class Bootstrap {
      * @param line
      */
     private static void initPriorityConfig(CommandLine line) {
+        // set home path
         if (System.getenv(Constants.TURTLE_HOME) != null) {
             System.setProperty(Constants.TURTLE_HOME, System.getenv(Constants.TURTLE_HOME));
         } else {
@@ -122,6 +123,8 @@ public class Bootstrap {
             }
             System.setProperty(Constants.TURTLE_HOME, homePath);
         }
+
+        // set config path
         boolean setConfPath = false;
         if (line.hasOption(OPTION_UD)) {
             Properties properties = line.getOptionProperties(OPTION_UD);
@@ -135,6 +138,8 @@ public class Bootstrap {
         if (!setConfPath) {
             System.setProperty(Constants.CONF_PATH, "/conf");
         }
+
+        // set debug info
         if (line.hasOption(OPTION_D)) {
             System.setProperty(Constants.DEBUG, "true");
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "debug");

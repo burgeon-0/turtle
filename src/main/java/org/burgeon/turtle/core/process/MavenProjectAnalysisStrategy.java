@@ -16,7 +16,7 @@ public class MavenProjectAnalysisStrategy implements AnalysisStrategy {
     }
 
     @Override
-    public SourceProject analyse() {
+    public SourceProject analyse() throws AnalysisException {
         return null;
     }
 

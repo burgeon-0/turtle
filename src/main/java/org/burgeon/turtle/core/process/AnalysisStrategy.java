@@ -23,6 +23,6 @@ public interface AnalysisStrategy {
      * @return
      * @throws AnalysisException
      */
-    SourceProject analyse() throws AnalysisException;
+    SourceProject analyze() throws AnalysisException;
 
 }

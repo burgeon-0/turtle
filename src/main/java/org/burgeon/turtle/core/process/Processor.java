@@ -17,7 +17,7 @@ public class Processor {
 
     @Setter
     @Getter
-    private Analyser analyser;
+    private Analyzer analyzer;
 
     private CollectorPipeline collectorPipeline = new CollectorPipeline();
 
@@ -29,7 +29,7 @@ public class Processor {
      * 处理
      */
     public void process() {
-        SourceProject sourceProject = analyser.analyse();
+        SourceProject sourceProject = analyzer.analyze();
         ApiProject apiProject = new ApiProject();
         collectorPipeline.collect(apiProject, sourceProject);
         ExportEvent exportEvent = notifier.notice(apiProject);

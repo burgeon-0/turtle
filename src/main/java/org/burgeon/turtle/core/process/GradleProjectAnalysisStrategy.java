@@ -1,5 +1,6 @@
 package org.burgeon.turtle.core.process;
 
+import lombok.extern.slf4j.Slf4j;
 import org.burgeon.turtle.core.model.source.SourceProject;
 
 /**
@@ -8,6 +9,7 @@ import org.burgeon.turtle.core.model.source.SourceProject;
  * @author luxiaocong
  * @createdOn 2021/3/4
  */
+@Slf4j
 public class GradleProjectAnalysisStrategy implements AnalysisStrategy {
 
     @Override
@@ -16,7 +18,8 @@ public class GradleProjectAnalysisStrategy implements AnalysisStrategy {
     }
 
     @Override
-    public SourceProject analyse() throws AnalysisException {
+    public SourceProject analyze() throws AnalysisException {
+        log.debug("Analyze by gradle strategy.");
         return null;
     }
 

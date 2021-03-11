@@ -15,7 +15,7 @@ import java.util.Map;
  * @createdOn 2021/3/4
  */
 @Slf4j
-public class DefaultAnalyser implements Analyser {
+public class DefaultAnalyzer implements Analyzer {
 
     private Map<String, AnalysisStrategy> analysisStrategyMap = new HashMap<>();
     private MavenProjectAnalysisStrategy mavenProjectAnalysisStrategy = new MavenProjectAnalysisStrategy();
@@ -29,13 +29,13 @@ public class DefaultAnalyser implements Analyser {
     }
 
     @Override
-    public SourceProject analyse() {
-        log.debug("Start to analyse...");
+    public SourceProject analyze() {
+        log.debug("Start to analyze...");
 
         // 若指定了编译模式，则使用指定的编译模式对应的策略进行分析
         String mode = EnvUtils.getStringProperty(Constants.COMPILE_MODE);
         if (mode != null) {
-            return analyseByMode(mode);
+            return analyzeByMode(mode);
         }
 
         // 没有指定编译模式，尝试按顺序使用不同的策略进行分析
@@ -43,7 +43,7 @@ public class DefaultAnalyser implements Analyser {
         if (order == null) {
             order = Constants.DEFALUT_COMPILE_ORDER;
         }
-        return analyseByOrder(order);
+        return analyzeByOrder(order);
     }
 
     /**
@@ -52,14 +52,14 @@ public class DefaultAnalyser implements Analyser {
      * @param mode
      * @return
      */
-    private SourceProject analyseByMode(String mode) {
+    private SourceProject analyzeByMode(String mode) {
         AnalysisStrategy analysisStrategy = analysisStrategyMap.get(mode);
         if (analysisStrategy == null) {
             log.error("Unknown compile mode: {}.", mode);
             return null;
         }
         try {
-            return analysisStrategy.analyse();
+            return analysisStrategy.analyze();
         } catch (AnalysisException e) {
             log.error(e.getMessage());
             return null;
@@ -72,7 +72,7 @@ public class DefaultAnalyser implements Analyser {
      * @param order
      * @return
      */
-    private SourceProject analyseByOrder(String[] order) {
+    private SourceProject analyzeByOrder(String[] order) {
         for (String name : order) {
             AnalysisStrategy analysisStrategy = analysisStrategyMap.get(name);
             if (analysisStrategy == null) {
@@ -80,7 +80,7 @@ public class DefaultAnalyser implements Analyser {
                 continue;
             }
             try {
-                return analysisStrategy.analyse();
+                return analysisStrategy.analyze();
             } catch (AnalysisException e) {
                 log.error(e.getMessage());
             }

@@ -9,8 +9,8 @@ package org.burgeon.turtle.core.process;
 public class DefaultProcessor extends Processor {
 
     public DefaultProcessor() {
-        Analyser analyser = new DefaultAnalyser();
-        super.setAnalyser(analyser);
+        Analyzer analyzer = new DefaultAnalyzer();
+        super.setAnalyzer(analyzer);
         Collector collector = new DefaultCollector();
         super.addCollector(collector);
     }

@@ -8,13 +8,13 @@ import org.burgeon.turtle.core.model.source.SourceProject;
  * @author luxiaocong
  * @createdOn 2021/2/27
  */
-public interface Analyser {
+public interface Analyzer {
 
     /**
      * 分析器经过分析，得到项目和源文件信息
      *
      * @return
      */
-    SourceProject analyse();
+    SourceProject analyze();
 
 }

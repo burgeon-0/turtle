@@ -17,3 +17,10 @@
 选择`Edit Configurations...` -> 点击`Logs` -> 点击`+` -> `Log File Location:`找到`当前项目目录/build/idea-sandbox/system/log/idea.log` -> 点击`OK` -> 点击`Apply`，配置成功即可看到打印的日志。
 
 [IntelliJ IDEA官方解析](https://intellij-support.jetbrains.com/hc/en-us/community/posts/203855890-com-intellij-openapi-diagnostic-Logger-debug-statements-are-not-visible-in-the-console)
+
+## 保留分支，以新方式进行源代码分析
+
+- 将代码推送到分支：1.0.1-SNAPSHOT，以保留现有代码；
+- 按照新的方式进行源代码分析，继续迭代；
+- 旧的方式，希望借助maven、gradle的能力进行源代码分析，但并不如人意，比如maven并没有提供编译、获取源代码信息的API，需要通过plugin的方式接入，并不理想；
+- 新的方式，使用[spoon](https://github.com/INRIA/spoon)进行源代码分析，支持通过依赖方式引入能力，并支持多种项目结构，方便友好。

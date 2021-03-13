@@ -18,9 +18,8 @@ public class Constants {
      */
     public static final String CONF_PATH = "confpath";
     public static final String DEBUG = "debug";
-    public static final String COMPILE_ORDER = "compile.order";
-    public static final String COMPILE_GUARANTEE = "compile.guarantee";
-    public static final String COMPILE_MODE = "compile.mode";
+    public static final String ANALYSIS_ORDER = "analysis.order";
+    public static final String ANALYSIS_MODE = "analysis.mode";
     public static final String CUSTOM_SOURCE_PATH = "custom.sourcepath";
     public static final String CUSTOM_TARGET_PATH = "custom.targetpath";
     public static final String CUSTOM_CLASSPATH = "custom.classpath";
@@ -28,8 +27,7 @@ public class Constants {
     /**
      * 默认配置，在配置文件加载不到的时候应用，如：作为IDEA插件的时候
      */
-    public static final String[] DEFALUT_COMPILE_ORDER = new String[]{"maven", "gradle", "custom"};
-    public static final String DEFALUT_COMPILE_GUARANTEE = "can_skip";
+    public static final String[] DEFAULT_ANALYSIS_ORDER = new String[]{"maven", "gradle", "custom"};
 
     /**
      * 逗号分隔符

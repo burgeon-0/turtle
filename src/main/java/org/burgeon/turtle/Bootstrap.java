@@ -66,7 +66,7 @@ public class Bootstrap {
 
                 // 初始化运行时指定的配置
                 // 配置文件中的配置，会被运行时指定的配置覆盖
-                initCompileConfig(line);
+                initAnalysisConfig(line);
                 initCustomConfig(line);
 
                 // 执行核心操作
@@ -99,9 +99,9 @@ public class Bootstrap {
         options.addOption(OPTION_D, "debug", false, "Turn on debug mode");
         options.addOption(OPTION_H, "help", false, "Display help information");
         options.addOption(OPTION_V, "version", false, "Display version information");
-        options.addOption(OPTION_I, "input", true, "Assigning source directory");
-        options.addOption(OPTION_O, "output", true, "Assigning target directory");
-        options.addOption(OPTION_C, "classpath", true, "Assigning jar file's classpath");
+        options.addOption(OPTION_I, "input", true, "Specify source directory");
+        options.addOption(OPTION_O, "output", true, "Specify target directory");
+        options.addOption(OPTION_C, "classpath", true, "Specify jar file's classpath");
         options.addOption(OPTION_E, "export", true, "blueprint | postman | jmeter");
         return options;
     }
@@ -147,22 +147,19 @@ public class Bootstrap {
     }
 
     /**
-     * 初始化compile配置
+     * 初始化analysis配置
      *
      * @param line
      */
-    private static void initCompileConfig(CommandLine line) {
+    private static void initAnalysisConfig(CommandLine line) {
         if (line.hasOption(OPTION_UD)) {
             Properties properties = line.getOptionProperties(OPTION_UD);
             if (properties != null) {
-                if (properties.getProperty(Constants.COMPILE_ORDER) != null) {
-                    System.setProperty(Constants.COMPILE_ORDER, properties.getProperty(Constants.COMPILE_ORDER));
+                if (properties.getProperty(Constants.ANALYSIS_ORDER) != null) {
+                    System.setProperty(Constants.ANALYSIS_ORDER, properties.getProperty(Constants.ANALYSIS_ORDER));
                 }
-                if (properties.getProperty(Constants.COMPILE_GUARANTEE) != null) {
-                    System.setProperty(Constants.COMPILE_GUARANTEE, properties.getProperty(Constants.COMPILE_GUARANTEE));
-                }
-                if (properties.getProperty(Constants.COMPILE_MODE) != null) {
-                    System.setProperty(Constants.COMPILE_MODE, properties.getProperty(Constants.COMPILE_MODE));
+                if (properties.getProperty(Constants.ANALYSIS_MODE) != null) {
+                    System.setProperty(Constants.ANALYSIS_MODE, properties.getProperty(Constants.ANALYSIS_MODE));
                 }
             }
         }

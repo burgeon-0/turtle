@@ -17,15 +17,12 @@ public class ConfigInitializer {
         // conf file path: turtle/build/resources/main/conf/turtle.conf or turtle/conf/turtle.conf
         Properties properties = PropertiesLoader.loadProperties("turtle.conf");
 
-        // init compile config
-        if (properties.getProperty(Constants.COMPILE_ORDER) != null) {
-            System.setProperty(Constants.COMPILE_ORDER, properties.getProperty(Constants.COMPILE_ORDER));
+        // init analysis config
+        if (properties.getProperty(Constants.ANALYSIS_ORDER) != null) {
+            System.setProperty(Constants.ANALYSIS_ORDER, properties.getProperty(Constants.ANALYSIS_ORDER));
         }
-        if (properties.getProperty(Constants.COMPILE_GUARANTEE) != null) {
-            System.setProperty(Constants.COMPILE_GUARANTEE, properties.getProperty(Constants.COMPILE_GUARANTEE));
-        }
-        if (properties.getProperty(Constants.COMPILE_MODE) != null) {
-            System.setProperty(Constants.COMPILE_MODE, properties.getProperty(Constants.COMPILE_MODE));
+        if (properties.getProperty(Constants.ANALYSIS_MODE) != null) {
+            System.setProperty(Constants.ANALYSIS_MODE, properties.getProperty(Constants.ANALYSIS_MODE));
         }
 
         // init custom config

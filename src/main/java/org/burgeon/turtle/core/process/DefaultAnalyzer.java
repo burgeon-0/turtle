@@ -32,22 +32,22 @@ public class DefaultAnalyzer implements Analyzer {
     public SourceProject analyze() {
         log.debug("Start to analyze...");
 
-        // 若指定了编译模式，则使用指定的编译模式对应的策略进行分析
-        String mode = EnvUtils.getStringProperty(Constants.COMPILE_MODE);
+        // 若指定了分析模式，则使用指定的分析模式对应的策略进行分析
+        String mode = EnvUtils.getStringProperty(Constants.ANALYSIS_MODE);
         if (mode != null) {
             return analyzeByMode(mode);
         }
 
-        // 没有指定编译模式，尝试按顺序使用不同的策略进行分析
-        String[] order = EnvUtils.getStringArrayProperty(Constants.COMPILE_ORDER, Constants.SEPARATOR_COMMA);
+        // 没有指定分析模式，则尝试按顺序使用不同的策略进行分析
+        String[] order = EnvUtils.getStringArrayProperty(Constants.ANALYSIS_ORDER, Constants.SEPARATOR_COMMA);
         if (order == null) {
-            order = Constants.DEFALUT_COMPILE_ORDER;
+            order = Constants.DEFAULT_ANALYSIS_ORDER;
         }
         return analyzeByOrder(order);
     }
 
     /**
-     * 按指定编译模式对应的策略进行分析
+     * 按指定分析模式对应的策略进行分析
      *
      * @param mode
      * @return
@@ -55,7 +55,7 @@ public class DefaultAnalyzer implements Analyzer {
     private SourceProject analyzeByMode(String mode) {
         AnalysisStrategy analysisStrategy = analysisStrategyMap.get(mode);
         if (analysisStrategy == null) {
-            log.error("Unknown compile mode: {}.", mode);
+            log.error("Unknown analysis mode: {}.", mode);
             return null;
         }
         try {
@@ -76,7 +76,7 @@ public class DefaultAnalyzer implements Analyzer {
         for (String name : order) {
             AnalysisStrategy analysisStrategy = analysisStrategyMap.get(name);
             if (analysisStrategy == null) {
-                log.error("Unknown compile name: {}.", name);
+                log.error("Unknown analysis name: {}.", name);
                 continue;
             }
             try {

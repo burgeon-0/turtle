@@ -39,10 +39,8 @@ public class DefaultAnalyzer implements Analyzer {
         }
 
         // 没有指定分析模式，则尝试按顺序使用不同的策略进行分析
-        String[] order = EnvUtils.getStringArrayProperty(Constants.ANALYSIS_ORDER, Constants.SEPARATOR_COMMA);
-        if (order == null) {
-            order = Constants.DEFAULT_ANALYSIS_ORDER;
-        }
+        String[] order = EnvUtils.getStringArrayProperty(Constants.ANALYSIS_ORDER,
+                Constants.SEPARATOR_COMMA, Constants.DEFAULT_ANALYSIS_ORDER);
         return analyzeByOrder(order);
     }
 
@@ -55,13 +53,13 @@ public class DefaultAnalyzer implements Analyzer {
     private SourceProject analyzeByMode(String mode) {
         AnalysisStrategy analysisStrategy = analysisStrategyMap.get(mode);
         if (analysisStrategy == null) {
-            log.error("Unknown analysis mode: {}.", mode);
+            log.warn("Unknown analysis mode: {}.", mode);
             return null;
         }
         try {
             return analysisStrategy.analyze();
         } catch (AnalysisException e) {
-            log.error(e.getMessage());
+            log.warn(e.getMessage());
             return null;
         }
     }
@@ -76,13 +74,13 @@ public class DefaultAnalyzer implements Analyzer {
         for (String name : order) {
             AnalysisStrategy analysisStrategy = analysisStrategyMap.get(name);
             if (analysisStrategy == null) {
-                log.error("Unknown analysis name: {}.", name);
+                log.warn("Unknown analysis name: {}.", name);
                 continue;
             }
             try {
                 return analysisStrategy.analyze();
             } catch (AnalysisException e) {
-                log.error(e.getMessage());
+                log.warn(e.getMessage());
             }
         }
         return null;

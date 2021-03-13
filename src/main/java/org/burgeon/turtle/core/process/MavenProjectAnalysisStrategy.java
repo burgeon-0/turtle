@@ -17,7 +17,7 @@ import java.io.File;
  * @createdOn 2021/3/4
  */
 @Slf4j
-public class MavenProjectAnalysisStrategy implements AnalysisStrategy {
+public class MavenProjectAnalysisStrategy extends AbstractAnalysisStrategy {
 
     private String srcPath = "src";
     private String pomName = "pom.xml";
@@ -49,19 +49,6 @@ public class MavenProjectAnalysisStrategy implements AnalysisStrategy {
         sourceProject.setModel(model);
 
         return sourceProject;
-    }
-
-    /**
-     * 检查项目根目录是否存在
-     *
-     * @param sourcePath
-     * @throws AnalysisException
-     */
-    private void checkDirectoryExists(String sourcePath) throws AnalysisException {
-        File directory = new File(sourcePath);
-        if (!directory.exists() || !directory.isDirectory()) {
-            throw new AnalysisException("Project directory not exists: " + sourcePath + ".");
-        }
     }
 
     /**

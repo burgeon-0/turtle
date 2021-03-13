@@ -145,12 +145,13 @@ public class EnvUtils {
      *
      * @param key
      * @param separator
+     * @param def
      * @return
      */
-    public static String[] getStringArrayProperty(String key, String separator) {
+    public static String[] getStringArrayProperty(String key, String separator, String[] def) {
         String val = getStringProperty(key);
         if (val == null) {
-            return null;
+            return def;
         }
 
         String[] arr = val.split(separator);

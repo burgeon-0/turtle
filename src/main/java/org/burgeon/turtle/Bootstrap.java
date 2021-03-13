@@ -61,24 +61,14 @@ public class Bootstrap {
                 // display version information
                 info("Turtle version " + VersionHelper.VERSION);
             } else {
-                // 初始化配置文件中的配置
-                ConfigInitializer.init();
-
-                // 初始化运行时指定的配置
-                // 配置文件中的配置，会被运行时指定的配置覆盖
-                initAnalysisConfig(line);
-                initDirectoryConfig(line);
-
-                // 执行核心操作
-                if (line.hasOption(OPTION_E)) {
-                    String export = line.getOptionValue(OPTION_E);
-                    execute(export);
-                } else {
-                    info("Argument: -e is required");
-                }
+                execute(line);
             }
         } catch (Exception e) {
-            error(e.getMessage());
+            if (e.getMessage() != null) {
+                error(e.getMessage());
+            } else {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -99,9 +89,12 @@ public class Bootstrap {
         options.addOption(OPTION_D, "debug", false, "Turn on debug mode");
         options.addOption(OPTION_H, "help", false, "Display help information");
         options.addOption(OPTION_V, "version", false, "Display version information");
-        options.addOption(OPTION_I, "input", true, "Specify source directory");
-        options.addOption(OPTION_O, "output", true, "Specify target directory");
-        options.addOption(OPTION_C, "classpath", true, "Specify jar file's classpath");
+        options.addOption(OPTION_I, "input", true,
+                "Specify source directory, it always is your project's root folder");
+        options.addOption(OPTION_O, "output", true,
+                "Specify target directory, where you want to store the artifacts");
+        options.addOption(OPTION_C, "classpath", true,
+                "Specify classpath, which can be directories or jar files, multiple paths can be split by ';'");
         options.addOption(OPTION_E, "export", true, "blueprint | postman | jmeter");
         return options;
     }
@@ -143,6 +136,30 @@ public class Bootstrap {
         if (line.hasOption(OPTION_D)) {
             System.setProperty(Constants.DEBUG, "true");
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "debug");
+        }
+    }
+
+    /**
+     * 处理
+     *
+     * @param line
+     * @throws BootstrapException
+     */
+    private static void execute(CommandLine line) throws BootstrapException {
+        // 初始化配置文件中的配置
+        ConfigInitializer.init();
+
+        // 初始化运行时指定的配置
+        // 配置文件中的配置，会被运行时指定的配置覆盖
+        initAnalysisConfig(line);
+        initDirectoryConfig(line);
+
+        // 执行核心操作
+        if (line.hasOption(OPTION_E)) {
+            String export = line.getOptionValue(OPTION_E);
+            doExecute(export);
+        } else {
+            info("Argument: -e is required");
         }
     }
 
@@ -196,7 +213,7 @@ public class Bootstrap {
      * @param export
      * @throws BootstrapException
      */
-    private static void execute(String export) throws BootstrapException {
+    private static void doExecute(String export) throws BootstrapException {
         if (!EventTarget.contains(export)) {
             throw new BootstrapException("Unknown export type: " + export);
         }

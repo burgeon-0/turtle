@@ -38,5 +38,9 @@ public class Constants {
      * 逗号分隔符
      */
     public static final String SEPARATOR_COMMA = ",";
+    /**
+     * 分号分隔符
+     */
+    public static final String SEPARATOR_SEMICOLON = ";";
 
 }

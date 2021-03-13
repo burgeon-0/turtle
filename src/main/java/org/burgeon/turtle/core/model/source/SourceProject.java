@@ -1,9 +1,7 @@
 package org.burgeon.turtle.core.model.source;
 
 import lombok.Data;
-
-import java.io.File;
-import java.util.List;
+import spoon.reflect.CtModel;
 
 /**
  * 源文件项目
@@ -30,13 +28,8 @@ public class SourceProject {
     private String host;
 
     /**
-     * Java源文件
+     * spoon root meta model
      */
-    private List<File> files;
-
-    /**
-     * class文件
-     */
-    private List<Class> classes;
+    private CtModel model;
 
 }

@@ -67,7 +67,7 @@ public class Bootstrap {
                 // 初始化运行时指定的配置
                 // 配置文件中的配置，会被运行时指定的配置覆盖
                 initAnalysisConfig(line);
-                initCustomConfig(line);
+                initDirectoryConfig(line);
 
                 // 执行核心操作
                 if (line.hasOption(OPTION_E)) {
@@ -117,7 +117,7 @@ public class Bootstrap {
             System.setProperty(Constants.TURTLE_HOME, System.getenv(Constants.TURTLE_HOME));
         } else {
             String homePath = System.getProperty("user.dir");
-            String binPath = "/bin";
+            String binPath = Constants.BIN_DIR;
             if (homePath.endsWith(binPath)) {
                 homePath = homePath.substring(0, homePath.length() - binPath.length());
             }
@@ -136,7 +136,7 @@ public class Bootstrap {
             }
         }
         if (!setConfPath) {
-            System.setProperty(Constants.CONF_PATH, "/conf");
+            System.setProperty(Constants.CONF_PATH, Constants.CONF_DIR);
         }
 
         // set debug info
@@ -166,22 +166,27 @@ public class Bootstrap {
     }
 
     /**
-     * 初始化custom配置
+     * 初始化directory配置
      *
      * @param line
      */
-    private static void initCustomConfig(CommandLine line) {
+    private static void initDirectoryConfig(CommandLine line) {
+        String currentPath = System.getProperty("user.dir");
         if (line.hasOption(OPTION_I)) {
             String sourcePath = line.getOptionValue(OPTION_I);
-            System.setProperty(Constants.CUSTOM_SOURCE_PATH, sourcePath);
+            System.setProperty(Constants.SOURCE_PATH, sourcePath);
+        } else {
+            System.setProperty(Constants.SOURCE_PATH, currentPath);
         }
         if (line.hasOption(OPTION_O)) {
             String targetPath = line.getOptionValue(OPTION_O);
-            System.setProperty(Constants.CUSTOM_TARGET_PATH, targetPath);
+            System.setProperty(Constants.TARGET_PATH, targetPath);
+        } else {
+            System.setProperty(Constants.TARGET_PATH, currentPath + Constants.OUT_DIR);
         }
         if (line.hasOption(OPTION_C)) {
             String classpath = line.getOptionValue(OPTION_C);
-            System.setProperty(Constants.CUSTOM_CLASSPATH, classpath);
+            System.setProperty(Constants.CLASSPATH, classpath);
         }
     }
 

@@ -37,6 +37,9 @@ build/
 mvnw
 mvnw.cmd
 
-## .gradle
+### gradle ###
 .gradle
 out/
+
+### spoon ###
+spooned/

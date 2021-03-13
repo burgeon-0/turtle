@@ -1,5 +1,7 @@
 package org.burgeon.turtle.common;
 
+import java.io.File;
+
 /**
  * 常量
  *
@@ -12,6 +14,9 @@ public class Constants {
      * turtle安装目录key
      */
     public static final String TURTLE_HOME = "TURTLE_HOME";
+    public static final String BIN_DIR = File.separator + "bin";
+    public static final String CONF_DIR = File.separator + "conf";
+    public static final String OUT_DIR = File.separator + "out";
 
     /**
      * 配置key
@@ -20,9 +25,9 @@ public class Constants {
     public static final String DEBUG = "debug";
     public static final String ANALYSIS_ORDER = "analysis.order";
     public static final String ANALYSIS_MODE = "analysis.mode";
-    public static final String CUSTOM_SOURCE_PATH = "custom.sourcepath";
-    public static final String CUSTOM_TARGET_PATH = "custom.targetpath";
-    public static final String CUSTOM_CLASSPATH = "custom.classpath";
+    public static final String SOURCE_PATH = "sourcepath";
+    public static final String TARGET_PATH = "targetpath";
+    public static final String CLASSPATH = "classpath";
 
     /**
      * 默认配置，在配置文件加载不到的时候应用，如：作为IDEA插件的时候

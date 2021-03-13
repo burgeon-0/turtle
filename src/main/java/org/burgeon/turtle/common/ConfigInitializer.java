@@ -25,15 +25,15 @@ public class ConfigInitializer {
             System.setProperty(Constants.ANALYSIS_MODE, properties.getProperty(Constants.ANALYSIS_MODE));
         }
 
-        // init custom config
-        if (properties.getProperty(Constants.CUSTOM_SOURCE_PATH) != null) {
-            System.setProperty(Constants.CUSTOM_SOURCE_PATH, properties.getProperty(Constants.CUSTOM_SOURCE_PATH));
+        // init directory config
+        if (properties.getProperty(Constants.SOURCE_PATH) != null) {
+            System.setProperty(Constants.SOURCE_PATH, properties.getProperty(Constants.SOURCE_PATH));
         }
-        if (properties.getProperty(Constants.CUSTOM_TARGET_PATH) != null) {
-            System.setProperty(Constants.CUSTOM_TARGET_PATH, properties.getProperty(Constants.CUSTOM_TARGET_PATH));
+        if (properties.getProperty(Constants.TARGET_PATH) != null) {
+            System.setProperty(Constants.TARGET_PATH, properties.getProperty(Constants.TARGET_PATH));
         }
-        if (properties.getProperty(Constants.CUSTOM_CLASSPATH) != null) {
-            System.setProperty(Constants.CUSTOM_CLASSPATH, properties.getProperty(Constants.CUSTOM_CLASSPATH));
+        if (properties.getProperty(Constants.CLASSPATH) != null) {
+            System.setProperty(Constants.CLASSPATH, properties.getProperty(Constants.CLASSPATH));
         }
     }
 

@@ -12,19 +12,14 @@ import lombok.Data;
 public class HttpApi {
 
     /**
+     * 以httpMethod+path作为ID
+     */
+    private String id;
+
+    /**
      * 接口名称
      */
     private String name;
-
-    /**
-     * HTTP方法
-     */
-    private HttpMethod httpMethod;
-
-    /**
-     * 接口路径
-     */
-    private String path;
 
     /**
      * 接口描述
@@ -35,6 +30,16 @@ public class HttpApi {
      * 接口版本
      */
     private String version;
+
+    /**
+     * HTTP方法
+     */
+    private HttpMethod httpMethod;
+
+    /**
+     * 接口路径
+     */
+    private String path;
 
     /**
      * 请求参数

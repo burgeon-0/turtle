@@ -2,18 +2,16 @@ package org.burgeon.turtle.core.process;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.burgeon.turtle.common.Constants;
-import org.burgeon.turtle.common.StringUtils;
 import org.burgeon.turtle.core.model.api.ApiGroup;
 import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.model.api.HttpApi;
 import org.burgeon.turtle.core.model.api.HttpMethod;
 import org.burgeon.turtle.core.model.source.SourceProject;
 import spoon.reflect.CtModel;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtJavaDoc;
-import spoon.reflect.code.CtJavaDocTag;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 
 import java.util.ArrayList;
@@ -48,9 +46,6 @@ public class DefaultCollector implements Collector {
     private static final String METHOD_OPTIONS = "org.springframework.web.bind.annotation.RequestMethod.OPTIONS";
     private static final String METHOD_TRACE = "org.springframework.web.bind.annotation.RequestMethod.TRACE";
 
-    private static final String COMMENT_TAG_GROUP = "group";
-    private static final String COMMENT_TAG_VERSION = "version";
-
     @Override
     public void collect(ApiProject apiProject, SourceProject sourceProject, CollectorContext context) {
         log.debug("Collect by default collector.");
@@ -62,21 +57,23 @@ public class DefaultCollector implements Collector {
         List<CtClass<?>> ctClasses = findApiClass(model);
         for (CtClass<?> ctClass : ctClasses) {
             ApiGroup group = new ApiGroup();
-            CtJavaDoc ctJavaDoc = getLastCtJavaDoc(ctClass);
-            group.setName(getGroupName(ctClass, ctJavaDoc));
-            if (ctJavaDoc != null) {
-                group.setDescription(getGroupDescription(group, ctJavaDoc));
-                group.setVersion(getApiVersion(ctJavaDoc));
-            }
+            group.setId(ctClass.getQualifiedName());
             groups.add(group);
             List<HttpApi> httpApis = new ArrayList<>();
             group.setHttpApis(httpApis);
+            apiProject.putApiGroup(ctClass.getQualifiedName(), group);
+            sourceProject.putCtClass(group.getId(), ctClass);
 
             String basePath = getBasePath(ctClass);
             List<HttpApiMaterial> materials = findApiMethod(ctClass);
             for (HttpApiMaterial material : materials) {
+                CtMethod<?> ctMethod = material.getCtMethod();
                 HttpApi httpApi = getHttpApi(basePath, material);
+                httpApi.setId(String.format("%s:%s", httpApi.getHttpMethod().name(), httpApi.getPath()));
                 httpApis.add(httpApi);
+                apiProject.putHttpApi(String.format("%s#%s", ctClass.getQualifiedName(),
+                        ctMethod.getSignature()), httpApi);
+                sourceProject.putCtMethod(httpApi.getId(), ctMethod);
             }
         }
 
@@ -143,43 +140,6 @@ public class DefaultCollector implements Collector {
     }
 
     /**
-     * 获取API群组名称
-     *
-     * @param ctClass
-     * @param ctJavaDoc
-     * @return
-     */
-    private String getGroupName(CtClass<?> ctClass, CtJavaDoc ctJavaDoc) {
-        if (ctJavaDoc != null) {
-            String groupName = getCommentTagValue(ctJavaDoc, COMMENT_TAG_GROUP);
-            if (groupName != null && !"".equals(groupName)) {
-                return groupName;
-            }
-            String mainComment = getMainComment(ctJavaDoc);
-            if (mainComment != null && !"".equals(mainComment)) {
-                return mainComment;
-            }
-        }
-        return ctClass.getSimpleName();
-    }
-
-    /**
-     * 获取API群组描述
-     *
-     * @param apiGroup
-     * @param ctJavaDoc
-     * @return
-     */
-    private String getGroupDescription(ApiGroup apiGroup, CtJavaDoc ctJavaDoc) {
-        String groupName = apiGroup.getName();
-        String content = ctJavaDoc.getContent();
-        if (content != null && groupName != null && content.startsWith(groupName)) {
-            content = content.substring(groupName.length());
-        }
-        return StringUtils.leftStrip(content, Constants.SEPARATOR_LINE_BREAK);
-    }
-
-    /**
      * 获取HttpApi
      *
      * @param basePath
@@ -188,89 +148,9 @@ public class DefaultCollector implements Collector {
      */
     private HttpApi getHttpApi(String basePath, HttpApiMaterial material) {
         HttpApi httpApi = new HttpApi();
-        CtMethod<?> ctMethod = material.getCtMethod();
-        CtJavaDoc ctJavaDoc = getLastCtJavaDoc(ctMethod);
-        httpApi.setName(getApiName(ctMethod, ctJavaDoc));
-        if (ctJavaDoc != null) {
-            httpApi.setDescription(getApiDescription(httpApi, ctJavaDoc));
-            httpApi.setVersion(getApiVersion(ctJavaDoc));
-        }
-        collectHttpPath(basePath, httpApi, material.getCtAnnotation());
         collectHttpMethod(httpApi, material.getCtAnnotation());
+        collectHttpPath(basePath, httpApi, material.getCtAnnotation());
         return httpApi;
-    }
-
-    /**
-     * 获取API名称
-     *
-     * @param ctJavaDoc
-     * @return
-     */
-    private String getApiName(CtMethod<?> ctMethod, CtJavaDoc ctJavaDoc) {
-        if (ctJavaDoc != null) {
-            String mainComment = getMainComment(ctJavaDoc);
-            if (mainComment != null && !"".equals(mainComment)) {
-                return mainComment;
-            }
-        }
-        return ctMethod.getSimpleName();
-    }
-
-    /**
-     * 获取API描述
-     *
-     * @param httpApi
-     * @param ctJavaDoc
-     * @return
-     */
-    private String getApiDescription(HttpApi httpApi, CtJavaDoc ctJavaDoc) {
-        String apiName = httpApi.getName() + Constants.SEPARATOR_LINE_BREAK;
-        String content = ctJavaDoc.getContent();
-        if (content != null && apiName != null && content.startsWith(apiName)) {
-            content = content.substring(apiName.length());
-        }
-        return StringUtils.leftStrip(content, Constants.SEPARATOR_LINE_BREAK);
-    }
-
-    /**
-     * 获取接口版本
-     *
-     * @param ctJavaDoc
-     * @return
-     */
-    private String getApiVersion(CtJavaDoc ctJavaDoc) {
-        String apiVersion = getCommentTagValue(ctJavaDoc, COMMENT_TAG_VERSION);
-        return apiVersion;
-    }
-
-    /**
-     * 获取接口根路径
-     *
-     * @param ctClass
-     * @return
-     */
-    private String getBasePath(CtClass<?> ctClass) {
-        List<CtAnnotation<?>> ctAnnotations = ctClass.getAnnotations();
-        for (CtAnnotation<?> ctAnnotation : ctAnnotations) {
-            String qualifiedName = ctAnnotation.getType().getQualifiedName();
-            if (REQUEST_MAPPING_ANNOTATION_TYPE.equals(qualifiedName)) {
-                return getAnnotationValue(ctAnnotation, "value");
-            }
-        }
-        return "";
-    }
-
-    /**
-     * 收集接口path
-     *
-     * @param basePath
-     * @param httpApi
-     * @param ctAnnotation
-     */
-    private void collectHttpPath(String basePath, HttpApi httpApi, CtAnnotation<?> ctAnnotation) {
-        String path = getAnnotationValue(ctAnnotation, "value");
-        path = basePath + path;
-        httpApi.setPath(path);
     }
 
     /**
@@ -342,55 +222,33 @@ public class DefaultCollector implements Collector {
     }
 
     /**
-     * 获取元素上的最后一个CtJavaDoc
+     * 获取接口根路径
      *
-     * @param ctElement
+     * @param ctClass
      * @return
      */
-    private CtJavaDoc getLastCtJavaDoc(CtElement ctElement) {
-        List<CtComment> ctComments = ctElement.getComments();
-        CtJavaDoc ctJavaDoc = null;
-        for (int i = ctComments.size() - 1; i >= 0; i--) {
-            CtComment ctComment = ctComments.get(i);
-            if (ctComment instanceof CtJavaDoc) {
-                ctJavaDoc = (CtJavaDoc) ctComment;
-                break;
+    private String getBasePath(CtClass<?> ctClass) {
+        List<CtAnnotation<?>> ctAnnotations = ctClass.getAnnotations();
+        for (CtAnnotation<?> ctAnnotation : ctAnnotations) {
+            String qualifiedName = ctAnnotation.getType().getQualifiedName();
+            if (REQUEST_MAPPING_ANNOTATION_TYPE.equals(qualifiedName)) {
+                return getAnnotationValue(ctAnnotation, "value");
             }
         }
-        return ctJavaDoc;
+        return "";
     }
 
     /**
-     * 获取主注释：作为API群组和API接口的名称
+     * 收集接口path
      *
-     * @param ctJavaDoc
-     * @return
+     * @param basePath
+     * @param httpApi
+     * @param ctAnnotation
      */
-    private String getMainComment(CtJavaDoc ctJavaDoc) {
-        if (ctJavaDoc.getContent() != null) {
-            String str = ctJavaDoc.getShortDescription();
-            if (str.contains(Constants.SEPARATOR_LINE_BREAK)) {
-                str = str.split(Constants.SEPARATOR_LINE_BREAK)[0];
-            }
-            return str;
-        }
-        return ctJavaDoc.getContent();
-    }
-
-    /**
-     * 获取注释的标签值
-     *
-     * @param ctJavaDoc
-     * @return
-     */
-    private String getCommentTagValue(CtJavaDoc ctJavaDoc, String key) {
-        List<CtJavaDocTag> ctJavaDocTags = ctJavaDoc.getTags();
-        for (CtJavaDocTag ctJavaDocTag : ctJavaDocTags) {
-            if (key.equalsIgnoreCase(ctJavaDocTag.getRealName())) {
-                return ctJavaDocTag.getContent();
-            }
-        }
-        return null;
+    private void collectHttpPath(String basePath, HttpApi httpApi, CtAnnotation<?> ctAnnotation) {
+        String path = getAnnotationValue(ctAnnotation, "value");
+        path = basePath + path;
+        httpApi.setPath(path);
     }
 
     /**

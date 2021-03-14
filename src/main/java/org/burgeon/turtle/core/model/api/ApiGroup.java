@@ -14,6 +14,11 @@ import java.util.List;
 public class ApiGroup {
 
     /**
+     * 以类的全限定名作为ID
+     */
+    private String id;
+
+    /**
      * 群组名称
      */
     private String name;

@@ -13,6 +13,8 @@ public class DefaultProcessor extends Processor {
         super.setAnalyzer(analyzer);
         Collector collector = new DefaultCollector();
         super.addCollector(collector);
+        Collector commentCollector = new DefaultCommentCollector();
+        super.addCollector(commentCollector);
     }
 
 }

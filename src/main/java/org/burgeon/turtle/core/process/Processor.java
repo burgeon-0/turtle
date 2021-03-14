@@ -35,6 +35,7 @@ public class Processor {
         SourceProject sourceProject = analyzer.analyze();
         if (sourceProject == null) {
             log.error("Analyze fail!");
+            return;
         }
         log.debug("Analyze cost: " + (System.currentTimeMillis() - time) + "ms.");
 

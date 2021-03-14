@@ -29,7 +29,7 @@ public class ApiGroup {
     private String description;
 
     /**
-     * 群组的接口版本
+     * 接口版本
      */
     private String version;
 

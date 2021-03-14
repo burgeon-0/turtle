@@ -67,10 +67,10 @@ public class DefaultCollector implements Collector {
             String basePath = getBasePath(ctClass);
             List<HttpApiMaterial> materials = findApiMethod(ctClass);
             for (HttpApiMaterial material : materials) {
-                CtMethod<?> ctMethod = material.getCtMethod();
                 HttpApi httpApi = getHttpApi(basePath, material);
                 httpApi.setId(String.format("%s:%s", httpApi.getHttpMethod().name(), httpApi.getPath()));
                 httpApis.add(httpApi);
+                CtMethod<?> ctMethod = material.getCtMethod();
                 apiProject.putHttpApi(String.format("%s#%s", ctClass.getQualifiedName(),
                         ctMethod.getSignature()), httpApi);
                 sourceProject.putCtMethod(httpApi.getId(), ctMethod);
@@ -182,6 +182,8 @@ public class DefaultCollector implements Collector {
                 httpApi.setHttpMethod(HttpMethod.PUT);
                 break;
             default:
+                httpApi.setHttpMethod(HttpMethod.GET);
+                break;
         }
     }
 
@@ -218,6 +220,8 @@ public class DefaultCollector implements Collector {
                 httpApi.setHttpMethod(HttpMethod.TRACE);
                 break;
             default:
+                httpApi.setHttpMethod(HttpMethod.GET);
+                break;
         }
     }
 
@@ -260,6 +264,9 @@ public class DefaultCollector implements Collector {
      */
     private String getAnnotationValue(CtAnnotation<?> ctAnnotation, String key) {
         if (ctAnnotation.getValues().size() == 0) {
+            return "";
+        }
+        if (!ctAnnotation.getValues().containsKey(key)) {
             return "";
         }
         return ctAnnotation.getValue(key).partiallyEvaluate().getValueByRole(CtRole.VALUE);

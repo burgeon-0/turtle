@@ -82,7 +82,7 @@ public class DefaultCommentCollector implements Collector {
      * @return
      */
     private String getGroupDescription(ApiGroup apiGroup, CtJavaDoc ctJavaDoc) {
-        String groupName = apiGroup.getName();
+        String groupName = apiGroup.getName() + Constants.SEPARATOR_LINE_BREAK;
         String content = ctJavaDoc.getContent();
         if (content != null && groupName != null && content.startsWith(groupName)) {
             content = content.substring(groupName.length());
@@ -161,6 +161,7 @@ public class DefaultCommentCollector implements Collector {
     private String getMainComment(CtJavaDoc ctJavaDoc) {
         if (ctJavaDoc.getContent() != null) {
             String str = ctJavaDoc.getShortDescription();
+            str = StringUtils.leftStrip(str, Constants.SEPARATOR_LINE_BREAK);
             if (str.contains(Constants.SEPARATOR_LINE_BREAK)) {
                 str = str.split(Constants.SEPARATOR_LINE_BREAK)[0];
             }

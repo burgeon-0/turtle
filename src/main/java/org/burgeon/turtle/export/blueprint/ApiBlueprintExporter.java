@@ -1,14 +1,9 @@
 package org.burgeon.turtle.export.blueprint;
 
 import lombok.extern.slf4j.Slf4j;
+import org.burgeon.turtle.core.event.BaseExportListener;
 import org.burgeon.turtle.core.event.EventTarget;
 import org.burgeon.turtle.core.event.ExportEvent;
-import org.burgeon.turtle.core.event.BaseExportListener;
-import org.burgeon.turtle.core.model.api.ApiGroup;
-import org.burgeon.turtle.core.model.api.ApiProject;
-import org.burgeon.turtle.core.model.api.HttpApi;
-
-import java.util.List;
 
 /**
  * 导出API Blueprint文档
@@ -36,7 +31,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
     public void action(ExportEvent exportEvent) {
         log.info("Export API Blueprint docs.");
 
-        ApiProject apiProject = exportEvent.getApiProject();
+        /*ApiProject apiProject = exportEvent.getApiProject();
         List<ApiGroup> apiGroups = apiProject.getGroups();
         for (ApiGroup apiGroup : apiGroups) {
             System.out.println(apiGroup);
@@ -45,7 +40,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
             for (HttpApi httpApi : httpApis) {
                 System.out.println(httpApi);
             }
-        }
+        }*/
     }
 
 }

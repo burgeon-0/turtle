@@ -31,14 +31,22 @@ public class Processor {
      * 处理
      */
     public void process() {
+        long time = System.currentTimeMillis();
         SourceProject sourceProject = analyzer.analyze();
         if (sourceProject == null) {
             log.error("Analyze fail!");
         }
+        log.debug("Analyze cost: " + (System.currentTimeMillis() - time) + "ms.");
+
+        time = System.currentTimeMillis();
         ApiProject apiProject = new ApiProject();
         collectorPipeline.collect(apiProject, sourceProject);
+        log.debug("Collect cost: " + (System.currentTimeMillis() - time) + "ms.");
+
+        time = System.currentTimeMillis();
         ExportEvent exportEvent = notifier.notice(apiProject);
         ExportEventSupport.fireExportEvent(exportEvent);
+        log.debug("Export cost: " + (System.currentTimeMillis() - time) + "ms.");
     }
 
     /**

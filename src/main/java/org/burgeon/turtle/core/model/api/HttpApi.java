@@ -32,6 +32,11 @@ public class HttpApi {
     private String description;
 
     /**
+     * 接口版本
+     */
+    private String version;
+
+    /**
      * 请求参数
      */
     private Parameter[] requestParameters;

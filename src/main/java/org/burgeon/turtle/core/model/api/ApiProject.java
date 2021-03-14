@@ -29,8 +29,8 @@ public class ApiProject {
     private String host;
 
     /**
-     * HTTP接口
+     * API群组
      */
-    private List<HttpApi> httpApis;
+    private List<ApiGroup> groups;
 
 }

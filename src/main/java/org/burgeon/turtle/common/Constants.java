@@ -42,5 +42,9 @@ public class Constants {
      * 分号分隔符
      */
     public static final String SEPARATOR_SEMICOLON = ";";
+    /**
+     * 系统换行符
+     */
+    public static final String SEPARATOR_LINE_BREAK = System.lineSeparator();
 
 }

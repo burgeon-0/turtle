@@ -5,14 +5,15 @@ import org.burgeon.turtle.bootstrap.BootstrapException;
 import org.burgeon.turtle.bootstrap.notifier.BootstrapApiBlueprintNotifier;
 import org.burgeon.turtle.bootstrap.notifier.BootstrapJmeterNotifier;
 import org.burgeon.turtle.bootstrap.notifier.BootstrapPostmanNotifier;
-import org.burgeon.turtle.common.Constants;
 import org.burgeon.turtle.common.ConfigInitializer;
+import org.burgeon.turtle.common.Constants;
 import org.burgeon.turtle.common.VersionHelper;
 import org.burgeon.turtle.core.event.EventTarget;
 import org.burgeon.turtle.core.process.DefaultProcessor;
 import org.burgeon.turtle.core.process.Notifier;
 import org.burgeon.turtle.core.process.Processor;
 import org.burgeon.turtle.export.DefaultExporterConfig;
+import org.burgeon.turtle.utils.EnvUtils;
 
 import java.util.Properties;
 
@@ -64,10 +65,14 @@ public class Bootstrap {
                 execute(line);
             }
         } catch (Exception e) {
-            if (e.getMessage() != null) {
-                error(e.getMessage());
-            } else {
+            if (EnvUtils.getBooleanProperty(Constants.DEBUG, false)) {
                 e.printStackTrace();
+            } else {
+                if (e.getMessage() != null) {
+                    error(e.getMessage());
+                } else {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -250,7 +255,7 @@ public class Bootstrap {
      * @param message
      */
     private static void error(String message) {
-        System.err.println(message);
+        System.err.println("ERROR " + message);
     }
 
 }

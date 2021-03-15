@@ -4,10 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.burgeon.turtle.common.Constants;
 import org.burgeon.turtle.core.model.source.SourceProject;
 import org.burgeon.turtle.utils.EnvUtils;
-import spoon.FluentLauncher;
+import spoon.IncrementalLauncher;
 import spoon.reflect.CtModel;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Gradle项目分析策略
@@ -32,6 +35,8 @@ public class GradleProjectAnalysisStrategy extends AbstractAnalysisStrategy {
 
         String sourcePath = EnvUtils.getStringProperty(Constants.SOURCE_PATH);
         String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH);
+        String[] classpath = EnvUtils.getStringArrayProperty(Constants.CLASSPATH,
+                Constants.SEPARATOR_SEMICOLON, new String[]{"."});
 
         // 检查项目根目录是否存在
         checkDirectoryExists(sourcePath);
@@ -40,9 +45,13 @@ public class GradleProjectAnalysisStrategy extends AbstractAnalysisStrategy {
         checkGradleConfigExists(sourcePath);
 
         // analyze by spoon
-        FluentLauncher launcher = new FluentLauncher()
-                .inputResource(sourcePath)
-                .outputDirectory(targetPath);
+        Set<File> inputResources = new HashSet<>();
+        inputResources.add(new File(sourcePath));
+        Set<String> sourceClasspath = new HashSet<>();
+        sourceClasspath.addAll(Arrays.asList(classpath));
+        File cacheDirectory = new File(targetPath);
+        IncrementalLauncher launcher = new IncrementalLauncher(inputResources, sourceClasspath,
+                cacheDirectory);
         CtModel model = launcher.buildModel();
         SourceProject sourceProject = new SourceProject();
         sourceProject.setModel(model);

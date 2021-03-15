@@ -4,8 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.burgeon.turtle.common.Constants;
 import org.burgeon.turtle.core.model.source.SourceProject;
 import org.burgeon.turtle.utils.EnvUtils;
-import spoon.FluentLauncher;
+import spoon.IncrementalLauncher;
 import spoon.reflect.CtModel;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 自定义项目分析策略
@@ -34,10 +39,13 @@ public class CustomProjectAnalysisStrategy extends AbstractAnalysisStrategy {
         checkDirectoryExists(sourcePath);
 
         // analyze by spoon
-        FluentLauncher launcher = new FluentLauncher()
-                .inputResource(sourcePath)
-                .sourceClassPath(classpath)
-                .outputDirectory(targetPath);
+        Set<File> inputResources = new HashSet<>();
+        inputResources.add(new File(sourcePath));
+        Set<String> sourceClasspath = new HashSet<>();
+        sourceClasspath.addAll(Arrays.asList(classpath));
+        File cacheDirectory = new File(targetPath);
+        IncrementalLauncher launcher = new IncrementalLauncher(inputResources, sourceClasspath,
+                cacheDirectory);
         CtModel model = launcher.buildModel();
         SourceProject sourceProject = new SourceProject();
         sourceProject.setModel(model);

@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.burgeon.turtle.common.Constants;
 import org.burgeon.turtle.core.model.source.SourceProject;
 import org.burgeon.turtle.utils.EnvUtils;
-import spoon.FluentLauncher;
 import spoon.MavenLauncher;
 import spoon.reflect.CtModel;
 
@@ -41,10 +40,17 @@ public class MavenProjectAnalysisStrategy extends AbstractAnalysisStrategy {
         sourcePath = checkPomExists(sourcePath);
 
         // analyze by spoon
+        // 分析依赖于spoon
+        // spoon在元数据封装、类文件分析和查询上都是比较优秀的
+        // 但编译效率有点差强人意
+        // TODO 后期需要把spoon研究透，从spoon fork一份代码，做编译策略的改进
         MavenLauncher launcher = new MavenLauncher(sourcePath, MavenLauncher.SOURCE_TYPE.APP_SOURCE);
-        launcher.setSourceOutputDirectory(targetPath);
-        launcher.setBinaryOutputDirectory(targetPath);
-        CtModel model = new FluentLauncher(launcher).buildModel();
+        launcher.run(new String[]{
+                "--input", sourcePath,
+                "--output", targetPath,
+                "--level", "error",
+                "--no-copy-resources"});
+        CtModel model = launcher.getModel();
         SourceProject sourceProject = new SourceProject();
         sourceProject.setModel(model);
 

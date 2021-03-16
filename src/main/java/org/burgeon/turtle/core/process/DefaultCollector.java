@@ -30,6 +30,7 @@ public class DefaultCollector implements Collector {
 
     private static final String CONTROLLER_ANNOTATION_TYPE = "org.springframework.stereotype.Controller";
     private static final String REST_CONTROLLER_ANNOTATION_TYPE = "org.springframework.web.bind.annotation.RestController";
+
     private static final String REQUEST_MAPPING_ANNOTATION_TYPE = "org.springframework.web.bind.annotation.RequestMapping";
     private static final String DELETE_MAPPING_ANNOTATION_TYPE = "org.springframework.web.bind.annotation.DeleteMapping";
     private static final String GET_MAPPING_ANNOTATION_TYPE = "org.springframework.web.bind.annotation.GetMapping";

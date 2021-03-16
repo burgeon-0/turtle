@@ -2,6 +2,8 @@ package org.burgeon.turtle.core.model.api;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * HTTP返回
  *
@@ -14,12 +16,12 @@ public class HttpResponse {
     /**
      * HTTP返回头
      */
-    private HttpHeader[] headers;
+    private List<HttpHeader> headers;
 
     /**
      * HTTP返回body
      */
-    private Parameter[] body;
+    private List<Parameter> body;
 
     /**
      * HTTP状态码

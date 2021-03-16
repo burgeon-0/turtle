@@ -13,15 +13,15 @@ public enum HttpMethod {
      */
     GET,
     /**
-     * HTTP POST
+     * HTTP POST, Request has body
      */
     POST,
     /**
-     * HTTP PUT
+     * HTTP PUT, Request has body
      */
     PUT,
     /**
-     * HTTP DELETE
+     * HTTP DELETE, Request has body
      */
     DELETE,
     /**
@@ -37,7 +37,7 @@ public enum HttpMethod {
      */
     TRACE,
     /**
-     * HTTP PATCH
+     * HTTP PATCH, Request has body
      */
     PATCH
 

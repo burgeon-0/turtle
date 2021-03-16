@@ -2,6 +2,8 @@ package org.burgeon.turtle.core.model.api;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * HTTP接口
  *
@@ -44,7 +46,7 @@ public class HttpApi {
     /**
      * 请求参数
      */
-    private Parameter[] requestParameters;
+    private List<Parameter> requestParameters;
 
     /**
      * HTTP请求
@@ -59,6 +61,6 @@ public class HttpApi {
     /**
      * 接口错误码
      */
-    private ErrorCode[] errorCodes;
+    private List<ErrorCode> errorCodes;
 
 }

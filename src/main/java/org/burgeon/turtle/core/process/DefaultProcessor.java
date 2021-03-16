@@ -15,6 +15,8 @@ public class DefaultProcessor extends Processor {
         super.addCollector(collector);
         Collector commentCollector = new DefaultCommentCollector();
         super.addCollector(commentCollector);
+        Collector parameterCollector = new DefaultParameterCollector();
+        super.addCollector(parameterCollector);
     }
 
 }

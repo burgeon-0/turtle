@@ -1,7 +1,7 @@
-package org.burgeon.turtle.common;
+package org.burgeon.turtle.core.common;
 
 import lombok.extern.slf4j.Slf4j;
-import org.burgeon.turtle.utils.EnvUtils;
+import org.burgeon.turtle.core.utils.EnvUtils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,7 +27,7 @@ public class PropertiesLoader {
      * @return
      */
     public static Properties loadProperties(String filename) {
-        String filePath = CONF_BASE_PATH + "/" + filename;
+        String filePath = CONF_BASE_PATH + Constants.SEPARATOR_FILE + filename;
         InputStream inputStream = null;
         try {
             inputStream = new FileInputStream(filePath);

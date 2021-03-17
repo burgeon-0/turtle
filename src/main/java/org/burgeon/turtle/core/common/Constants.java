@@ -1,4 +1,4 @@
-package org.burgeon.turtle.common;
+package org.burgeon.turtle.core.common;
 
 import java.io.File;
 
@@ -11,12 +11,29 @@ import java.io.File;
 public class Constants {
 
     /**
+     * 逗号分隔符
+     */
+    public static final String SEPARATOR_COMMA = ",";
+    /**
+     * 分号分隔符
+     */
+    public static final String SEPARATOR_SEMICOLON = ";";
+    /**
+     * 目录分隔符
+     */
+    public static final String SEPARATOR_FILE = File.separator;
+    /**
+     * 系统换行符
+     */
+    public static final String SEPARATOR_LINE_BREAK = System.lineSeparator();
+
+    /**
      * turtle安装目录key
      */
     public static final String TURTLE_HOME = "TURTLE_HOME";
-    public static final String BIN_DIR = File.separator + "bin";
-    public static final String CONF_DIR = File.separator + "conf";
-    public static final String OUT_DIR = File.separator + "out";
+    public static final String BIN_DIR = SEPARATOR_FILE + "bin";
+    public static final String CONF_DIR = SEPARATOR_FILE + "conf";
+    public static final String OUT_DIR = SEPARATOR_FILE + "out";
 
     /**
      * 配置key
@@ -33,18 +50,5 @@ public class Constants {
      * 默认配置，在配置文件加载不到的时候应用，如：作为IDEA插件的时候
      */
     public static final String[] DEFAULT_ANALYSIS_ORDER = new String[]{"maven", "gradle", "custom"};
-
-    /**
-     * 逗号分隔符
-     */
-    public static final String SEPARATOR_COMMA = ",";
-    /**
-     * 分号分隔符
-     */
-    public static final String SEPARATOR_SEMICOLON = ";";
-    /**
-     * 系统换行符
-     */
-    public static final String SEPARATOR_LINE_BREAK = System.lineSeparator();
 
 }

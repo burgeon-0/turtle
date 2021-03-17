@@ -1,4 +1,4 @@
-package org.burgeon.turtle.utils;
+package org.burgeon.turtle.core.utils;
 
 /**
  * 环境配置工具类

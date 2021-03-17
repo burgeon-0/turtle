@@ -44,9 +44,14 @@ public class HttpApi {
     private String path;
 
     /**
-     * 请求参数
+     * PATH参数
      */
-    private List<Parameter> requestParameters;
+    private List<Parameter> pathParameters;
+
+    /**
+     * URI参数
+     */
+    private List<Parameter> uriParameters;
 
     /**
      * HTTP请求

@@ -5,15 +5,15 @@ import org.burgeon.turtle.bootstrap.BootstrapException;
 import org.burgeon.turtle.bootstrap.notifier.BootstrapApiBlueprintNotifier;
 import org.burgeon.turtle.bootstrap.notifier.BootstrapJmeterNotifier;
 import org.burgeon.turtle.bootstrap.notifier.BootstrapPostmanNotifier;
-import org.burgeon.turtle.common.ConfigInitializer;
-import org.burgeon.turtle.common.Constants;
-import org.burgeon.turtle.common.VersionHelper;
+import org.burgeon.turtle.core.common.ConfigInitializer;
+import org.burgeon.turtle.core.common.Constants;
+import org.burgeon.turtle.core.common.VersionHelper;
 import org.burgeon.turtle.core.event.EventTarget;
 import org.burgeon.turtle.core.process.DefaultProcessor;
 import org.burgeon.turtle.core.process.Notifier;
 import org.burgeon.turtle.core.process.Processor;
 import org.burgeon.turtle.export.DefaultExporterConfig;
-import org.burgeon.turtle.utils.EnvUtils;
+import org.burgeon.turtle.core.utils.EnvUtils;
 
 import java.util.Properties;
 

@@ -1,11 +1,11 @@
 package org.burgeon.turtle.core.process;
 
-import org.burgeon.turtle.common.Constants;
-import org.burgeon.turtle.common.StringUtils;
+import org.burgeon.turtle.core.common.Constants;
 import org.burgeon.turtle.core.model.api.ApiGroup;
 import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.model.api.HttpApi;
 import org.burgeon.turtle.core.model.source.SourceProject;
+import org.burgeon.turtle.core.utils.StringUtils;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;

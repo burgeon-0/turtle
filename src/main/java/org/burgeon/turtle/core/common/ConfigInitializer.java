@@ -1,4 +1,4 @@
-package org.burgeon.turtle.common;
+package org.burgeon.turtle.core.common;
 
 import java.util.Properties;
 

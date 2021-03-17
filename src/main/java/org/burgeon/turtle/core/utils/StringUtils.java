@@ -1,4 +1,4 @@
-package org.burgeon.turtle.common;
+package org.burgeon.turtle.core.utils;
 
 /**
  * 字符串工具
@@ -30,16 +30,6 @@ public class StringUtils {
     public static String rightStrip(String str, String sub) {
         String lStrip = str.replaceAll("(" + sub + ")+$", "");
         return lStrip;
-    }
-
-    public static void main(String[] args) {
-        String str = "\n\ntest\n\n";
-        System.out.println("leftStrip start");
-        System.out.println(leftStrip(str, "\n"));
-        System.out.println("leftStrip end");
-        System.out.println("rightStrip start");
-        System.out.println(rightStrip(str, "\n"));
-        System.out.println("rightStrip end");
     }
 
 }

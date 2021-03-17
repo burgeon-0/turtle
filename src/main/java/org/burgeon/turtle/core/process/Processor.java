@@ -27,6 +27,10 @@ public class Processor {
     @Getter
     private Notifier notifier;
 
+    @Setter
+    @Getter
+    private JsonConverter jsonConverter;
+
     /**
      * 处理
      */

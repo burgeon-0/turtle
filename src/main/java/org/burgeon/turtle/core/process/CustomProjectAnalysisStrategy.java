@@ -1,9 +1,9 @@
 package org.burgeon.turtle.core.process;
 
 import lombok.extern.slf4j.Slf4j;
-import org.burgeon.turtle.common.Constants;
+import org.burgeon.turtle.core.common.Constants;
 import org.burgeon.turtle.core.model.source.SourceProject;
-import org.burgeon.turtle.utils.EnvUtils;
+import org.burgeon.turtle.core.utils.EnvUtils;
 import spoon.IncrementalLauncher;
 import spoon.reflect.CtModel;
 

@@ -39,7 +39,7 @@ public class Parameter {
     private String exampleValue;
 
     /**
-     * 子参数，只有Object类型的参数才有子参数
+     * 子参数，只有Array或Object类型的参数才有子参数，Array类型只有一个子参数
      *
      * @see ParameterType
      */

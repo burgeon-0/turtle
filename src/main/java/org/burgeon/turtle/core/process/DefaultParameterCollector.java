@@ -7,7 +7,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -19,33 +18,6 @@ import java.util.regex.Pattern;
  */
 public class DefaultParameterCollector implements Collector {
 
-    private static final String PRIMITIVE_BYTE = "byte";
-    private static final String PRIMITIVE_SHORT = "short";
-    private static final String PRIMITIVE_INT = "int";
-    private static final String PRIMITIVE_LONG = "long";
-    private static final String PRIMITIVE_FLOAT = "float";
-    private static final String PRIMITIVE_DOUBLE = "double";
-    private static final String PRIMITIVE_BOOLEAN = "boolean";
-    private static final String PRIMITIVE_CHAR = "char";
-    private static final String BYTE = "java.lang.Byte";
-    private static final String SHORT = "java.lang.Short";
-    private static final String INTEGER = "java.lang.Integer";
-    private static final String LONG = "java.lang.Long";
-    private static final String FLOAT = "java.lang.Float";
-    private static final String DOUBLE = "java.lang.Double";
-    private static final String BOOLEAN = "java.lang.Boolean";
-    private static final String CHARACTER = "java.lang.Character";
-    private static final String STRING = "java.lang.String";
-    private static final String NUMBER = "java.lang.Number";
-    private static final String BIG_INTEGER = "java.math.BigInteger";
-    private static final String BIG_DECIMAL = "java.math.BigDecimal";
-    private static final String UUID = "java.lang.UUID";
-    private static final String DATE = "java.util.Date";
-    private static final String TIMESTAMP = "java.sql.Timestamp";
-    private static final String LOCAL_DATE = "java.time.LocalDate";
-    private static final String LOCAL_TIME = "java.time.LocalTime";
-    private static final String LOCAL_DATE_TIME = "java.time.LocalDateTime";
-
     /**
      * 排除项，无需解析、收集的参数
      */
@@ -55,6 +27,12 @@ public class DefaultParameterCollector implements Collector {
     {
         exclusions.add("org.springframework.validation.*");
         exclusions.add("javax.servlet.**");
+    }
+
+    private Processor processor;
+
+    public DefaultParameterCollector(Processor processor) {
+        this.processor = processor;
     }
 
     /**
@@ -100,6 +78,7 @@ public class DefaultParameterCollector implements Collector {
             for (HttpApi httpApi : httpApis) {
                 CtMethod<?> ctMethod = sourceProject.getCtMethod(httpApi.getId());
                 List<CtParameter<?>> ctParameters = ctMethod.getParameters();
+                System.out.println(httpApi.getHttpMethod() + ": " + httpApi.getPath());
                 for (CtParameter<?> ctParameter : ctParameters) {
                     parseParameter(httpApi, ctParameter);
                 }
@@ -125,8 +104,8 @@ public class DefaultParameterCollector implements Collector {
 
         List<CtAnnotation<?>> ctAnnotations = ctParameter.getAnnotations();
         if (isRequestParameter(httpApi, ctAnnotations)) {
-            initRequestParameters(httpApi);
-            httpApi.getRequestParameters().addAll(buildParameters(ctParameter, ctAnnotations));
+            initUriParameters(httpApi);
+            httpApi.getPathParameters().addAll(buildParameters(ctParameter, ctAnnotations));
         } else {
             initHttpRequest(httpApi);
             httpApi.getHttpRequest().getBody().addAll(buildParameters(ctParameter, ctAnnotations));
@@ -157,20 +136,20 @@ public class DefaultParameterCollector implements Collector {
     }
 
     /**
-     * 初始化URL参数
+     * 初始化请求URI参数
      *
      * @param httpApi
      */
-    private void initRequestParameters(HttpApi httpApi) {
-        List<Parameter> parameters = httpApi.getRequestParameters();
+    private void initUriParameters(HttpApi httpApi) {
+        List<Parameter> parameters = httpApi.getPathParameters();
         if (parameters == null) {
             parameters = new ArrayList<>();
-            httpApi.setRequestParameters(parameters);
+            httpApi.setUriParameters(parameters);
         }
     }
 
     /**
-     * 初始化Body参数
+     * 初始化请求Body参数
      *
      * @param httpApi
      */
@@ -195,39 +174,60 @@ public class DefaultParameterCollector implements Collector {
     private List<Parameter> buildParameters(CtParameter<?> parameter, List<CtAnnotation<?>> ctAnnotations) {
         List<Parameter> parameters = new ArrayList<>();
         Parameter param = new Parameter();
-        param.setType(getParameterType(parameter));
         parameters.add(param);
+
+        String typeName = parameter.getType().getQualifiedName();
+        ParameterType type;
+        switch (typeName) {
+            case "byte":
+            case "short":
+            case "int":
+            case "long":
+            case "float":
+            case "double":
+                type = ParameterType.NUMBER;
+                break;
+            case "boolean":
+                type = ParameterType.BOOLEAN;
+                break;
+            case "char":
+                type = ParameterType.STRING;
+                break;
+            default:
+                type = buildParameters(parameters, parameter, typeName);
+                break;
+        }
+
+        param.setType(type);
+        param.setName(parameter.getSimpleName());
         return parameters;
     }
 
     /**
-     * 获取参数类型
+     * 构建请求参数
      *
+     * @param parameters
      * @param parameter
+     * @param typeName
      * @return
      */
-    private ParameterType getParameterType(CtParameter<?> parameter) {
-        String type = parameter.getType().getQualifiedName();
+    private ParameterType buildParameters(List<Parameter> parameters, CtParameter<?> parameter,
+                                          String typeName) {
+        ParameterType type;
         try {
-            Class<?> clazz = Class.forName(type);
-            char c = 'a';
-            String str = "a";
-            Date date = new Date();
-            if (clazz.isInstance(0)) {
-                return ParameterType.NUMBER;
-            } else if (clazz.isInstance(true)) {
-                return ParameterType.BOOLEAN;
-            } else if (clazz.isInstance(c)) {
-                return ParameterType.STRING;
-            } else if (clazz.isInstance(str)) {
-                return ParameterType.STRING;
-            } else if (clazz.isInstance(date)) {
-                return ParameterType.STRING;
-            }
+            Class<?> clazz = Class.forName(typeName);
+            System.out.println(parameter.getSimpleName() + ": " + typeName);
+            Object obj = clazz.newInstance();
+            JsonConverter jsonConverter = processor.getJsonConverter();
+            String json = jsonConverter.convert(obj);
+            System.out.println(parameter.getSimpleName() + ": " + json);
+            Object newObj = jsonConverter.convert(json);
+            Class<?> newObjClass = newObj.getClass();
+            type = jsonConverter.inferParameterType(newObjClass);
         } catch (Exception e) {
-            return ParameterType.OBJECT;
+            type = ParameterType.OBJECT;
         }
-        return ParameterType.OBJECT;
+        return type;
     }
 
 }

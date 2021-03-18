@@ -2,11 +2,14 @@ package org.burgeon.turtle.core.process;
 
 import org.burgeon.turtle.core.model.api.*;
 import org.burgeon.turtle.core.model.source.SourceProject;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.*;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -17,6 +20,20 @@ import java.util.regex.Pattern;
  * @createdOn 2021/3/14
  */
 public class DefaultParameterCollector implements Collector {
+
+    private static final String PRIVATE = "private";
+
+    private static final String PATH_VARIABLE = "org.springframework.web.bind.annotation.PathVariable";
+    private static final String REQUEST_PARAM = "org.springframework.web.bind.annotation.RequestParam";
+    private static final String MODEL_ATTRIBUTE = "org.springframework.web.bind.annotation.ModelAttribute";
+    private static final String REQUEST_BODY = "org.springframework.web.bind.annotation.RequestBody";
+
+    private static final String NOT_NULL = "NotNull";
+    private static final String NOT_BLANK = "NotBlank";
+    private static final String NOT_EMPTY = "NotEmpty";
+
+    private static final String JAVAX_VALIDATION = "javax.validation.constraints";
+    private static final String HIBERNATE_VALIDATOR = "org.hibernate.validator.constraints";
 
     /**
      * 排除项，无需解析、收集的参数
@@ -78,9 +95,8 @@ public class DefaultParameterCollector implements Collector {
             for (HttpApi httpApi : httpApis) {
                 CtMethod<?> ctMethod = sourceProject.getCtMethod(httpApi.getId());
                 List<CtParameter<?>> ctParameters = ctMethod.getParameters();
-                System.out.println(httpApi.getHttpMethod() + ": " + httpApi.getPath());
                 for (CtParameter<?> ctParameter : ctParameters) {
-                    parseParameter(httpApi, ctParameter);
+                    parseRequestParameter(httpApi, ctParameter);
                 }
             }
         }
@@ -89,12 +105,12 @@ public class DefaultParameterCollector implements Collector {
     }
 
     /**
-     * 解析参数
+     * 解析Request参数
      *
      * @param httpApi
      * @param ctParameter
      */
-    private void parseParameter(HttpApi httpApi, CtParameter<?> ctParameter) {
+    private void parseRequestParameter(HttpApi httpApi, CtParameter<?> ctParameter) {
         String type = ctParameter.getType().getQualifiedName();
         for (String exclusion : exclusionPatterns) {
             if (Pattern.matches(exclusion, type)) {
@@ -103,36 +119,74 @@ public class DefaultParameterCollector implements Collector {
         }
 
         List<CtAnnotation<?>> ctAnnotations = ctParameter.getAnnotations();
-        if (isRequestParameter(httpApi, ctAnnotations)) {
-            initUriParameters(httpApi);
-            httpApi.getPathParameters().addAll(buildParameters(ctParameter, ctAnnotations));
-        } else {
-            initHttpRequest(httpApi);
-            httpApi.getHttpRequest().getBody().addAll(buildParameters(ctParameter, ctAnnotations));
+        Parameter parameter = buildParameter(ctParameter.getSimpleName(), ctParameter.getType(),
+                ctAnnotations);
+        switch (getHttpParameterType(httpApi, ctAnnotations)) {
+            case PATH_PARAMETER:
+                initPathParameters(httpApi);
+                httpApi.getPathParameters().add(parameter);
+                break;
+            case URI_PARAMETER:
+                initUriParameters(httpApi);
+                httpApi.getUriParameters().add(parameter);
+                break;
+            case BODY_PARAMETER:
+                initHttpRequest(httpApi);
+                httpApi.getHttpRequest().getBody().add(parameter);
+                break;
+            default:
+                break;
         }
-        //System.out.println(ctParameter.getType().getQualifiedName());
     }
 
     /**
-     * 判断是否是URL参数
+     * 判断HTTP参数类型
      *
      * @param httpApi
      * @param ctAnnotations
      * @return
+     * @see HttpParameterType
      */
-    private boolean isRequestParameter(HttpApi httpApi, List<CtAnnotation<?>> ctAnnotations) {
+    private HttpParameterType getHttpParameterType(HttpApi httpApi, List<CtAnnotation<?>> ctAnnotations) {
         if (ctAnnotations == null) {
             if (httpApi.getHttpMethod().equals(HttpMethod.POST)
                     || httpApi.getHttpMethod().equals(HttpMethod.PUT)
                     || httpApi.getHttpMethod().equals(HttpMethod.DELETE)
                     || httpApi.getHttpMethod().equals(HttpMethod.PATCH)) {
-                return false;
+                return HttpParameterType.BODY_PARAMETER;
             } else {
-                return true;
+                return HttpParameterType.URI_PARAMETER;
             }
         }
-        // TODO
-        return false;
+
+        for (CtAnnotation<?> ctAnnotation : ctAnnotations) {
+            String name = ctAnnotation.getType().getQualifiedName();
+            switch (name) {
+                case PATH_VARIABLE:
+                    return HttpParameterType.PATH_PARAMETER;
+                case REQUEST_PARAM:
+                case MODEL_ATTRIBUTE:
+                    return HttpParameterType.URI_PARAMETER;
+                case REQUEST_BODY:
+                    return HttpParameterType.BODY_PARAMETER;
+                default:
+                    break;
+            }
+        }
+        return HttpParameterType.BODY_PARAMETER;
+    }
+
+    /**
+     * 初始化请求路径参数
+     *
+     * @param httpApi
+     */
+    private void initPathParameters(HttpApi httpApi) {
+        List<Parameter> parameters = httpApi.getPathParameters();
+        if (parameters == null) {
+            parameters = new ArrayList<>();
+            httpApi.setPathParameters(parameters);
+        }
     }
 
     /**
@@ -141,7 +195,7 @@ public class DefaultParameterCollector implements Collector {
      * @param httpApi
      */
     private void initUriParameters(HttpApi httpApi) {
-        List<Parameter> parameters = httpApi.getPathParameters();
+        List<Parameter> parameters = httpApi.getUriParameters();
         if (parameters == null) {
             parameters = new ArrayList<>();
             httpApi.setUriParameters(parameters);
@@ -167,67 +221,128 @@ public class DefaultParameterCollector implements Collector {
     /**
      * 构建请求参数
      *
-     * @param parameter
+     * @param fieldName
+     * @param ctTypeReference
      * @param ctAnnotations
      * @return
      */
-    private List<Parameter> buildParameters(CtParameter<?> parameter, List<CtAnnotation<?>> ctAnnotations) {
-        List<Parameter> parameters = new ArrayList<>();
-        Parameter param = new Parameter();
-        parameters.add(param);
+    private Parameter buildParameter(String fieldName, CtTypeReference<?> ctTypeReference,
+                                     List<CtAnnotation<?>> ctAnnotations) {
+        Parameter parameter = new Parameter();
+        parameter.setName(fieldName);
+        ParameterTypeHandlerChain handlerChain = processor.getParameterTypeHandlerChain();
+        ParameterType type = handlerChain.handle(ctTypeReference);
+        parameter.setType(type);
+        parameter.setRequired(isRequired(ctAnnotations));
+        collectParameterDescription(parameter, ctAnnotations);
 
-        String typeName = parameter.getType().getQualifiedName();
-        ParameterType type;
-        switch (typeName) {
-            case "byte":
-            case "short":
-            case "int":
-            case "long":
-            case "float":
-            case "double":
-                type = ParameterType.NUMBER;
-                break;
-            case "boolean":
-                type = ParameterType.BOOLEAN;
-                break;
-            case "char":
-                type = ParameterType.STRING;
-                break;
-            default:
-                type = buildParameters(parameters, parameter, typeName);
-                break;
+        if (type == ParameterType.ARRAY) {
+            CtTypeReference<?> actualType;
+            if (ctTypeReference instanceof CtArrayTypeReferenceImpl) {
+                actualType = ((CtArrayTypeReferenceImpl) ctTypeReference).getArrayType();
+            } else {
+                actualType = ctTypeReference.getActualTypeArguments().get(0);
+            }
+            List<Parameter> childParameters = new ArrayList<>();
+            Parameter childParameter = buildParameter(null, actualType, null);
+            childParameters.add(childParameter);
+            parameter.setChildParameters(childParameters);
+        } else if (type == ParameterType.OBJECT) {
+            Collection<CtFieldReference<?>> ctFieldReferences = ctTypeReference.getDeclaredFields();
+            List<Parameter> childParameters = new ArrayList<>();
+            for (CtFieldReference<?> ctFieldReference : ctFieldReferences) {
+                CtField<?> ctField = ctFieldReference.getFieldDeclaration();
+                if (isChildParameter(ctField)) {
+                    Parameter childParameter = buildParameter(ctField.getSimpleName(),
+                            ctField.getType(), ctField.getAnnotations());
+                    childParameters.add(childParameter);
+                }
+            }
+            parameter.setChildParameters(childParameters);
         }
 
-        param.setType(type);
-        param.setName(parameter.getSimpleName());
-        return parameters;
+        return parameter;
     }
 
     /**
-     * 构建请求参数
+     * 是否是子参数：只有private一个修饰符的参数才为子参数
      *
-     * @param parameters
-     * @param parameter
-     * @param typeName
+     * @param ctField
      * @return
      */
-    private ParameterType buildParameters(List<Parameter> parameters, CtParameter<?> parameter,
-                                          String typeName) {
-        ParameterType type;
-        try {
-            Class<?> clazz = Class.forName(typeName);
-            System.out.println(parameter.getSimpleName() + ": " + typeName);
-            Object obj = clazz.newInstance();
-            JsonConverter jsonConverter = processor.getJsonConverter();
-            String json = jsonConverter.convert(obj);
-            System.out.println(parameter.getSimpleName() + ": " + json);
-            Object newObj = jsonConverter.convert(json);
-            Class<?> newObjClass = newObj.getClass();
-            type = jsonConverter.inferParameterType(newObjClass);
-        } catch (Exception e) {
-            type = ParameterType.OBJECT;
+    private boolean isChildParameter(CtField<?> ctField) {
+        if (ctField.getModifiers().size() == 1) {
+            ModifierKind modifierKind = ctField.getModifiers().iterator().next();
+            if (modifierKind.toString().equals(PRIVATE)) {
+                return true;
+            }
         }
-        return type;
+        return false;
+    }
+
+    /**
+     * 判断参数是否是必须的
+     *
+     * @param ctAnnotations
+     * @return
+     */
+    private boolean isRequired(List<CtAnnotation<?>> ctAnnotations) {
+        if (ctAnnotations == null) {
+            return false;
+        }
+
+        for (CtAnnotation<?> ctAnnotation : ctAnnotations) {
+            String qualifiedName = ctAnnotation.getType().getQualifiedName();
+            if (qualifiedName.equals(PATH_VARIABLE) || qualifiedName.equals(REQUEST_PARAM)) {
+                return ctAnnotation.getValue("required").getValueByRole(CtRole.VALUE);
+            }
+
+            String simpleName = ctAnnotation.getType().getSimpleName();
+            if (simpleName.equals(NOT_NULL) || simpleName.equals(NOT_BLANK)
+                    || simpleName.equals(NOT_EMPTY)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 收集参数描述
+     *
+     * @param parameter
+     * @param ctAnnotations
+     */
+    private void collectParameterDescription(Parameter parameter, List<CtAnnotation<?>> ctAnnotations) {
+        if (ctAnnotations == null) {
+            return;
+        }
+
+        for (CtAnnotation<?> ctAnnotation : ctAnnotations) {
+            String qualifiedName = ctAnnotation.getType().getQualifiedName();
+            String desc = parameter.getDescription();
+            if (qualifiedName.startsWith(JAVAX_VALIDATION)
+                    || qualifiedName.startsWith(HIBERNATE_VALIDATOR)) {
+                String str = ctAnnotation.getValue("message").getValueByRole(CtRole.VALUE);
+                desc = appendDescription(desc, str);
+            }
+            parameter.setDescription(desc);
+        }
+    }
+
+    /**
+     * 处理参数描述
+     *
+     * @param desc
+     * @param str
+     * @return
+     */
+    private String appendDescription(String desc, String str) {
+        if (desc == null) {
+            desc = str;
+        } else {
+            desc += " " + str;
+        }
+        return desc;
     }
 
 }

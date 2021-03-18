@@ -10,6 +10,7 @@ import org.burgeon.turtle.core.model.source.SourceProject;
 
 /**
  * 处理器
+ * TODO Processor转为接口，实现交给AbstractProcessor
  *
  * @author luxiaocong
  * @createdOn 2021/2/26
@@ -29,7 +30,7 @@ public class Processor {
 
     @Setter
     @Getter
-    private JsonConverter jsonConverter;
+    private ParameterTypeHandlerChain parameterTypeHandlerChain;
 
     /**
      * 处理
@@ -70,6 +71,24 @@ public class Processor {
      */
     public void removeCollector(Collector collector) {
         collectorPipeline.removeCollector(collector);
+    }
+
+    /**
+     * 添加参数类型推断器
+     *
+     * @param handler
+     */
+    public void addHandler(ParameterTypeHandler handler) {
+        parameterTypeHandlerChain.addHandler(handler);
+    }
+
+    /**
+     * 移除参数类型推断器
+     *
+     * @param handler
+     */
+    public void removeHandler(ParameterTypeHandler handler) {
+        parameterTypeHandlerChain.removeHandler(handler);
     }
 
 }

@@ -9,16 +9,19 @@ package org.burgeon.turtle.core.process;
 public class DefaultProcessor extends Processor {
 
     public DefaultProcessor() {
-        JsonConverter jsonConverter = new DefaultJsonConverter();
-        super.setJsonConverter(jsonConverter);
+        ParameterTypeHandlerChain parameterTypeHandlerChain = new ParameterTypeHandlerChain();
+        parameterTypeHandlerChain.addHandler(new PrimitiveParameterTypeHandler());
+        parameterTypeHandlerChain.addHandler(new DefaultParameterTypeHandler());
+        super.setParameterTypeHandlerChain(parameterTypeHandlerChain);
+
         Analyzer analyzer = new DefaultAnalyzer();
         super.setAnalyzer(analyzer);
         Collector collector = new DefaultCollector();
         super.addCollector(collector);
-        Collector commentCollector = new DefaultCommentCollector();
-        super.addCollector(commentCollector);
         Collector parameterCollector = new DefaultParameterCollector(this);
         super.addCollector(parameterCollector);
+        Collector commentCollector = new DefaultCommentCollector();
+        super.addCollector(commentCollector);
     }
 
 }

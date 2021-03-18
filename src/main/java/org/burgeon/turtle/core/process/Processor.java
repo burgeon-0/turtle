@@ -1,94 +1,58 @@
 package org.burgeon.turtle.core.process;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.burgeon.turtle.core.event.ExportEvent;
-import org.burgeon.turtle.core.event.ExportEventSupport;
-import org.burgeon.turtle.core.model.api.ApiProject;
-import org.burgeon.turtle.core.model.source.SourceProject;
-
 /**
  * 处理器
- * TODO Processor转为接口，实现交给AbstractProcessor
  *
  * @author luxiaocong
- * @createdOn 2021/2/26
+ * @createdOn 2021/3/18
  */
-@Slf4j
-public class Processor {
-
-    @Setter
-    @Getter
-    private Analyzer analyzer;
-
-    private CollectorPipeline collectorPipeline = new CollectorPipeline();
-
-    @Setter
-    @Getter
-    private Notifier notifier;
-
-    @Setter
-    @Getter
-    private ParameterTypeHandlerChain parameterTypeHandlerChain;
+public interface Processor {
 
     /**
-     * 处理
+     * 设置分析器
+     *
+     * @param analyzer
      */
-    public void process() {
-        long time = System.currentTimeMillis();
-        SourceProject sourceProject = analyzer.analyze();
-        if (sourceProject == null) {
-            log.error("Analyze fail!");
-            return;
-        }
-        log.debug("Analyze cost: " + (System.currentTimeMillis() - time) + "ms.");
+    void setAnalyzer(Analyzer analyzer);
 
-        time = System.currentTimeMillis();
-        ApiProject apiProject = new ApiProject();
-        collectorPipeline.collect(apiProject, sourceProject);
-        log.debug("Collect cost: " + (System.currentTimeMillis() - time) + "ms.");
-
-        time = System.currentTimeMillis();
-        ExportEvent exportEvent = notifier.notice(apiProject);
-        ExportEventSupport.fireExportEvent(exportEvent);
-        log.debug("Export cost: " + (System.currentTimeMillis() - time) + "ms.");
-    }
+    /**
+     * 获取分析器
+     *
+     * @return
+     */
+    Analyzer getAnalyzer();
 
     /**
      * 添加收集器
      *
      * @param collector
      */
-    public void addCollector(Collector collector) {
-        collectorPipeline.addCollector(collector);
-    }
+    void addCollector(Collector collector);
 
     /**
      * 移除收集器
      *
      * @param collector
      */
-    public void removeCollector(Collector collector) {
-        collectorPipeline.removeCollector(collector);
-    }
+    void removeCollector(Collector collector);
 
     /**
-     * 添加参数类型推断器
+     * 设置通知器
      *
-     * @param handler
+     * @param notifier
      */
-    public void addHandler(ParameterTypeHandler handler) {
-        parameterTypeHandlerChain.addHandler(handler);
-    }
+    void setNotifier(Notifier notifier);
 
     /**
-     * 移除参数类型推断器
+     * 获取通知器
      *
-     * @param handler
+     * @return
      */
-    public void removeHandler(ParameterTypeHandler handler) {
-        parameterTypeHandlerChain.removeHandler(handler);
-    }
+    Notifier getNotifier();
+
+    /**
+     * 执行处理
+     */
+    void process();
 
 }

@@ -46,11 +46,7 @@ public class DefaultParameterCollector implements Collector {
         exclusions.add("javax.servlet.**");
     }
 
-    private Processor processor;
-
-    public DefaultParameterCollector(Processor processor) {
-        this.processor = processor;
-    }
+    private ParameterTypeHandlerChain parameterTypeHandlerChain = new ParameterTypeHandlerChain();
 
     /**
      * 添加排除项
@@ -68,6 +64,24 @@ public class DefaultParameterCollector implements Collector {
      */
     public void removeExclusion(String exclusion) {
         exclusions.remove(exclusion);
+    }
+
+    /**
+     * 添加参数类型推断器
+     *
+     * @param handler
+     */
+    public void addParameterTypeHandler(ParameterTypeHandler handler) {
+        parameterTypeHandlerChain.addParameterTypeHandler(handler);
+    }
+
+    /**
+     * 移除参数类型推断器
+     *
+     * @param handler
+     */
+    public void removeParameterTypeHandler(ParameterTypeHandler handler) {
+        parameterTypeHandlerChain.removeParameterTypeHandler(handler);
     }
 
     /**
@@ -230,8 +244,7 @@ public class DefaultParameterCollector implements Collector {
                                      List<CtAnnotation<?>> ctAnnotations) {
         Parameter parameter = new Parameter();
         parameter.setName(fieldName);
-        ParameterTypeHandlerChain handlerChain = processor.getParameterTypeHandlerChain();
-        ParameterType type = handlerChain.handle(ctTypeReference);
+        ParameterType type = parameterTypeHandlerChain.handle(ctTypeReference);
         parameter.setType(type);
         parameter.setRequired(isRequired(ctAnnotations));
         collectParameterDescription(parameter, ctAnnotations);

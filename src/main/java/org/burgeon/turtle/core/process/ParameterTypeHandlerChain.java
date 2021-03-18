@@ -38,7 +38,7 @@ public class ParameterTypeHandlerChain {
      *
      * @param handler
      */
-    public void addHandler(ParameterTypeHandler handler) {
+    public void addParameterTypeHandler(ParameterTypeHandler handler) {
         handlers.add(handler);
     }
 
@@ -47,7 +47,7 @@ public class ParameterTypeHandlerChain {
      *
      * @param handler
      */
-    public void removeHandler(ParameterTypeHandler handler) {
+    public void removeParameterTypeHandler(ParameterTypeHandler handler) {
         handlers.remove(handler);
     }
 

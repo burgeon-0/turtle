@@ -6,22 +6,16 @@ package org.burgeon.turtle.core.process;
  * @author luxiaocong
  * @createdOn 2021/3/4
  */
-public class DefaultProcessor extends Processor {
+public class DefaultProcessor extends AbstractProcessor {
 
     public DefaultProcessor() {
-        ParameterTypeHandlerChain parameterTypeHandlerChain = new ParameterTypeHandlerChain();
-        parameterTypeHandlerChain.addHandler(new PrimitiveParameterTypeHandler());
-        parameterTypeHandlerChain.addHandler(new DefaultParameterTypeHandler());
-        super.setParameterTypeHandlerChain(parameterTypeHandlerChain);
-
-        Analyzer analyzer = new DefaultAnalyzer();
-        super.setAnalyzer(analyzer);
-        Collector collector = new DefaultCollector();
-        super.addCollector(collector);
-        Collector parameterCollector = new DefaultParameterCollector(this);
-        super.addCollector(parameterCollector);
-        Collector commentCollector = new DefaultCommentCollector();
-        super.addCollector(commentCollector);
+        super.setAnalyzer(new DefaultAnalyzer());
+        super.addCollector(new DefaultCollector());
+        DefaultParameterCollector defaultParameterCollector = new DefaultParameterCollector();
+        defaultParameterCollector.addParameterTypeHandler(new PrimitiveParameterTypeHandler());
+        defaultParameterCollector.addParameterTypeHandler(new DefaultParameterTypeHandler());
+        super.addCollector(defaultParameterCollector);
+        super.addCollector(new DefaultCommentCollector());
     }
 
 }

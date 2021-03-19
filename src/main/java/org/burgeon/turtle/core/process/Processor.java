@@ -9,6 +9,11 @@ package org.burgeon.turtle.core.process;
 public interface Processor {
 
     /**
+     * 执行处理
+     */
+    void process();
+
+    /**
      * 设置分析器
      *
      * @param analyzer
@@ -49,10 +54,5 @@ public interface Processor {
      * @return
      */
     Notifier getNotifier();
-
-    /**
-     * 执行处理
-     */
-    void process();
 
 }

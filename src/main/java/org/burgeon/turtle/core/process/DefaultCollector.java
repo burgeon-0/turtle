@@ -2,6 +2,7 @@ package org.burgeon.turtle.core.process;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.burgeon.turtle.core.common.CtModelUtils;
 import org.burgeon.turtle.core.model.api.ApiGroup;
 import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.model.api.HttpApi;
@@ -57,24 +58,27 @@ public class DefaultCollector implements Collector {
         CtModel model = sourceProject.getModel();
         List<CtClass<?>> ctClasses = findApiClass(model);
         for (CtClass<?> ctClass : ctClasses) {
+            String classKey = CtModelUtils.getCtClassKey(ctClass);
             ApiGroup group = new ApiGroup();
-            group.setId(ctClass.getQualifiedName());
+            group.setId(classKey);
             groups.add(group);
             List<HttpApi> httpApis = new ArrayList<>();
             group.setHttpApis(httpApis);
-            apiProject.putApiGroup(ctClass.getQualifiedName(), group);
-            sourceProject.putCtClass(group.getId(), ctClass);
+
+            apiProject.putApiGroup(classKey, group);
+            sourceProject.putCtClass(classKey, ctClass);
 
             String basePath = getBasePath(ctClass);
             List<HttpApiMaterial> materials = findApiMethod(ctClass);
             for (HttpApiMaterial material : materials) {
-                HttpApi httpApi = getHttpApi(basePath, material);
-                httpApi.setId(String.format("%s:%s", httpApi.getHttpMethod().name(), httpApi.getPath()));
-                httpApis.add(httpApi);
                 CtMethod<?> ctMethod = material.getCtMethod();
-                apiProject.putHttpApi(String.format("%s#%s", ctClass.getQualifiedName(),
-                        ctMethod.getSignature()), httpApi);
-                sourceProject.putCtMethod(httpApi.getId(), ctMethod);
+                String methodKey = CtModelUtils.getCtMethodKey(ctMethod);
+                HttpApi httpApi = getHttpApi(basePath, material);
+                httpApi.setId(methodKey);
+                httpApis.add(httpApi);
+
+                apiProject.putHttpApi(methodKey, httpApi);
+                sourceProject.putCtMethod(methodKey, ctMethod);
             }
         }
 

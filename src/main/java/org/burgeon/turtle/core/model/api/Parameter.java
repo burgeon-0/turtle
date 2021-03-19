@@ -14,6 +14,11 @@ import java.util.List;
 public class Parameter {
 
     /**
+     * 以类的全限定名+方法签名+参数路径名作为ID
+     */
+    private String id;
+
+    /**
      * 参数类型
      */
     private ParameterType type;

@@ -1,5 +1,6 @@
 package org.burgeon.turtle.core.process;
 
+import org.burgeon.turtle.core.common.CtModelUtils;
 import org.burgeon.turtle.core.model.api.*;
 import org.burgeon.turtle.core.model.source.SourceProject;
 import spoon.reflect.declaration.*;
@@ -21,6 +22,8 @@ import java.util.regex.Pattern;
  */
 public class DefaultParameterCollector implements Collector {
 
+    private static final String PUBLIC = "public";
+    private static final String PROTECTED = "protected";
     private static final String PRIVATE = "private";
 
     private static final String PATH_VARIABLE = "org.springframework.web.bind.annotation.PathVariable";
@@ -110,8 +113,9 @@ public class DefaultParameterCollector implements Collector {
                 CtMethod<?> ctMethod = sourceProject.getCtMethod(httpApi.getId());
                 List<CtParameter<?>> ctParameters = ctMethod.getParameters();
                 for (CtParameter<?> ctParameter : ctParameters) {
-                    parseRequestParameter(httpApi, ctParameter);
+                    collectRequestParameter(apiProject, sourceProject, httpApi, ctParameter);
                 }
+                collectResponseParameter(apiProject, sourceProject, httpApi, ctMethod);
             }
         }
 
@@ -119,12 +123,15 @@ public class DefaultParameterCollector implements Collector {
     }
 
     /**
-     * 解析Request参数
+     * 收集Request参数
      *
+     * @param apiProject
+     * @param sourceProject
      * @param httpApi
      * @param ctParameter
      */
-    private void parseRequestParameter(HttpApi httpApi, CtParameter<?> ctParameter) {
+    private void collectRequestParameter(ApiProject apiProject, SourceProject sourceProject,
+                                         HttpApi httpApi, CtParameter<?> ctParameter) {
         String type = ctParameter.getType().getQualifiedName();
         for (String exclusion : exclusionPatterns) {
             if (Pattern.matches(exclusion, type)) {
@@ -132,10 +139,9 @@ public class DefaultParameterCollector implements Collector {
             }
         }
 
-        List<CtAnnotation<?>> ctAnnotations = ctParameter.getAnnotations();
-        Parameter parameter = buildParameter(ctParameter.getSimpleName(), ctParameter.getType(),
-                ctAnnotations);
-        switch (getHttpParameterType(httpApi, ctAnnotations)) {
+        Parameter parameter = buildParameter(apiProject, sourceProject,
+                httpApi.getId(), ParameterPosition.NORMAL, ctParameter);
+        switch (getHttpParameterType(httpApi, ctParameter.getAnnotations())) {
             case PATH_PARAMETER:
                 initPathParameters(httpApi);
                 httpApi.getPathParameters().add(parameter);
@@ -233,31 +239,82 @@ public class DefaultParameterCollector implements Collector {
     }
 
     /**
-     * 构建请求参数
+     * 收集Response参数
      *
-     * @param fieldName
-     * @param ctTypeReference
-     * @param ctAnnotations
+     * @param apiProject
+     * @param sourceProject
+     * @param httpApi
+     * @param ctMethod
+     */
+    private void collectResponseParameter(ApiProject apiProject, SourceProject sourceProject,
+                                          HttpApi httpApi, CtMethod<?> ctMethod) {
+        initHttpResponse(httpApi);
+        Parameter parameter = buildParameter(apiProject, sourceProject,
+                httpApi.getId(), ParameterPosition.METHOD_RETURN, ctMethod);
+        httpApi.getHttpResponse().getBody().add(parameter);
+    }
+
+    /**
+     * 初始化返回Body参数
+     *
+     * @param httpApi
+     */
+    private void initHttpResponse(HttpApi httpApi) {
+        HttpResponse httpResponse = httpApi.getHttpResponse();
+        if (httpResponse == null) {
+            httpResponse = new HttpResponse();
+            httpApi.setHttpResponse(httpResponse);
+            httpResponse.setBody(new ArrayList<>());
+        } else if (httpResponse.getBody() == null) {
+            httpResponse.setBody(new ArrayList<>());
+        }
+    }
+
+    /**
+     * 构建参数
+     *
+     * @param apiProject
+     * @param sourceProject
+     * @param parentKey
+     * @param parameterPosition
+     * @param ctElement
      * @return
      */
-    private Parameter buildParameter(String fieldName, CtTypeReference<?> ctTypeReference,
-                                     List<CtAnnotation<?>> ctAnnotations) {
+    private Parameter buildParameter(ApiProject apiProject, SourceProject sourceProject,
+                                     String parentKey, ParameterPosition parameterPosition,
+                                     CtElement ctElement) {
+        String parameterKey = CtModelUtils.getParameterKey(parentKey, parameterPosition,
+                (CtNamedElement) ctElement);
+        String parameterName = CtModelUtils.getParameterName(parameterPosition,
+                (CtNamedElement) ctElement);
+        CtTypeReference<?> ctTypeReference;
+        if (parameterPosition.equals(ParameterPosition.ARRAY_SUB)) {
+            CtTypeReference<?> type = ((CtTypedElement<?>) ctElement).getType();
+            if (type instanceof CtArrayTypeReferenceImpl) {
+                ctTypeReference = ((CtArrayTypeReferenceImpl) type).getArrayType();
+            } else {
+                ctTypeReference = type.getActualTypeArguments().get(0);
+            }
+        } else {
+            ctTypeReference = ((CtTypedElement<?>) ctElement).getType();
+        }
+        List<CtAnnotation<?>> ctAnnotations = ctElement.getAnnotations();
+
         Parameter parameter = new Parameter();
-        parameter.setName(fieldName);
+        parameter.setId(parameterKey);
+        parameter.setName(parameterName);
         ParameterType type = parameterTypeHandlerChain.handle(ctTypeReference);
         parameter.setType(type);
         parameter.setRequired(isRequired(ctAnnotations));
         collectParameterDescription(parameter, ctAnnotations);
 
+        apiProject.putParameter(parameterKey, parameter);
+        sourceProject.putCtElement(parameterKey, ctElement);
+
         if (type == ParameterType.ARRAY) {
-            CtTypeReference<?> actualType;
-            if (ctTypeReference instanceof CtArrayTypeReferenceImpl) {
-                actualType = ((CtArrayTypeReferenceImpl) ctTypeReference).getArrayType();
-            } else {
-                actualType = ctTypeReference.getActualTypeArguments().get(0);
-            }
             List<Parameter> childParameters = new ArrayList<>();
-            Parameter childParameter = buildParameter(null, actualType, null);
+            Parameter childParameter = buildParameter(apiProject, sourceProject,
+                    parameterKey, ParameterPosition.ARRAY_SUB, ctElement);
             childParameters.add(childParameter);
             parameter.setChildParameters(childParameters);
         } else if (type == ParameterType.OBJECT) {
@@ -266,8 +323,8 @@ public class DefaultParameterCollector implements Collector {
             for (CtFieldReference<?> ctFieldReference : ctFieldReferences) {
                 CtField<?> ctField = ctFieldReference.getFieldDeclaration();
                 if (isChildParameter(ctField)) {
-                    Parameter childParameter = buildParameter(ctField.getSimpleName(),
-                            ctField.getType(), ctField.getAnnotations());
+                    Parameter childParameter = buildParameter(apiProject, sourceProject,
+                            parameterKey, ParameterPosition.NORMAL, ctField);
                     childParameters.add(childParameter);
                 }
             }
@@ -278,15 +335,18 @@ public class DefaultParameterCollector implements Collector {
     }
 
     /**
-     * 是否是子参数：只有private一个修饰符的参数才为子参数
+     * 是否是子参数：没有修饰符或只有一个修饰符（限定为public、protected、private几个）的参数才为子参数
      *
      * @param ctField
      * @return
      */
     private boolean isChildParameter(CtField<?> ctField) {
-        if (ctField.getModifiers().size() == 1) {
+        if (ctField.getModifiers().size() == 0) {
+            return true;
+        } else if (ctField.getModifiers().size() == 1) {
             ModifierKind modifierKind = ctField.getModifiers().iterator().next();
-            if (modifierKind.toString().equals(PRIVATE)) {
+            if (modifierKind.toString().equals(PUBLIC) || modifierKind.toString().equals(PROTECTED)
+                    || modifierKind.toString().equals(PRIVATE)) {
                 return true;
             }
         }
@@ -306,7 +366,8 @@ public class DefaultParameterCollector implements Collector {
 
         for (CtAnnotation<?> ctAnnotation : ctAnnotations) {
             String qualifiedName = ctAnnotation.getType().getQualifiedName();
-            if (qualifiedName.equals(PATH_VARIABLE) || qualifiedName.equals(REQUEST_PARAM)) {
+            if (qualifiedName.equals(PATH_VARIABLE) || qualifiedName.equals(REQUEST_PARAM)
+                    || qualifiedName.equals(REQUEST_BODY)) {
                 return ctAnnotation.getValue("required").getValueByRole(CtRole.VALUE);
             }
 

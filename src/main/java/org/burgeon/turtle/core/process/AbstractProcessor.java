@@ -22,6 +22,27 @@ public class AbstractProcessor implements Processor {
     private Notifier notifier;
 
     @Override
+    public void process() {
+        long time = System.currentTimeMillis();
+        SourceProject sourceProject = analyzer.analyze();
+        if (sourceProject == null) {
+            log.error("Analyze fail!");
+            return;
+        }
+        log.debug("Analyze cost: " + (System.currentTimeMillis() - time) + "ms.");
+
+        time = System.currentTimeMillis();
+        ApiProject apiProject = new ApiProject();
+        collectorPipeline.collect(apiProject, sourceProject);
+        log.debug("Collect cost: " + (System.currentTimeMillis() - time) + "ms.");
+
+        time = System.currentTimeMillis();
+        ExportEvent exportEvent = notifier.notice(apiProject);
+        ExportEventSupport.fireExportEvent(exportEvent);
+        log.debug("Export cost: " + (System.currentTimeMillis() - time) + "ms.");
+    }
+
+    @Override
     public void setAnalyzer(Analyzer analyzer) {
         this.analyzer = analyzer;
     }
@@ -49,27 +70,6 @@ public class AbstractProcessor implements Processor {
     @Override
     public Notifier getNotifier() {
         return notifier;
-    }
-
-    @Override
-    public void process() {
-        long time = System.currentTimeMillis();
-        SourceProject sourceProject = analyzer.analyze();
-        if (sourceProject == null) {
-            log.error("Analyze fail!");
-            return;
-        }
-        log.debug("Analyze cost: " + (System.currentTimeMillis() - time) + "ms.");
-
-        time = System.currentTimeMillis();
-        ApiProject apiProject = new ApiProject();
-        collectorPipeline.collect(apiProject, sourceProject);
-        log.debug("Collect cost: " + (System.currentTimeMillis() - time) + "ms.");
-
-        time = System.currentTimeMillis();
-        ExportEvent exportEvent = notifier.notice(apiProject);
-        ExportEventSupport.fireExportEvent(exportEvent);
-        log.debug("Export cost: " + (System.currentTimeMillis() - time) + "ms.");
     }
 
 }

@@ -35,23 +35,32 @@ public class ApiProject {
      */
     private List<ApiGroup> groups;
 
-    private Map<String, ApiGroup> groupMap = new HashMap<>();
-    private Map<String, HttpApi> apiMap = new HashMap<>();
+    private Map<String, ApiGroup> apiGroupMap = new HashMap<>();
+    private Map<String, HttpApi> httpApiMap = new HashMap<>();
+    private Map<String, Parameter> parameterMap = new HashMap<>();
 
     public void putApiGroup(String key, ApiGroup apiGroup) {
-        groupMap.put(key, apiGroup);
+        apiGroupMap.put(key, apiGroup);
     }
 
     public ApiGroup getApiGroup(String key) {
-        return groupMap.get(key);
+        return apiGroupMap.get(key);
     }
 
     public void putHttpApi(String key, HttpApi httpApi) {
-        apiMap.put(key, httpApi);
+        httpApiMap.put(key, httpApi);
     }
 
     public HttpApi getHttpApi(String key) {
-        return apiMap.get(key);
+        return httpApiMap.get(key);
+    }
+
+    public void putParameter(String key, Parameter parameter) {
+        parameterMap.put(key, parameter);
+    }
+
+    public Parameter getParameter(String key) {
+        return parameterMap.get(key);
     }
 
 }

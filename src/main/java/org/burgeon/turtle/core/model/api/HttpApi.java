@@ -14,7 +14,7 @@ import java.util.List;
 public class HttpApi {
 
     /**
-     * 以httpMethod+path作为ID
+     * 以类的全限定名+方法签名作为ID
      */
     private String id;
 

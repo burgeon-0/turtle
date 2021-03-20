@@ -4,12 +4,12 @@ import org.burgeon.turtle.core.process.ParameterPosition;
 import spoon.reflect.declaration.*;
 
 /**
- * spoon model utils
+ * spoon model helper
  *
  * @author luxiaocong
  * @createdOn 2021/3/18
  */
-public class CtModelUtils {
+public class CtModelHelper {
 
     private static final String METHOD_RETURN_PARAMETER_NAME = ":return";
     private static final String ARRAY_SUB_PARAMETER_NAME = "[]";
@@ -32,7 +32,7 @@ public class CtModelUtils {
      */
     public static String getCtMethodKey(CtMethod<?> ctMethod) {
         CtClass<?> ctClass = (CtClass<?>) ctMethod.getParent();
-        return String.format("%s.%s()", ctClass.getQualifiedName(), ctMethod.getSimpleName());
+        return String.format("%s.%s", ctClass.getQualifiedName(), ctMethod.getSignature());
     }
 
     /**

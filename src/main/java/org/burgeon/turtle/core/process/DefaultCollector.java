@@ -2,7 +2,7 @@ package org.burgeon.turtle.core.process;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.burgeon.turtle.core.common.CtModelUtils;
+import org.burgeon.turtle.core.common.CtModelHelper;
 import org.burgeon.turtle.core.model.api.ApiGroup;
 import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.model.api.HttpApi;
@@ -58,7 +58,7 @@ public class DefaultCollector implements Collector {
         CtModel model = sourceProject.getModel();
         List<CtClass<?>> ctClasses = findApiClass(model);
         for (CtClass<?> ctClass : ctClasses) {
-            String classKey = CtModelUtils.getCtClassKey(ctClass);
+            String classKey = CtModelHelper.getCtClassKey(ctClass);
             ApiGroup group = new ApiGroup();
             group.setId(classKey);
             groups.add(group);
@@ -72,7 +72,7 @@ public class DefaultCollector implements Collector {
             List<HttpApiMaterial> materials = findApiMethod(ctClass);
             for (HttpApiMaterial material : materials) {
                 CtMethod<?> ctMethod = material.getCtMethod();
-                String methodKey = CtModelUtils.getCtMethodKey(ctMethod);
+                String methodKey = CtModelHelper.getCtMethodKey(ctMethod);
                 HttpApi httpApi = getHttpApi(basePath, material);
                 httpApi.setId(methodKey);
                 httpApis.add(httpApi);

@@ -1,6 +1,6 @@
 package org.burgeon.turtle.core.process;
 
-import org.burgeon.turtle.core.common.CtModelUtils;
+import org.burgeon.turtle.core.common.CtModelHelper;
 import org.burgeon.turtle.core.model.api.*;
 import org.burgeon.turtle.core.model.source.SourceProject;
 import spoon.reflect.declaration.*;
@@ -144,6 +144,10 @@ public class DefaultParameterCollector implements Collector {
         switch (getHttpParameterType(httpApi, ctParameter.getAnnotations())) {
             case PATH_PARAMETER:
                 initPathParameters(httpApi);
+                String pathParameterName = getPathParameterName(ctParameter.getAnnotations());
+                if (!"".equals(pathParameterName)) {
+                    parameter.setName(pathParameterName);
+                }
                 httpApi.getPathParameters().add(parameter);
                 break;
             case URI_PARAMETER:
@@ -207,6 +211,23 @@ public class DefaultParameterCollector implements Collector {
             parameters = new ArrayList<>();
             httpApi.setPathParameters(parameters);
         }
+    }
+
+    /**
+     * 获取请求路径参数的名称
+     *
+     * @param ctAnnotations
+     * @return
+     */
+    private String getPathParameterName(List<CtAnnotation<?>> ctAnnotations) {
+        for (CtAnnotation<?> ctAnnotation : ctAnnotations) {
+            String name = ctAnnotation.getType().getQualifiedName();
+            if (name.equals(PATH_VARIABLE)) {
+                String value = ctAnnotation.getValue("value").getValueByRole(CtRole.VALUE);
+                return value;
+            }
+        }
+        return "";
     }
 
     /**
@@ -283,21 +304,11 @@ public class DefaultParameterCollector implements Collector {
     private Parameter buildParameter(ApiProject apiProject, SourceProject sourceProject,
                                      String parentKey, ParameterPosition parameterPosition,
                                      CtElement ctElement) {
-        String parameterKey = CtModelUtils.getParameterKey(parentKey, parameterPosition,
+        String parameterKey = CtModelHelper.getParameterKey(parentKey, parameterPosition,
                 (CtNamedElement) ctElement);
-        String parameterName = CtModelUtils.getParameterName(parameterPosition,
+        String parameterName = CtModelHelper.getParameterName(parameterPosition,
                 (CtNamedElement) ctElement);
-        CtTypeReference<?> ctTypeReference;
-        if (parameterPosition.equals(ParameterPosition.ARRAY_SUB)) {
-            CtTypeReference<?> type = ((CtTypedElement<?>) ctElement).getType();
-            if (type instanceof CtArrayTypeReferenceImpl) {
-                ctTypeReference = ((CtArrayTypeReferenceImpl) type).getArrayType();
-            } else {
-                ctTypeReference = type.getActualTypeArguments().get(0);
-            }
-        } else {
-            ctTypeReference = ((CtTypedElement<?>) ctElement).getType();
-        }
+        CtTypeReference<?> ctTypeReference = getCtTypeReference(parameterPosition, ctElement);
         List<CtAnnotation<?>> ctAnnotations = ctElement.getAnnotations();
 
         Parameter parameter = new Parameter();
@@ -335,22 +346,25 @@ public class DefaultParameterCollector implements Collector {
     }
 
     /**
-     * 是否是子参数：没有修饰符或只有一个修饰符（限定为public、protected、private几个）的参数才为子参数
+     * 获取参数的反射模型
      *
-     * @param ctField
+     * @param parameterPosition
+     * @param ctElement
      * @return
      */
-    private boolean isChildParameter(CtField<?> ctField) {
-        if (ctField.getModifiers().size() == 0) {
-            return true;
-        } else if (ctField.getModifiers().size() == 1) {
-            ModifierKind modifierKind = ctField.getModifiers().iterator().next();
-            if (modifierKind.toString().equals(PUBLIC) || modifierKind.toString().equals(PROTECTED)
-                    || modifierKind.toString().equals(PRIVATE)) {
-                return true;
+    private CtTypeReference<?> getCtTypeReference(ParameterPosition parameterPosition, CtElement ctElement) {
+        CtTypeReference<?> ctTypeReference;
+        if (parameterPosition.equals(ParameterPosition.ARRAY_SUB)) {
+            CtTypeReference<?> type = ((CtTypedElement<?>) ctElement).getType();
+            if (type instanceof CtArrayTypeReferenceImpl) {
+                ctTypeReference = ((CtArrayTypeReferenceImpl) type).getArrayType();
+            } else {
+                ctTypeReference = type.getActualTypeArguments().get(0);
             }
+        } else {
+            ctTypeReference = ((CtTypedElement<?>) ctElement).getType();
         }
-        return false;
+        return ctTypeReference;
     }
 
     /**
@@ -417,6 +431,25 @@ public class DefaultParameterCollector implements Collector {
             desc += " " + str;
         }
         return desc;
+    }
+
+    /**
+     * 是否是子参数：没有修饰符或只有一个修饰符（限定为public、protected、private几个）的参数才为子参数
+     *
+     * @param ctField
+     * @return
+     */
+    private boolean isChildParameter(CtField<?> ctField) {
+        if (ctField.getModifiers().size() == 0) {
+            return true;
+        } else if (ctField.getModifiers().size() == 1) {
+            ModifierKind modifierKind = ctField.getModifiers().iterator().next();
+            if (modifierKind.toString().equals(PUBLIC) || modifierKind.toString().equals(PROTECTED)
+                    || modifierKind.toString().equals(PRIVATE)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

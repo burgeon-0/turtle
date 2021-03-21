@@ -4,6 +4,7 @@ import org.burgeon.turtle.core.common.Constants;
 import org.burgeon.turtle.core.model.api.ApiGroup;
 import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.model.api.HttpApi;
+import org.burgeon.turtle.core.model.api.Parameter;
 import org.burgeon.turtle.core.model.source.SourceProject;
 import org.burgeon.turtle.core.utils.StringUtils;
 import spoon.reflect.code.CtComment;
@@ -32,7 +33,7 @@ public class DefaultCommentCollector implements Collector {
         List<ApiGroup> apiGroups = apiProject.getGroups();
         for (ApiGroup group : apiGroups) {
             CtClass<?> ctClass = sourceProject.getCtClass(group.getId());
-            CtJavaDoc classDoc = getLastCtJavaDoc(ctClass);
+            CtJavaDoc classDoc = getLastCtJavaDoc(ctClass.getComments());
             group.setName(getGroupName(ctClass, classDoc));
             if (classDoc != null) {
                 group.setDescription(getGroupDescription(group, classDoc));
@@ -42,11 +43,21 @@ public class DefaultCommentCollector implements Collector {
             List<HttpApi> httpApis = group.getHttpApis();
             for (HttpApi httpApi : httpApis) {
                 CtMethod<?> ctMethod = sourceProject.getCtMethod(httpApi.getId());
-                CtJavaDoc methodDoc = getLastCtJavaDoc(ctMethod);
+                CtJavaDoc methodDoc = getLastCtJavaDoc(ctMethod.getComments());
                 httpApi.setName(getApiName(ctMethod, methodDoc));
                 if (methodDoc != null) {
                     httpApi.setDescription(getApiDescription(httpApi, methodDoc));
                     httpApi.setVersion(getApiVersion(methodDoc));
+                }
+                collectMethodComment(httpApi, ctMethod);
+
+                collectParametersComment(httpApi.getPathParameters(), sourceProject);
+                collectParametersComment(httpApi.getUriParameters(), sourceProject);
+                if (httpApi.getHttpRequest() != null) {
+                    collectParametersComment(httpApi.getHttpRequest().getBody(), sourceProject);
+                }
+                if (httpApi.getHttpResponse() != null) {
+                    collectParametersComment(httpApi.getHttpResponse().getBody(), sourceProject);
                 }
             }
         }
@@ -135,25 +146,6 @@ public class DefaultCommentCollector implements Collector {
     }
 
     /**
-     * 获取元素上的最后一个CtJavaDoc
-     *
-     * @param ctElement
-     * @return
-     */
-    private CtJavaDoc getLastCtJavaDoc(CtElement ctElement) {
-        List<CtComment> ctComments = ctElement.getComments();
-        CtJavaDoc ctJavaDoc = null;
-        for (int i = ctComments.size() - 1; i >= 0; i--) {
-            CtComment ctComment = ctComments.get(i);
-            if (ctComment instanceof CtJavaDoc) {
-                ctJavaDoc = (CtJavaDoc) ctComment;
-                break;
-            }
-        }
-        return ctJavaDoc;
-    }
-
-    /**
      * 获取主注释：作为API群组和API接口的名称
      *
      * @param ctJavaDoc
@@ -185,6 +177,99 @@ public class DefaultCommentCollector implements Collector {
             }
         }
         return null;
+    }
+
+    /**
+     * 收集方法注释
+     *
+     * @param httpApi
+     * @param ctMethod
+     */
+    private void collectMethodComment(HttpApi httpApi, CtMethod<?> ctMethod) {
+
+    }
+
+    /**
+     * 收集参数上的注释
+     *
+     * @param parameters
+     * @param sourceProject
+     */
+    private void collectParametersComment(List<Parameter> parameters, SourceProject sourceProject) {
+        if (parameters == null) {
+            return;
+        }
+
+        for (Parameter parameter : parameters) {
+            CtElement ctElement = sourceProject.getCtElement(parameter.getId());
+            if (!(ctElement instanceof CtMethod<?>)) {
+                collectParameterComment(parameter, ctElement);
+            }
+            collectParametersComment(parameter.getChildParameters(), sourceProject);
+        }
+    }
+
+    /**
+     * 收集参数上的注释
+     *
+     * @param parameter
+     * @param ctElement
+     */
+    private void collectParameterComment(Parameter parameter, CtElement ctElement) {
+        List<CtComment> ctComments = ctElement.getComments();
+        if (ctComments == null || ctComments.isEmpty()) {
+            return;
+        }
+        String desc = parameter.getDescription();
+        CtJavaDoc ctJavaDoc = getLastCtJavaDoc(ctComments);
+        if (ctJavaDoc != null) {
+            String str = ctJavaDoc.getContent();
+            desc = appendDescription(desc, str);
+        } else {
+            String str = "";
+            for (CtComment ctComment : ctComments) {
+                str += ctComment.getContent();
+            }
+            desc = appendDescription(desc, str);
+        }
+        parameter.setDescription(desc);
+    }
+
+    /**
+     * 获取元素上的最后一个CtJavaDoc
+     *
+     * @param ctComments
+     * @return
+     */
+    private CtJavaDoc getLastCtJavaDoc(List<CtComment> ctComments) {
+        if (ctComments == null) {
+            return null;
+        }
+        CtJavaDoc ctJavaDoc = null;
+        for (int i = ctComments.size() - 1; i >= 0; i--) {
+            CtComment ctComment = ctComments.get(i);
+            if (ctComment instanceof CtJavaDoc) {
+                ctJavaDoc = (CtJavaDoc) ctComment;
+                break;
+            }
+        }
+        return ctJavaDoc;
+    }
+
+    /**
+     * 处理参数描述
+     *
+     * @param desc
+     * @param str
+     * @return
+     */
+    private String appendDescription(String desc, String str) {
+        if (desc == null) {
+            desc = str;
+        } else {
+            desc = String.format("%s; %s", str, desc);
+        }
+        return desc;
     }
 
 }

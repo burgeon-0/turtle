@@ -140,7 +140,7 @@ public class DefaultParameterCollector implements Collector {
         }
 
         Parameter parameter = buildParameter(apiProject, sourceProject,
-                httpApi.getId(), ParameterPosition.NORMAL, ctParameter);
+                httpApi, null, ParameterPosition.NORMAL, ctParameter);
         switch (getHttpParameterType(httpApi, ctParameter.getAnnotations())) {
             case PATH_PARAMETER:
                 initPathParameters(httpApi);
@@ -201,7 +201,7 @@ public class DefaultParameterCollector implements Collector {
     }
 
     /**
-     * 初始化请求路径参数
+     * 初始化请求Path参数
      *
      * @param httpApi
      */
@@ -214,7 +214,7 @@ public class DefaultParameterCollector implements Collector {
     }
 
     /**
-     * 获取请求路径参数的名称
+     * 获取请求Path参数的名称
      *
      * @param ctAnnotations
      * @return
@@ -271,7 +271,7 @@ public class DefaultParameterCollector implements Collector {
                                           HttpApi httpApi, CtMethod<?> ctMethod) {
         initHttpResponse(httpApi);
         Parameter parameter = buildParameter(apiProject, sourceProject,
-                httpApi.getId(), ParameterPosition.METHOD_RETURN, ctMethod);
+                httpApi, null, ParameterPosition.METHOD_RETURN, ctMethod);
         httpApi.getHttpResponse().getBody().add(parameter);
     }
 
@@ -296,52 +296,32 @@ public class DefaultParameterCollector implements Collector {
      *
      * @param apiProject
      * @param sourceProject
-     * @param parentKey
+     * @param httpApi
+     * @param parentParameter
      * @param parameterPosition
      * @param ctElement
      * @return
      */
     private Parameter buildParameter(ApiProject apiProject, SourceProject sourceProject,
-                                     String parentKey, ParameterPosition parameterPosition,
-                                     CtElement ctElement) {
+                                     HttpApi httpApi, Parameter parentParameter,
+                                     ParameterPosition parameterPosition, CtElement ctElement) {
+        String parentKey = parentParameter != null ? parentParameter.getId() : httpApi.getId();
         String parameterKey = CtModelHelper.getParameterKey(parentKey, parameterPosition,
                 (CtNamedElement) ctElement);
         String parameterName = CtModelHelper.getParameterName(parameterPosition,
                 (CtNamedElement) ctElement);
         CtTypeReference<?> ctTypeReference = getCtTypeReference(parameterPosition, ctElement);
         List<CtAnnotation<?>> ctAnnotations = ctElement.getAnnotations();
-
-        Parameter parameter = new Parameter();
-        parameter.setId(parameterKey);
-        parameter.setName(parameterName);
-        ParameterType type = parameterTypeHandlerChain.handle(ctTypeReference);
-        parameter.setType(type);
-        parameter.setRequired(isRequired(ctAnnotations));
-        collectParameterDescription(parameter, ctAnnotations);
+        Parameter parameter = buildParameter(parentParameter, parameterKey, parameterName,
+                ctTypeReference, ctAnnotations);
 
         apiProject.putParameter(parameterKey, parameter);
         sourceProject.putCtElement(parameterKey, ctElement);
 
-        if (type == ParameterType.ARRAY) {
-            List<Parameter> childParameters = new ArrayList<>();
-            Parameter childParameter = buildParameter(apiProject, sourceProject,
-                    parameterKey, ParameterPosition.ARRAY_SUB, ctElement);
-            childParameters.add(childParameter);
-            parameter.setChildParameters(childParameters);
-        } else if (type == ParameterType.OBJECT) {
-            Collection<CtFieldReference<?>> ctFieldReferences = ctTypeReference.getDeclaredFields();
-            List<Parameter> childParameters = new ArrayList<>();
-            for (CtFieldReference<?> ctFieldReference : ctFieldReferences) {
-                CtField<?> ctField = ctFieldReference.getFieldDeclaration();
-                if (isChildParameter(ctField)) {
-                    Parameter childParameter = buildParameter(apiProject, sourceProject,
-                            parameterKey, ParameterPosition.NORMAL, ctField);
-                    childParameters.add(childParameter);
-                }
-            }
-            parameter.setChildParameters(childParameters);
+        if (isChildBuilt(parameter)) {
+            return parameter;
         }
-
+        buildChildParameters(apiProject, sourceProject, httpApi, ctElement, parameter, ctTypeReference);
         return parameter;
     }
 
@@ -365,6 +345,31 @@ public class DefaultParameterCollector implements Collector {
             ctTypeReference = ((CtTypedElement<?>) ctElement).getType();
         }
         return ctTypeReference;
+    }
+
+    /**
+     * 构建参数
+     *
+     * @param parentParameter
+     * @param parameterKey
+     * @param parameterName
+     * @param ctTypeReference
+     * @param ctAnnotations
+     * @return
+     */
+    private Parameter buildParameter(Parameter parentParameter, String parameterKey,
+                                     String parameterName, CtTypeReference<?> ctTypeReference,
+                                     List<CtAnnotation<?>> ctAnnotations) {
+        Parameter parameter = new Parameter();
+        parameter.setParentParameter(parentParameter);
+        parameter.setId(parameterKey);
+        parameter.setName(parameterName);
+        ParameterType type = parameterTypeHandlerChain.handle(ctTypeReference);
+        parameter.setType(type);
+        parameter.setOriginType(ctTypeReference.getQualifiedName());
+        parameter.setRequired(isRequired(ctAnnotations));
+        collectParameterDescription(parameter, ctAnnotations);
+        return parameter;
     }
 
     /**
@@ -428,9 +433,63 @@ public class DefaultParameterCollector implements Collector {
         if (desc == null) {
             desc = str;
         } else {
-            desc += " " + str;
+            desc = String.format("%s; %s", desc, str);
         }
         return desc;
+    }
+
+    /**
+     * 子参数是否已经构建过
+     * 如果父参数跟本参数均是Object类型，且父参数的子参数已构建过，则不继续往下构建，否则会出现无穷无尽的向下构建
+     *
+     * @param parameter
+     * @return
+     */
+    private boolean isChildBuilt(Parameter parameter) {
+        Parameter parentParameter = parameter.getParentParameter();
+        while (parentParameter != null) {
+            if (parameter.getType() == ParameterType.OBJECT
+                    && parameter.getOriginType().equals(parentParameter.getOriginType())) {
+                return true;
+            }
+            parentParameter = parentParameter.getParentParameter();
+        }
+        return false;
+    }
+
+    /**
+     * 构建子参数
+     *
+     * @param apiProject
+     * @param sourceProject
+     * @param httpApi
+     * @param ctElement
+     * @param parameter
+     * @param ctTypeReference
+     */
+    private void buildChildParameters(ApiProject apiProject, SourceProject sourceProject,
+                                      HttpApi httpApi, CtElement ctElement,
+                                      Parameter parameter, CtTypeReference<?> ctTypeReference) {
+        ParameterType type = parameter.getType();
+        if (type == ParameterType.ARRAY) {
+            List<Parameter> childParameters = new ArrayList<>();
+            Parameter childParameter = buildParameter(apiProject, sourceProject,
+                    httpApi, parameter, ParameterPosition.ARRAY_SUB, ctElement);
+            childParameters.add(childParameter);
+            parameter.setChildParameters(childParameters);
+        } else if (type == ParameterType.OBJECT) {
+            Collection<CtFieldReference<?>> ctFieldReferences = ctTypeReference.getDeclaredFields();
+            List<Parameter> childParameters = new ArrayList<>();
+            for (CtFieldReference<?> ctFieldReference : ctFieldReferences) {
+                CtField<?> ctField = ctFieldReference.getFieldDeclaration();
+                if (isChildParameter(ctField)) {
+                    Parameter childParameter = buildParameter(apiProject, sourceProject,
+                            httpApi, parameter, ParameterPosition.NORMAL, ctField);
+                    childParameters.add(childParameter);
+                }
+            }
+            parameter.setChildParameters(childParameters);
+        }
     }
 
     /**

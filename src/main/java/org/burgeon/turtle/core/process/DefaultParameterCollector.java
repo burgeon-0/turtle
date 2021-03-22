@@ -284,6 +284,7 @@ public class DefaultParameterCollector implements Collector {
         HttpResponse httpResponse = httpApi.getHttpResponse();
         if (httpResponse == null) {
             httpResponse = new HttpResponse();
+            httpResponse.setStatus(HttpStatus.SC_OK);
             httpApi.setHttpResponse(httpResponse);
             httpResponse.setBody(new ArrayList<>());
         } else if (httpResponse.getBody() == null) {
@@ -415,6 +416,7 @@ public class DefaultParameterCollector implements Collector {
             String desc = parameter.getDescription();
             if (qualifiedName.startsWith(JAVAX_VALIDATION)
                     || qualifiedName.startsWith(HIBERNATE_VALIDATOR)) {
+                // TODO parse message
                 String str = ctAnnotation.getValue("message").getValueByRole(CtRole.VALUE);
                 desc = appendDescription(desc, str);
             }

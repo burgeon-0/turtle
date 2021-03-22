@@ -81,4 +81,15 @@ public class CtModelHelper {
         }
     }
 
+    /**
+     * 获取Element的key
+     *
+     * @param parentKey
+     * @param subKey
+     * @return
+     */
+    public static String getElementKey(String parentKey, String subKey) {
+        return String.format("%s.%s", parentKey, subKey);
+    }
+
 }

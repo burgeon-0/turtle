@@ -11,6 +11,10 @@ import java.io.File;
 public class Constants {
 
     /**
+     * 空格分隔符
+     */
+    public static final String SEPARATOR_SPACE = " ";
+    /**
      * 逗号分隔符
      */
     public static final String SEPARATOR_COMMA = ",";

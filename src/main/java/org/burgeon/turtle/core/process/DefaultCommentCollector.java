@@ -1,10 +1,8 @@
 package org.burgeon.turtle.core.process;
 
 import org.burgeon.turtle.core.common.Constants;
-import org.burgeon.turtle.core.model.api.ApiGroup;
-import org.burgeon.turtle.core.model.api.ApiProject;
-import org.burgeon.turtle.core.model.api.HttpApi;
-import org.burgeon.turtle.core.model.api.Parameter;
+import org.burgeon.turtle.core.common.CtModelHelper;
+import org.burgeon.turtle.core.model.api.*;
 import org.burgeon.turtle.core.model.source.SourceProject;
 import org.burgeon.turtle.core.utils.StringUtils;
 import spoon.reflect.code.CtComment;
@@ -14,11 +12,11 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 默认注释收集器
- * TODO 收集参数注释
  *
  * @author luxiaocong
  * @createdOn 2021/3/14
@@ -27,6 +25,8 @@ public class DefaultCommentCollector implements Collector {
 
     private static final String COMMENT_TAG_GROUP = "group";
     private static final String COMMENT_TAG_VERSION = "version";
+    private static final String COMMENT_TAG_HEADER = "header";
+    private static final String COMMENT_TAG_PARAM = "param";
 
     @Override
     public void collect(ApiProject apiProject, SourceProject sourceProject, CollectorContext context) {
@@ -49,7 +49,7 @@ public class DefaultCommentCollector implements Collector {
                     httpApi.setDescription(getApiDescription(httpApi, methodDoc));
                     httpApi.setVersion(getApiVersion(methodDoc));
                 }
-                collectMethodComment(httpApi, ctMethod);
+                collectMethodComment(apiProject, httpApi, ctMethod);
 
                 collectParametersComment(httpApi.getPathParameters(), sourceProject);
                 collectParametersComment(httpApi.getUriParameters(), sourceProject);
@@ -182,11 +182,56 @@ public class DefaultCommentCollector implements Collector {
     /**
      * 收集方法注释
      *
+     * @param apiProject
      * @param httpApi
      * @param ctMethod
      */
-    private void collectMethodComment(HttpApi httpApi, CtMethod<?> ctMethod) {
+    private void collectMethodComment(ApiProject apiProject, HttpApi httpApi, CtMethod<?> ctMethod) {
+        CtJavaDoc ctJavaDoc = getLastCtJavaDoc(ctMethod.getComments());
+        if (ctJavaDoc != null) {
+            List<CtJavaDocTag> ctJavaDocTags = ctJavaDoc.getTags();
+            for (CtJavaDocTag ctJavaDocTag : ctJavaDocTags) {
+                String content = ctJavaDocTag.getContent().trim();
+                if (COMMENT_TAG_HEADER.equalsIgnoreCase(ctJavaDocTag.getRealName())) {
+                    initHttpRequestHeaders(httpApi);
+                    HttpHeader httpHeader = new HttpHeader();
+                    httpApi.getHttpRequest().getHeaders().add(httpHeader);
+                    if (content.contains(Constants.SEPARATOR_SPACE)) {
+                        int index = content.indexOf(Constants.SEPARATOR_SPACE);
+                        httpHeader.setName(content.substring(0, index));
+                        httpHeader.setDescription(content.substring(index + 1).trim());
+                    } else {
+                        httpHeader.setName(content);
+                    }
+                } else if (COMMENT_TAG_PARAM.equalsIgnoreCase(ctJavaDocTag.getRealName())) {
+                    if (content.contains(Constants.SEPARATOR_SPACE)) {
+                        int index = content.indexOf(Constants.SEPARATOR_SPACE);
+                        String parentKey = CtModelHelper.getCtMethodKey(ctMethod);
+                        String key = CtModelHelper.getElementKey(parentKey, content.substring(0, index));
+                        Parameter parameter = apiProject.getParameter(key);
+                        if (parameter != null) {
+                            parameter.setDescription(content.substring(index + 1).trim());
+                        }
+                    }
+                }
+            }
+        }
+    }
 
+    /**
+     * 初始化请求Headers
+     *
+     * @param httpApi
+     */
+    private void initHttpRequestHeaders(HttpApi httpApi) {
+        HttpRequest httpRequest = httpApi.getHttpRequest();
+        if (httpRequest == null) {
+            httpRequest = new HttpRequest();
+            httpApi.setHttpRequest(httpRequest);
+            httpRequest.setHeaders(new ArrayList<>());
+        } else if (httpRequest.getHeaders() == null) {
+            httpRequest.setHeaders(new ArrayList<>());
+        }
     }
 
     /**
@@ -201,9 +246,16 @@ public class DefaultCommentCollector implements Collector {
         }
 
         for (Parameter parameter : parameters) {
+            if (parameter.getParentParameter() != null
+                    && parameter.getParentParameter().getType() == ParameterType.ARRAY) {
+                collectParametersComment(parameter.getChildParameters(), sourceProject);
+                continue;
+            }
             CtElement ctElement = sourceProject.getCtElement(parameter.getId());
             if (!(ctElement instanceof CtMethod<?>)) {
                 collectParameterComment(parameter, ctElement);
+            } else if (parameter.getType() == ParameterType.OBJECT) {
+                // TODO collect returnType comment
             }
             collectParametersComment(parameter.getChildParameters(), sourceProject);
         }

@@ -44,7 +44,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
             List<HttpApi> httpApis = apiGroup.getHttpApis();
             apiSize += httpApis.size();
             for (HttpApi httpApi : httpApis) {
-                System.out.println(httpApi.getId());
+                //System.out.println(httpApi.getId());
             }
         }
         log.debug("Export {} api.", apiSize);

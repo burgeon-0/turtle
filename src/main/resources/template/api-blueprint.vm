@@ -1,0 +1,79 @@
+FORMAT: 1A
+HOST: #if($apiProject.host)$apiProject.host#end
+
+${hashtag} #if($apiProject.name)$apiProject.name#end
+
+#if($apiProject.description)$apiProject.description
+#end
+
+#foreach($group in $apiProject.groups)
+#if($group.name)${hashtag}${hashtag} Group $group.name#if($group.version) $group.version#end
+#end
+#if($group.description)$group.description
+#end
+
+#foreach($httpApi in $group.httpApis)
+${hashtag}${hashtag}${hashtag} $httpApi.name#if($httpApi.version) $httpApi.version#end [$httpApi.httpMethod $httpApi.path]
+    #if($httpApi.pathParameters && $httpApi.pathParameters.size()>0)
+
+    + Parameters
+        #foreach($pathParam in $httpApi.pathParameters)
+
+        + $pathParam.name ($pathParam.required, $pathParam.type)#if($pathParam.description) ... $pathParam.description#end
+        #end
+    #end
+    #if($httpApi.uriParameters && $httpApi.uriParameters.size()>0)
+
+    + Parameters
+        #foreach($uriParam in $httpApi.uriParameters)
+
+        + $uriParam.name ($uriParam.required, $uriParam.type)#if($uriParam.description) ... $uriParam.description#end
+        #end
+    #end
+    #if ($httpApi.httpRequest && $httpApi.httpRequest.body && $httpApi.httpRequest.body.size()>0)
+
+    + Request ()
+        #if($httpApi.httpRequest.header)
+
+        + Headers
+            #foreach ($header in $httpApi.httpRequest.header)
+
+            $header.name $header.description
+            #end
+        #end
+        #if($httpApi.httpRequest.body)
+
+        + Parameters
+            #foreach ($param in $httpApi.httpRequest.body)
+
+            $param.name#if($param.description) $param.description#end
+            #end
+        #end
+    #end
+    #if ($httpApi.httpResponse && $httpApi.httpResponse.body && $httpApi.httpResponse.body.size()>0)
+
+    + Response $httpApi.httpResponse.status ()
+        #if($httpApi.httpRequest.header)
+
+        + Headers
+            #foreach ($header in $httpApi.httpResponse.header)
+
+            $header.name $header.description
+            #end
+        #end
+        #if($httpApi.httpRequest.body)
+
+        + Parameters
+            #foreach ($param in $httpApi.httpResponse.body)
+
+            $param.name#if($param.description) $param.description#end
+            #end
+        #end
+    #else
+
+    + Response 200
+    #end
+
+#end
+#end
+## end of resource

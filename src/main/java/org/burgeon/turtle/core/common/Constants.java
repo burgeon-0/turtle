@@ -15,6 +15,10 @@ public class Constants {
      */
     public static final String SEPARATOR_SPACE = " ";
     /**
+     * 冒号分隔符
+     */
+    public static final String SEPARATOR_COLON = ":";
+    /**
      * 逗号分隔符
      */
     public static final String SEPARATOR_COMMA = ",";

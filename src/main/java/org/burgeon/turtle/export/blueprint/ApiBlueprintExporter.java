@@ -1,11 +1,6 @@
 package org.burgeon.turtle.export.blueprint;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.burgeon.turtle.core.common.Constants;
 import org.burgeon.turtle.core.event.BaseExportListener;
 import org.burgeon.turtle.core.event.EventTarget;
@@ -15,9 +10,7 @@ import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.model.api.HttpApi;
 import org.burgeon.turtle.core.utils.EnvUtils;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -58,7 +51,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
 
         try {
             export(apiProject);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             if (EnvUtils.getBooleanProperty(Constants.DEBUG, false)) {
                 e.printStackTrace();
             }
@@ -67,29 +60,52 @@ public class ApiBlueprintExporter extends BaseExportListener {
     }
 
     /**
-     * 导出文档
+     * 导出API文档
      *
      * @param apiProject
      */
-    private void export(ApiProject apiProject) throws FileNotFoundException {
-        VelocityEngine velocityEngine = new VelocityEngine();
-        velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-        velocityEngine.setProperty("classpath.resource.loader.class",
-                ClasspathResourceLoader.class.getName());
-        velocityEngine.init();
+    private void export(ApiProject apiProject) throws IOException {
+        DocsBuilder docsBuilder = new DocsBuilder();
+        docsBuilder.appendHost(apiProject.getHost());
+        docsBuilder.appendTitle(apiProject.getName());
+        docsBuilder.appendDescription(apiProject.getDescription());
+        for (ApiGroup apiGroup : apiProject.getGroups()) {
+            docsBuilder.appendGroupTitle(apiGroup.getName(), apiGroup.getVersion());
+            docsBuilder.appendGroupDescription(apiGroup.getDescription());
+            for (HttpApi httpApi : apiGroup.getHttpApis()) {
+                docsBuilder.appendApi(httpApi.getName(), httpApi.getVersion(),
+                        httpApi.getHttpMethod(), httpApi.getPath());
+                docsBuilder.appendApiDescription(httpApi.getDescription());
+                docsBuilder.appendPathParameters(httpApi.getPathParameters());
+                docsBuilder.appendUriParameters(httpApi.getUriParameters());
+                docsBuilder.appendHttpRequest(httpApi.getHttpRequest());
+                docsBuilder.appendHttpResponse(httpApi.getHttpResponse());
+                docsBuilder.appendErrorCodes(httpApi.getErrorCodes());
+            }
+        }
 
-        VelocityContext context = new VelocityContext();
-        context.put("hashtag", "#");
-        context.put("apiProject", apiProject);
+        writeToFile(docsBuilder.build());
+    }
 
-        Template t = velocityEngine.getTemplate("template/api-blueprint.vm");
-        StringWriter writer = new StringWriter();
-        t.merge(context, writer);
-
+    /**
+     * 将API内容写入到文件
+     *
+     * @param content
+     * @throws IOException
+     */
+    private void writeToFile(String content) throws IOException {
         String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH);
         String targetFile = targetPath + Constants.SEPARATOR_FILE + "api-blueprint.apib";
-        PrintWriter out = new PrintWriter(targetFile);
-        out.println(writer.toString());
+        BufferedWriter bw = null;
+        try {
+            bw = new BufferedWriter(new FileWriter(targetFile), 133619);
+            bw.write(content);
+            System.out.println(content);
+        } finally {
+            if (bw != null) {
+                bw.close();
+            }
+        }
     }
 
 }

@@ -32,4 +32,17 @@ public class StringUtils {
         return lStrip;
     }
 
+    /**
+     * 字符串不为空
+     *
+     * @param str
+     * @return
+     */
+    public static boolean notBlank(String str) {
+        if (str != null && !str.trim().equals("")) {
+            return true;
+        }
+        return false;
+    }
+
 }

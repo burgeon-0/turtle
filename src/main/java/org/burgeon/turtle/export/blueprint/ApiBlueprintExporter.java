@@ -74,7 +74,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
             docsBuilder.appendGroupDescription(apiGroup.getDescription());
             for (HttpApi httpApi : apiGroup.getHttpApis()) {
                 docsBuilder.appendApi(httpApi.getName(), httpApi.getVersion(),
-                        httpApi.getHttpMethod(), httpApi.getPath());
+                        httpApi.getHttpMethod(), httpApi.getPath(), httpApi.getUriParameters());
                 docsBuilder.appendApiDescription(httpApi.getDescription());
                 docsBuilder.appendPathParameters(httpApi.getPathParameters());
                 docsBuilder.appendUriParameters(httpApi.getUriParameters());
@@ -96,14 +96,14 @@ public class ApiBlueprintExporter extends BaseExportListener {
     private void writeToFile(String content) throws IOException {
         String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH);
         String targetFile = targetPath + Constants.SEPARATOR_FILE + "api-blueprint.apib";
-        BufferedWriter bw = null;
+        BufferedWriter writer = null;
         try {
-            bw = new BufferedWriter(new FileWriter(targetFile), 133619);
-            bw.write(content);
+            writer = new BufferedWriter(new FileWriter(targetFile));
+            writer.write(content);
             System.out.println(content);
         } finally {
-            if (bw != null) {
-                bw.close();
+            if (writer != null) {
+                writer.close();
             }
         }
     }

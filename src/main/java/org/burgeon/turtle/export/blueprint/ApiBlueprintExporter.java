@@ -66,6 +66,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
      */
     private void export(ApiProject apiProject) throws IOException {
         DocsBuilder docsBuilder = new DocsBuilder();
+        docsBuilder.preAnalyze(apiProject);
         docsBuilder.appendHost(apiProject.getHost());
         docsBuilder.appendTitle(apiProject.getName());
         docsBuilder.appendDescription(apiProject.getDescription());
@@ -73,14 +74,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
             docsBuilder.appendGroupTitle(apiGroup.getName(), apiGroup.getVersion());
             docsBuilder.appendGroupDescription(apiGroup.getDescription());
             for (HttpApi httpApi : apiGroup.getHttpApis()) {
-                docsBuilder.appendApi(httpApi.getName(), httpApi.getVersion(),
-                        httpApi.getHttpMethod(), httpApi.getPath(), httpApi.getUriParameters());
-                docsBuilder.appendApiDescription(httpApi.getDescription());
-                docsBuilder.appendPathParameters(httpApi.getPathParameters());
-                docsBuilder.appendUriParameters(httpApi.getUriParameters());
-                docsBuilder.appendHttpRequest(httpApi.getHttpRequest());
-                docsBuilder.appendHttpResponse(httpApi.getHttpResponse());
-                docsBuilder.appendErrorCodes(httpApi.getErrorCodes());
+                docsBuilder.appendApi(httpApi);
             }
         }
 

@@ -26,6 +26,7 @@ public class DefaultParameterCollector implements Collector {
     private static final String PROTECTED = "protected";
     private static final String PRIVATE = "private";
 
+    private static final String VALID = "javax.validation.Valid";
     private static final String PATH_VARIABLE = "org.springframework.web.bind.annotation.PathVariable";
     private static final String REQUEST_PARAM = "org.springframework.web.bind.annotation.RequestParam";
     private static final String MODEL_ATTRIBUTE = "org.springframework.web.bind.annotation.ModelAttribute";
@@ -54,7 +55,7 @@ public class DefaultParameterCollector implements Collector {
     /**
      * 添加排除项
      *
-     * @param exclusion
+     * @param exclusion 标识无需解析、收集的参数，可以使用通配符"*"、"**"，"*"代表任何类，"**"代表任何包下的任何类
      */
     public void addExclusion(String exclusion) {
         exclusions.add(exclusion);
@@ -63,7 +64,7 @@ public class DefaultParameterCollector implements Collector {
     /**
      * 移除排除项
      *
-     * @param exclusion
+     * @param exclusion 标识无需解析、收集的参数，可以使用通配符"*"、"**"，"*"代表任何类，"**"代表任何包下的任何类
      */
     public void removeExclusion(String exclusion) {
         exclusions.remove(exclusion);
@@ -72,7 +73,7 @@ public class DefaultParameterCollector implements Collector {
     /**
      * 添加参数类型推断器
      *
-     * @param handler
+     * @param handler 参数类型推断器，对于默认识别不了的参数类型，可以通过增加推断器的方式进行识别
      */
     public void addParameterTypeHandler(ParameterTypeHandler handler) {
         parameterTypeHandlerChain.addParameterTypeHandler(handler);
@@ -81,7 +82,7 @@ public class DefaultParameterCollector implements Collector {
     /**
      * 移除参数类型推断器
      *
-     * @param handler
+     * @param handler 参数类型推断器，对于默认识别不了的参数类型，可以通过增加推断器的方式进行识别
      */
     public void removeParameterTypeHandler(ParameterTypeHandler handler) {
         parameterTypeHandlerChain.removeParameterTypeHandler(handler);
@@ -141,7 +142,11 @@ public class DefaultParameterCollector implements Collector {
 
         Parameter parameter = buildParameter(apiProject, sourceProject,
                 httpApi, null, ParameterPosition.NORMAL, ctParameter);
-        switch (getHttpParameterType(httpApi, ctParameter.getAnnotations())) {
+        HttpParameterType httpParameterType = getHttpParameterType(httpApi,
+                ctParameter.getAnnotations());
+        httpParameterType = checkHttpParameterType(httpApi, ctParameter.getAnnotations(),
+                httpParameterType, parameter);
+        switch (httpParameterType) {
             case PATH_PARAMETER:
                 initPathParameters(httpApi);
                 String pathParameterName = getPathParameterName(ctParameter.getAnnotations());
@@ -172,7 +177,9 @@ public class DefaultParameterCollector implements Collector {
      * @see HttpParameterType
      */
     private HttpParameterType getHttpParameterType(HttpApi httpApi, List<CtAnnotation<?>> ctAnnotations) {
-        if (ctAnnotations == null) {
+        boolean nullPositionMark = ctAnnotations == null || (ctAnnotations.size() == 1
+                && VALID.equals(ctAnnotations.get(0).getType().getQualifiedName()));
+        if (nullPositionMark) {
             if (httpApi.getHttpMethod().equals(HttpMethod.POST)
                     || httpApi.getHttpMethod().equals(HttpMethod.PUT)
                     || httpApi.getHttpMethod().equals(HttpMethod.DELETE)
@@ -198,6 +205,35 @@ public class DefaultParameterCollector implements Collector {
             }
         }
         return HttpParameterType.BODY_PARAMETER;
+    }
+
+    /**
+     * 重新判断HTTP参数类型
+     * <ol>
+     * <li>
+     * 如果参数类型为Path参数，但是路径上又不存在该参数，则重新判定为URI参数
+     * </li>
+     * </ol>
+     *
+     * @param httpApi
+     * @param ctAnnotations
+     * @param httpParameterType
+     * @param parameter
+     * @return
+     */
+    private HttpParameterType checkHttpParameterType(HttpApi httpApi,
+                                                     List<CtAnnotation<?>> ctAnnotations,
+                                                     HttpParameterType httpParameterType,
+                                                     Parameter parameter) {
+        if (httpParameterType == HttpParameterType.PATH_PARAMETER) {
+            String pathParameterName = getPathParameterName(ctAnnotations);
+            pathParameterName = "".equals(pathParameterName) ? parameter.getName() : pathParameterName;
+            String str = String.format("{%s}", pathParameterName);
+            if (!httpApi.getPath().contains(str)) {
+                return HttpParameterType.URI_PARAMETER;
+            }
+        }
+        return httpParameterType;
     }
 
     /**

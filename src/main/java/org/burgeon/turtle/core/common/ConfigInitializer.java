@@ -11,7 +11,7 @@ import java.util.Properties;
 public class ConfigInitializer {
 
     /**
-     * 初始化项目配置
+     * 初始化项目配置，各配置项的含义可参看配置文件（turtle.conf）的描述
      */
     public static void init() {
         // conf file path: turtle/build/resources/main/conf/turtle.conf or turtle/conf/turtle.conf

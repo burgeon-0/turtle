@@ -14,6 +14,12 @@ import org.burgeon.turtle.core.process.Notifier;
  */
 public class IdeaApiBlueprintNotifier implements Notifier {
 
+    /**
+     * IntelliJ IDEA触发的API Blueprint文档导出事件
+     *
+     * @param apiProject
+     * @return
+     */
     @Override
     public ExportEvent notice(ApiProject apiProject) {
         ExportEvent exportEvent = new ExportEvent();

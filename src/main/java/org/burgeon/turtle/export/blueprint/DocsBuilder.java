@@ -5,7 +5,10 @@ import org.burgeon.turtle.core.common.HttpHelper;
 import org.burgeon.turtle.core.model.api.*;
 import org.burgeon.turtle.core.utils.StringUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 文档构建器
@@ -46,12 +49,55 @@ public class DocsBuilder {
     private static final String OPTIONAL = "optional";
     private static final String FIXED_TYPE = "fixed-type";
     private static final String OBJECT = "(object)";
+    private static final String RESOURCE = "Resource";
     private static final String DEFAULT_CONTENT_TYPE = "application/json";
 
     private StringBuilder builder = new StringBuilder();
 
+    private ApiProject apiProject;
+
+    /**
+     * API Blueprint不允许出现名字重复的Group，因此，需要：
+     * 缓存API群组标题，出现重复时进行重命名，在标题后加上后缀-1、-2、-3...
+     */
+    private Map<String, Integer> groupTitleNumber = new HashMap<>();
+
+    /**
+     * API Blueprint不允许出现重复的URI，因此，需要：
+     * 缓存URI信息，出现重复时将其URI合并在一起进行定义
+     */
+    private Map<String, List<String>> uriRepeatMap = new HashMap<>();
+
+    /**
+     * 如果API已经添加，则不能重新添加；在URI重复时会出现这种情况
+     */
+    private Map<String, Boolean> apiAppendedMap = new HashMap<>();
+
     public DocsBuilder() {
         builder.append(VERSION_HEADER).append(LINE_BREAK);
+    }
+
+    /**
+     * 进行预分析，识别出重复的URI
+     *
+     * @param apiProject
+     */
+    public void preAnalyze(ApiProject apiProject) {
+        this.apiProject = apiProject;
+
+        for (ApiGroup apiGroup : apiProject.getGroups()) {
+            for (HttpApi httpApi : apiGroup.getHttpApis()) {
+                String uri = getUri(httpApi.getPath(), httpApi.getUriParameters());
+                List<String> ids = uriRepeatMap.get(uri);
+                if (ids == null) {
+                    ids = new ArrayList<>();
+                    ids.add(httpApi.getId());
+                    uriRepeatMap.put(uri, ids);
+                } else {
+                    ids.add(httpApi.getId());
+                }
+            }
+        }
     }
 
     /**
@@ -107,13 +153,20 @@ public class DocsBuilder {
      */
     public DocsBuilder appendGroupTitle(String name, String version) {
         if (StringUtils.notBlank(name)) {
-            builder.append(LINE_BREAK);
-            builder.append(HASH_MARK).append(HASH_MARK).append(SPACE);
-            builder.append(GROUP).append(SPACE).append(name);
+            String title = name;
             if (StringUtils.notBlank(version)) {
-                builder.append(SPACE).append(version);
+                title = String.format("%s %s", title, version);
+            }
+            Integer number = groupTitleNumber.get(title);
+            if (number == null) {
+                groupTitleNumber.put(title, 0);
+            } else {
+                groupTitleNumber.put(title, ++number);
+                title = String.format("%s-%d", title, number);
             }
             builder.append(LINE_BREAK);
+            builder.append(HASH_MARK).append(HASH_MARK).append(SPACE);
+            builder.append(GROUP).append(SPACE).append(title).append(LINE_BREAK);
         }
         return this;
     }
@@ -135,6 +188,38 @@ public class DocsBuilder {
     /**
      * 添加API
      *
+     * @param httpApi
+     * @return
+     */
+    public DocsBuilder appendApi(HttpApi httpApi) {
+        if (appendApi(httpApi.getName(), httpApi.getVersion(),
+                httpApi.getHttpMethod(), httpApi.getPath(), httpApi.getUriParameters())) {
+            appendApiDescription(httpApi.getDescription());
+            appendPathParameters(httpApi.getPathParameters());
+            appendUriParameters(httpApi.getUriParameters());
+            appendHttpRequest(httpApi.getHttpRequest());
+            appendHttpResponse(httpApi.getHttpResponse());
+            appendErrorCodes(httpApi.getErrorCodes());
+        }
+        return this;
+    }
+
+    /**
+     * 完成构建
+     *
+     * @return
+     */
+    public String build() {
+        return builder.toString();
+    }
+
+    /**
+     * 添加API
+     * <ol>
+     * <li>如果返回true，表示该API是普通的API，可以继续往下添加参数、Request、Response等</li>
+     * <li>如果返回false，表示该API是聚合的API，不可以继续往下添加参数、Request、Response等</li>
+     * </ol>
+     *
      * @param name
      * @param version
      * @param httpMethod
@@ -142,74 +227,126 @@ public class DocsBuilder {
      * @param uriParameters
      * @return
      */
-    public DocsBuilder appendApi(String name, String version, HttpMethod httpMethod, String path,
-                                 List<Parameter> uriParameters) {
+    private boolean appendApi(String name, String version, HttpMethod httpMethod, String path,
+                              List<Parameter> uriParameters) {
+        String uri = getUri(path, uriParameters);
+        Boolean appended = apiAppendedMap.get(uri);
+        if (appended != null && appended) {
+            return false;
+        }
+
+        apiAppendedMap.put(uri, true);
+        List<String> ids = uriRepeatMap.get(uri);
+        if (ids.size() == 1) {
+            appendNormalApi(name, version, httpMethod, uri);
+            return true;
+        } else {
+            appendAggregationApi(uri);
+            return false;
+        }
+    }
+
+    /**
+     * 添加普通的API，区别于聚合的API
+     *
+     * @param name
+     * @param version
+     * @param httpMethod
+     * @param uri
+     */
+    private void appendNormalApi(String name, String version, HttpMethod httpMethod, String uri) {
         builder.append(LINE_BREAK);
         builder.append(HASH_MARK).append(HASH_MARK).append(HASH_MARK).append(SPACE);
-        builder.append(name);
+        builder.append(getApiName(name));
         if (StringUtils.notBlank(version)) {
             builder.append(SPACE).append(version);
         }
         builder.append(SPACE).append(LEFT_BRACKET).append(httpMethod);
-        builder.append(SPACE).append(path);
-        if (uriParameters != null && uriParameters.size() > 0) {
-            builder.append(QUESTION_MARK);
-            for (int i = 0; i < uriParameters.size(); i++) {
-                Parameter parameter = uriParameters.get(i);
-                builder.append(parameter.getName()).append(EQUAL);
-                builder.append(LEFT_BRACE).append(parameter.getName()).append(RIGHT_BRACE);
-                if (i < uriParameters.size() - 1) {
-                    builder.append(AND_MARK);
-                }
-            }
-        }
+        builder.append(SPACE).append(uri);
         builder.append(RIGHT_BRACKET).append(LINE_BREAK);
-        return this;
+    }
+
+    /**
+     * 添加聚合的API，多个API的URI出现重复，则将其定义在一起
+     *
+     * @param uri
+     */
+    private void appendAggregationApi(String uri) {
+        builder.append(LINE_BREAK);
+        builder.append(HASH_MARK).append(HASH_MARK).append(HASH_MARK);
+        builder.append(SPACE).append(RESOURCE).append(SPACE);
+        builder.append(LEFT_BRACKET).append(uri).append(RIGHT_BRACKET).append(LINE_BREAK);
+
+        List<String> ids = uriRepeatMap.get(uri);
+        for (String id : ids) {
+            HttpApi httpApi = apiProject.getHttpApi(id);
+            builder.append(LINE_BREAK);
+            builder.append(HASH_MARK).append(HASH_MARK).append(HASH_MARK).append(HASH_MARK);
+            builder.append(SPACE).append(getApiName(httpApi.getName()));
+            if (StringUtils.notBlank(httpApi.getVersion())) {
+                builder.append(SPACE).append(httpApi.getVersion());
+            }
+            builder.append(SPACE).append(LEFT_BRACKET).append(httpApi.getHttpMethod());
+            builder.append(RIGHT_BRACKET).append(LINE_BREAK);
+
+            // 为聚合的API添加参数、Request、Response等
+            appendApiDescription(httpApi.getDescription());
+            appendPathParameters(httpApi.getPathParameters());
+            appendUriParameters(httpApi.getUriParameters());
+            appendHttpRequest(httpApi.getHttpRequest());
+            appendHttpResponse(httpApi.getHttpResponse());
+            appendErrorCodes(httpApi.getErrorCodes());
+        }
+    }
+
+    /**
+     * API Blueprint的API名称不允许出现"()"
+     *
+     * @param name
+     * @return
+     */
+    private String getApiName(String name) {
+        name = name.replaceAll("\\(", " ");
+        name = name.replaceAll("\\)", " ");
+        return name;
     }
 
     /**
      * 添加API描述
      *
      * @param description
-     * @return
      */
-    public DocsBuilder appendApiDescription(String description) {
+    private void appendApiDescription(String description) {
         if (StringUtils.notBlank(description)) {
             builder.append(LINE_BREAK);
             builder.append(description).append(LINE_BREAK);
         }
-        return this;
     }
 
     /**
      * 添加Http Path参数
      *
      * @param parameters
-     * @return
      */
-    public DocsBuilder appendPathParameters(List<Parameter> parameters) {
+    private void appendPathParameters(List<Parameter> parameters) {
         buildParameters(parameters);
-        return this;
     }
 
     /**
      * 添加Http Uri参数
      *
      * @param parameters
-     * @return
      */
-    public DocsBuilder appendUriParameters(List<Parameter> parameters) {
+    private void appendUriParameters(List<Parameter> parameters) {
         buildParameters(parameters);
-        return this;
     }
 
     /**
      * 添加HttpRequest
      *
      * @param httpRequest
-     * @return
      */
-    public DocsBuilder appendHttpRequest(HttpRequest httpRequest) {
+    private void appendHttpRequest(HttpRequest httpRequest) {
         if (httpRequest != null) {
             builder.append(LINE_BREAK);
             builder.append(REQUEST).append(SPACE);
@@ -222,16 +359,14 @@ public class DocsBuilder {
                 buildAttributes(httpRequest.getBody());
             }
         }
-        return this;
     }
 
     /**
      * 添加HttpResponse
      *
      * @param httpResponse
-     * @return
      */
-    public DocsBuilder appendHttpResponse(HttpResponse httpResponse) {
+    private void appendHttpResponse(HttpResponse httpResponse) {
         if (httpResponse != null) {
             builder.append(LINE_BREAK);
             builder.append(RESPONSE).append(SPACE).append(httpResponse.getStatus()).append(SPACE);
@@ -247,26 +382,15 @@ public class DocsBuilder {
                 }
             }
         }
-        return this;
     }
 
     /**
      * 添加错误码
      *
      * @param errorCodes
-     * @return
      */
-    public DocsBuilder appendErrorCodes(List<ErrorCode> errorCodes) {
-        return this;
-    }
-
-    /**
-     * 完成构建
-     *
-     * @return
-     */
-    public String build() {
-        return builder.toString();
+    private void appendErrorCodes(List<ErrorCode> errorCodes) {
+        // TODO
     }
 
     /**
@@ -279,7 +403,15 @@ public class DocsBuilder {
             builder.append(LINE_BREAK);
             builder.append(PARAMETERS).append(LINE_BREAK);
             for (Parameter parameter : parameters) {
-                buildParameter(parameter, 1);
+                if (parameter.getParentParameter() == null
+                        && parameter.getType() == ParameterType.OBJECT) {
+                    List<Parameter> childParameters = parameter.getChildParameters();
+                    for (Parameter childParameter : childParameters) {
+                        buildParameter(childParameter, 1);
+                    }
+                } else {
+                    buildParameter(parameter, 1);
+                }
             }
         }
     }
@@ -399,6 +531,62 @@ public class DocsBuilder {
                 }
             }
         }
+    }
+
+    /**
+     * 获取API的URI
+     *
+     * @param path
+     * @param uriParameters
+     * @return
+     */
+    private String getUri(String path, List<Parameter> uriParameters) {
+        StringBuilder stringBuilder = new StringBuilder(path);
+        if (uriParameters != null && uriParameters.size() > 0) {
+            stringBuilder.append(QUESTION_MARK);
+            for (int i = 0; i < uriParameters.size(); i++) {
+                Parameter parameter = uriParameters.get(i);
+                stringBuilder.append(getQueryString(parameter, i == uriParameters.size() - 1, null));
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
+     * 获取API的QueryString
+     *
+     * @param parameter
+     * @param last
+     * @param suffix
+     * @return
+     */
+    private String getQueryString(Parameter parameter, boolean last, String suffix) {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (parameter.getType() == ParameterType.OBJECT) {
+            if (parameter.getParentParameter() != null) {
+                if (suffix == null) {
+                    suffix = parameter.getName();
+                } else {
+                    suffix = String.format("%s.%s", suffix, parameter.getName());
+                }
+            }
+            List<Parameter> childParameters = parameter.getChildParameters();
+            for (int i = 0; i < childParameters.size(); i++) {
+                Parameter childParameter = childParameters.get(i);
+                stringBuilder.append(getQueryString(childParameter, i == childParameters.size() - 1, suffix));
+            }
+        } else {
+            String parameterName = parameter.getName();
+            if (suffix != null) {
+                parameterName = String.format("%s.%s", suffix, parameter);
+            }
+            stringBuilder.append(parameterName).append(EQUAL);
+            stringBuilder.append(LEFT_BRACE).append(parameterName).append(RIGHT_BRACE);
+        }
+        if (!last) {
+            stringBuilder.append(AND_MARK);
+        }
+        return stringBuilder.toString();
     }
 
 }

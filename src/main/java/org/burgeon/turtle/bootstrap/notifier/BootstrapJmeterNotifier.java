@@ -14,6 +14,12 @@ import org.burgeon.turtle.core.process.Notifier;
  */
 public class BootstrapJmeterNotifier implements Notifier {
 
+    /**
+     * 命令行方式触发的JMeter测试用例导出事件
+     *
+     * @param apiProject
+     * @return
+     */
     @Override
     public ExportEvent notice(ApiProject apiProject) {
         ExportEvent exportEvent = new ExportEvent();

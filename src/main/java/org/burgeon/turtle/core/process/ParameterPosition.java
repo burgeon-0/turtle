@@ -19,6 +19,6 @@ public enum ParameterPosition {
     /**
      * 表示参数为：普通参数
      */
-    NORMAL;
+    NORMAL
 
 }

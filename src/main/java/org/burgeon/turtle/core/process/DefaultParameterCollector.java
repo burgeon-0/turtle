@@ -259,7 +259,10 @@ public class DefaultParameterCollector implements Collector {
         for (CtAnnotation<?> ctAnnotation : ctAnnotations) {
             String name = ctAnnotation.getType().getQualifiedName();
             if (name.equals(PATH_VARIABLE)) {
-                String value = ctAnnotation.getValue("name").getValueByRole(CtRole.VALUE);
+                String value = ctAnnotation.getValue("value").getValueByRole(CtRole.VALUE);
+                if ("".equals(value)) {
+                    value = ctAnnotation.getValue("name").getValueByRole(CtRole.VALUE);
+                }
                 return value;
             }
         }

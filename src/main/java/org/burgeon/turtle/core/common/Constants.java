@@ -36,6 +36,23 @@ public class Constants {
     public static final String SEPARATOR_LINE_BREAK = System.lineSeparator();
 
     /**
+     * 加号
+     */
+    public static final String PLUS = "+";
+    /**
+     * 减号
+     */
+    public static final String MINUS = "-";
+    /**
+     * 等于号
+     */
+    public static final String EQUAL = "=";
+    /**
+     * 下划线
+     */
+    public static final String UNDERLINE = "_";
+
+    /**
      * turtle安装目录key
      */
     public static final String TURTLE_HOME = "TURTLE_HOME";

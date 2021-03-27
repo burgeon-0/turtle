@@ -25,10 +25,10 @@ public class DocsBuilder {
     private static final String SPACE = Constants.SEPARATOR_SPACE;
     private static final String COLON = Constants.SEPARATOR_COLON;
     private static final String COMMA = Constants.SEPARATOR_COMMA;
-    private static final String PLUS = "+";
-    private static final String MINUS = "-";
-    private static final String EQUAL = "=";
-    private static final String TAB = "\t";
+    private static final String PLUS = Constants.PLUS;
+    private static final String MINUS = Constants.MINUS;
+    private static final String EQUAL = Constants.EQUAL;
+    private static final String TAB = "    ";
     private static final String HASH_MARK = "#";
     private static final String QUESTION_MARK = "?";
     private static final String AND_MARK = "&";
@@ -257,7 +257,7 @@ public class DocsBuilder {
     private void appendNormalApi(String name, String version, HttpMethod httpMethod, String uri) {
         builder.append(LINE_BREAK);
         builder.append(HASH_MARK).append(HASH_MARK).append(HASH_MARK).append(SPACE);
-        builder.append(getApiName(name));
+        builder.append(name);
         if (StringUtils.notBlank(version)) {
             builder.append(SPACE).append(version);
         }
@@ -282,7 +282,7 @@ public class DocsBuilder {
             HttpApi httpApi = apiProject.getHttpApi(id);
             builder.append(LINE_BREAK);
             builder.append(HASH_MARK).append(HASH_MARK).append(HASH_MARK).append(HASH_MARK);
-            builder.append(SPACE).append(getApiName(httpApi.getName()));
+            builder.append(SPACE).append(httpApi.getName());
             if (StringUtils.notBlank(httpApi.getVersion())) {
                 builder.append(SPACE).append(httpApi.getVersion());
             }
@@ -297,18 +297,6 @@ public class DocsBuilder {
             appendHttpResponse(httpApi.getHttpResponse());
             appendErrorCodes(httpApi.getErrorCodes());
         }
-    }
-
-    /**
-     * API Blueprint的API名称不允许出现"()"
-     *
-     * @param name
-     * @return
-     */
-    private String getApiName(String name) {
-        name = name.replaceAll("\\(", " ");
-        name = name.replaceAll("\\)", " ");
-        return name;
     }
 
     /**

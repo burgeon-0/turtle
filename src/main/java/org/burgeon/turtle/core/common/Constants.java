@@ -76,4 +76,9 @@ public class Constants {
      */
     public static final String[] DEFAULT_ANALYSIS_ORDER = new String[]{"maven", "gradle", "custom"};
 
+    /**
+     * HTTP Content-Type
+     */
+    public static final String CONTENT_TYPE = "Content-Type";
+
 }

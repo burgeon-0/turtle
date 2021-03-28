@@ -12,15 +12,13 @@ import java.util.List;
  */
 public class HttpHelper {
 
-    private static final String CONTENT_TYPE = "Content-Type";
-
     /**
      * Get HTTP Content-Type
      */
     public static String getContentType(List<HttpHeader> headers) {
         if (headers != null) {
             for (HttpHeader header : headers) {
-                if (CONTENT_TYPE.equalsIgnoreCase(header.getName())) {
+                if (Constants.CONTENT_TYPE.equalsIgnoreCase(header.getName())) {
                     return header.getDescription();
                 }
             }

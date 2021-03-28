@@ -18,7 +18,7 @@ public class FilterHelper {
      * @return
      */
     public static String filterApiProjectName(String name) {
-        return filterName(name);
+        return name;
     }
 
     /**
@@ -48,7 +48,7 @@ public class FilterHelper {
      * @return
      */
     public static String filterHttpHeaderName(String name) {
-        return filterName(name);
+        return name;
     }
 
     /**
@@ -58,7 +58,7 @@ public class FilterHelper {
      * @return
      */
     public static String filterParameterName(String name) {
-        return filterName(name);
+        return name;
     }
 
     /**
@@ -83,12 +83,22 @@ public class FilterHelper {
 
     /**
      * 过滤API描述
+     * <ol>
+     * <li>
+     * API Blueprint的API描述中不能有"/"，如果存在"/"会解析出错，因此，将"/"过滤掉
+     * </li>
+     * </ol>
      *
      * @param description
      * @return
      */
     public static String filterHttpApiDescription(String description) {
-        return filterDescription(description);
+        if (StringUtils.isBlank(description)) {
+            return description;
+        }
+        description = filterDescription(description);
+        description = description.replaceAll("/", "");
+        return description;
     }
 
     /**
@@ -103,19 +113,29 @@ public class FilterHelper {
 
     /**
      * 过滤HTTP参数描述
+     * <ol>
+     * <li>
+     * API Blueprint的参数描述中不能有"_"，如果存在"_"会解析出错，因此，将"_"转换为"-"
+     * </li>
+     * </ol>
      *
      * @param description
      * @return
      */
     public static String filterParameterDescription(String description) {
-        return filterDescription(description);
+        if (StringUtils.isBlank(description)) {
+            return description;
+        }
+        description = filterDescription(description);
+        description = description.replaceAll("_", "-");
+        return description;
     }
 
     /**
      * 过滤名称
      * <ol>
      * <li>
-     * API Blueprint的API名称不允许出现"()"
+     * API Blueprint的API名称和API群组名称不允许出现"()"
      * </li>
      * </ol>
      *
@@ -135,9 +155,8 @@ public class FilterHelper {
     /**
      * 过滤描述
      * <ol>
-     * <li>
-     * API Blueprint的描述中不能有"_"，如果存在"_"会抛出警告，因此，将"_"转换为"-"
-     * </li>
+     * <li>过滤描述中的换行符</li>
+     * <li>"\t"转换成4个空格</li>
      * </ol>
      *
      * @param description
@@ -148,7 +167,7 @@ public class FilterHelper {
             return description;
         }
         description = StringUtils.strip(description, Constants.SEPARATOR_LINE_BREAK);
-        description = description.replaceAll("_", "-");
+        description = description.replaceAll("\t", "    ");
         return description;
     }
 

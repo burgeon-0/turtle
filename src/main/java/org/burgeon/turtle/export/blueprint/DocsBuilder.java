@@ -422,13 +422,19 @@ public class DocsBuilder {
     }
 
     /**
-     * 构建Http请求和返回头
+     * 构建Http请求和返回头，Content-Type在Request或Response标签中已有定义，在此处需将其过滤掉
      *
      * @param headers
      */
     private void buildHeaders(List<HttpHeader> headers) {
+        if (headers.size() == 1 && Constants.CONTENT_TYPE.equals(headers.get(0).getName())) {
+            return;
+        }
         builder.append(TAB).append(HEADERS).append(LINE_BREAK).append(LINE_BREAK);
         for (HttpHeader header : headers) {
+            if (Constants.CONTENT_TYPE.equals(header.getName())) {
+                continue;
+            }
             builder.append(TAB).append(TAB).append(TAB).append(header.getName()).append(COLON);
             builder.append(SPACE).append(header.getDescription()).append(LINE_BREAK);
         }

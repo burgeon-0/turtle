@@ -4,6 +4,7 @@ import org.burgeon.turtle.core.model.api.ApiGroup;
 import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.model.api.HttpApi;
 import org.burgeon.turtle.core.model.api.Parameter;
+import org.burgeon.turtle.core.utils.StringUtils;
 import org.burgeon.turtle.export.blueprint.FilterHelper;
 
 import java.util.List;
@@ -16,6 +17,8 @@ import java.util.Map;
  * @createdOn 2021/3/27
  */
 public class ApiProjectDecorator extends ApiProject {
+
+    private static final String DEFAULT_PROJECT_NAME = "API Docs";
 
     private ApiProject apiProject;
     private List<ApiGroup> apiGroups;
@@ -35,6 +38,9 @@ public class ApiProjectDecorator extends ApiProject {
 
     @Override
     public String getName() {
+        if (StringUtils.isBlank(apiProject.getName())) {
+            return DEFAULT_PROJECT_NAME;
+        }
         return FilterHelper.filterApiProjectName(apiProject.getName());
     }
 

@@ -2,6 +2,7 @@ package org.burgeon.turtle.core.process;
 
 import org.burgeon.turtle.core.common.CtModelHelper;
 import org.burgeon.turtle.core.model.api.*;
+import org.burgeon.turtle.core.model.source.ParameterPosition;
 import org.burgeon.turtle.core.model.source.SourceProject;
 import spoon.reflect.declaration.*;
 import spoon.reflect.path.CtRole;
@@ -140,26 +141,33 @@ public class DefaultParameterCollector implements Collector {
             }
         }
 
-        Parameter parameter = buildParameter(apiProject, sourceProject,
-                httpApi, null, ParameterPosition.NORMAL, ctParameter);
         HttpParameterType httpParameterType = getHttpParameterType(httpApi,
                 ctParameter.getAnnotations());
-        httpParameterType = checkHttpParameterType(httpApi, ctParameter.getAnnotations(),
-                httpParameterType, parameter);
+        Parameter parameter;
         switch (httpParameterType) {
             case PATH_PARAMETER:
+                parameter = buildParameter(apiProject, sourceProject,
+                        httpApi, null, ctParameter, HttpParameterPosition.PATH,
+                        ParameterPosition.NORMAL);
                 initPathParameters(httpApi);
                 String pathParameterName = getPathParameterName(ctParameter.getAnnotations());
                 if (!"".equals(pathParameterName)) {
                     parameter.setName(pathParameterName);
                 }
                 httpApi.getPathParameters().add(parameter);
+                resetPathParameterPosition(httpApi, parameter);
                 break;
             case URI_PARAMETER:
+                parameter = buildParameter(apiProject, sourceProject,
+                        httpApi, null, ctParameter, HttpParameterPosition.URI,
+                        ParameterPosition.NORMAL);
                 initUriParameters(httpApi);
                 httpApi.getUriParameters().add(parameter);
                 break;
             case BODY_PARAMETER:
+                parameter = buildParameter(apiProject, sourceProject,
+                        httpApi, null, ctParameter, HttpParameterPosition.REQUEST,
+                        ParameterPosition.NORMAL);
                 initHttpRequest(httpApi);
                 httpApi.getHttpRequest().getBody().add(parameter);
                 break;
@@ -208,35 +216,6 @@ public class DefaultParameterCollector implements Collector {
     }
 
     /**
-     * 重新判断HTTP参数类型
-     * <ol>
-     * <li>
-     * 如果参数类型为Path参数，但是路径上又不存在该参数，则重新判定为URI参数
-     * </li>
-     * </ol>
-     *
-     * @param httpApi
-     * @param ctAnnotations
-     * @param httpParameterType
-     * @param parameter
-     * @return
-     */
-    private HttpParameterType checkHttpParameterType(HttpApi httpApi,
-                                                     List<CtAnnotation<?>> ctAnnotations,
-                                                     HttpParameterType httpParameterType,
-                                                     Parameter parameter) {
-        if (httpParameterType == HttpParameterType.PATH_PARAMETER) {
-            String pathParameterName = getPathParameterName(ctAnnotations);
-            pathParameterName = "".equals(pathParameterName) ? parameter.getName() : pathParameterName;
-            String str = String.format("{%s}", pathParameterName);
-            if (!httpApi.getPath().contains(str)) {
-                return HttpParameterType.URI_PARAMETER;
-            }
-        }
-        return httpParameterType;
-    }
-
-    /**
      * 初始化请求Path参数
      *
      * @param httpApi
@@ -267,6 +246,30 @@ public class DefaultParameterCollector implements Collector {
             }
         }
         return "";
+    }
+
+    /**
+     * 重设Path参数位置
+     * <ol>
+     * <li>
+     * 如果参数为Path参数，但是路径上又不存在该参数，则重新设置为URI参数
+     * </li>
+     * </ol>
+     *
+     * @param httpApi
+     * @param parameter
+     * @return
+     */
+    private void resetPathParameterPosition(HttpApi httpApi, Parameter parameter) {
+        String str = String.format("{%s}", parameter.getName());
+        if (!httpApi.getPath().contains(str)) {
+            httpApi.getPathParameters().remove(parameter);
+            if (httpApi.getPathParameters().size() == 0) {
+                httpApi.setPathParameters(null);
+            }
+            initUriParameters(httpApi);
+            httpApi.getUriParameters().add(parameter);
+        }
     }
 
     /**
@@ -310,7 +313,8 @@ public class DefaultParameterCollector implements Collector {
                                           HttpApi httpApi, CtMethod<?> ctMethod) {
         initHttpResponse(httpApi);
         Parameter parameter = buildParameter(apiProject, sourceProject,
-                httpApi, null, ParameterPosition.METHOD_RETURN, ctMethod);
+                httpApi, null, ctMethod, HttpParameterPosition.RESPONSE,
+                ParameterPosition.METHOD_RETURN);
         httpApi.getHttpResponse().getBody().add(parameter);
     }
 
@@ -338,13 +342,15 @@ public class DefaultParameterCollector implements Collector {
      * @param sourceProject
      * @param httpApi
      * @param parentParameter
-     * @param parameterPosition
      * @param ctElement
+     * @param httpParameterPosition
+     * @param parameterPosition
      * @return
      */
     private Parameter buildParameter(ApiProject apiProject, SourceProject sourceProject,
-                                     HttpApi httpApi, Parameter parentParameter,
-                                     ParameterPosition parameterPosition, CtElement ctElement) {
+                                     HttpApi httpApi, Parameter parentParameter, CtElement ctElement,
+                                     HttpParameterPosition httpParameterPosition,
+                                     ParameterPosition parameterPosition) {
         String parentKey = parentParameter != null ? parentParameter.getId() : httpApi.getId();
         String parameterKey = CtModelHelper.getParameterKey(parentKey, parameterPosition,
                 (CtNamedElement) ctElement);
@@ -353,7 +359,7 @@ public class DefaultParameterCollector implements Collector {
         CtTypeReference<?> ctTypeReference = getCtTypeReference(parameterPosition, ctElement);
         List<CtAnnotation<?>> ctAnnotations = ctElement.getAnnotations();
         Parameter parameter = buildParameter(parentParameter, parameterKey, parameterName,
-                ctTypeReference, ctAnnotations);
+                ctTypeReference, ctAnnotations, httpParameterPosition);
 
         apiProject.putParameter(parameterKey, parameter);
         sourceProject.putCtElement(parameterKey, ctElement);
@@ -361,7 +367,8 @@ public class DefaultParameterCollector implements Collector {
         if (isChildBuilt(parameter)) {
             return parameter;
         }
-        buildChildParameters(apiProject, sourceProject, httpApi, ctElement, parameter, ctTypeReference);
+        buildChildParameters(apiProject, sourceProject, httpApi, ctElement, parameter,
+                ctTypeReference, httpParameterPosition);
         return parameter;
     }
 
@@ -395,11 +402,13 @@ public class DefaultParameterCollector implements Collector {
      * @param parameterName
      * @param ctTypeReference
      * @param ctAnnotations
+     * @param httpParameterPosition
      * @return
      */
     private Parameter buildParameter(Parameter parentParameter, String parameterKey,
                                      String parameterName, CtTypeReference<?> ctTypeReference,
-                                     List<CtAnnotation<?>> ctAnnotations) {
+                                     List<CtAnnotation<?>> ctAnnotations,
+                                     HttpParameterPosition httpParameterPosition) {
         Parameter parameter = new Parameter();
         parameter.setParentParameter(parentParameter);
         parameter.setId(parameterKey);
@@ -408,6 +417,7 @@ public class DefaultParameterCollector implements Collector {
         parameter.setType(type);
         parameter.setOriginType(ctTypeReference.getQualifiedName());
         parameter.setRequired(isRequired(ctAnnotations));
+        parameter.setPosition(httpParameterPosition);
         collectParameterDescription(parameter, ctAnnotations);
         return parameter;
     }
@@ -507,15 +517,17 @@ public class DefaultParameterCollector implements Collector {
      * @param ctElement
      * @param parameter
      * @param ctTypeReference
+     * @param httpParameterPosition
      */
     private void buildChildParameters(ApiProject apiProject, SourceProject sourceProject,
                                       HttpApi httpApi, CtElement ctElement,
-                                      Parameter parameter, CtTypeReference<?> ctTypeReference) {
+                                      Parameter parameter, CtTypeReference<?> ctTypeReference,
+                                      HttpParameterPosition httpParameterPosition) {
         ParameterType type = parameter.getType();
         if (type == ParameterType.ARRAY) {
             List<Parameter> childParameters = new ArrayList<>();
             Parameter childParameter = buildParameter(apiProject, sourceProject,
-                    httpApi, parameter, ParameterPosition.ARRAY_SUB, ctElement);
+                    httpApi, parameter, ctElement, httpParameterPosition, ParameterPosition.ARRAY_SUB);
             childParameters.add(childParameter);
             parameter.setChildParameters(childParameters);
         } else if (type == ParameterType.OBJECT) {
@@ -525,7 +537,7 @@ public class DefaultParameterCollector implements Collector {
                 CtField<?> ctField = ctFieldReference.getFieldDeclaration();
                 if (isChildParameter(ctField)) {
                     Parameter childParameter = buildParameter(apiProject, sourceProject,
-                            httpApi, parameter, ParameterPosition.NORMAL, ctField);
+                            httpApi, parameter, ctField, httpParameterPosition, ParameterPosition.NORMAL);
                     childParameters.add(childParameter);
                 }
             }

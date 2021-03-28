@@ -48,7 +48,7 @@ public class ParameterDecorator extends Parameter {
     @Override
     public String getName() {
         if (name == null) {
-            name = FilterHelper.filterName(parameter.getName());
+            name = FilterHelper.filterParameterName(parameter.getName());
             if (name.contains(Constants.MINUS)) {
                 name = name.replaceAll(Constants.MINUS, Constants.UNDERLINE);
             }
@@ -63,7 +63,7 @@ public class ParameterDecorator extends Parameter {
 
     @Override
     public String getDescription() {
-        return FilterHelper.filterDescription(parameter.getDescription());
+        return FilterHelper.filterParameterDescription(parameter.getDescription());
     }
 
     @Override

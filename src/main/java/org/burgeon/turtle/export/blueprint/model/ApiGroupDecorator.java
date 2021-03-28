@@ -29,12 +29,12 @@ public class ApiGroupDecorator extends ApiGroup {
 
     @Override
     public String getName() {
-        return FilterHelper.filterName(apiGroup.getName());
+        return FilterHelper.filterApiGroupName(apiGroup.getName());
     }
 
     @Override
     public String getDescription() {
-        return FilterHelper.filterDescription(apiGroup.getDescription());
+        return FilterHelper.filterApiGroupDescription(apiGroup.getDescription());
     }
 
     @Override

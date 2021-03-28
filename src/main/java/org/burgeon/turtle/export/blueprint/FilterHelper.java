@@ -12,6 +12,106 @@ import org.burgeon.turtle.core.utils.StringUtils;
 public class FilterHelper {
 
     /**
+     * 过滤API项目名称
+     *
+     * @param name
+     * @return
+     */
+    public static String filterApiProjectName(String name) {
+        return filterName(name);
+    }
+
+    /**
+     * 过滤API群组名称
+     *
+     * @param name
+     * @return
+     */
+    public static String filterApiGroupName(String name) {
+        return filterName(name);
+    }
+
+    /**
+     * 过滤API名称
+     *
+     * @param name
+     * @return
+     */
+    public static String filterHttpApiName(String name) {
+        return filterName(name);
+    }
+
+    /**
+     * 过滤HTTP Header名称
+     *
+     * @param name
+     * @return
+     */
+    public static String filterHttpHeaderName(String name) {
+        return filterName(name);
+    }
+
+    /**
+     * 过滤HTTP参数名称
+     *
+     * @param name
+     * @return
+     */
+    public static String filterParameterName(String name) {
+        return filterName(name);
+    }
+
+    /**
+     * 过滤API项目描述
+     *
+     * @param description
+     * @return
+     */
+    public static String filterApiProjectDescription(String description) {
+        return filterDescription(description);
+    }
+
+    /**
+     * 过滤API群组描述
+     *
+     * @param description
+     * @return
+     */
+    public static String filterApiGroupDescription(String description) {
+        return filterDescription(description);
+    }
+
+    /**
+     * 过滤API描述
+     *
+     * @param description
+     * @return
+     */
+    public static String filterHttpApiDescription(String description) {
+        return filterDescription(description);
+    }
+
+    /**
+     * 过滤HTTP Header描述
+     *
+     * @param description
+     * @return
+     */
+    public static String filterHttpHeaderDescription(String description) {
+        return filterDescription(description);
+    }
+
+    /**
+     * 过滤HTTP参数描述
+     *
+     * @param description
+     * @return
+     */
+    public static String filterParameterDescription(String description) {
+        return filterDescription(description);
+    }
+
+    /**
      * 过滤名称
      * <ol>
      * <li>
@@ -22,7 +122,7 @@ public class FilterHelper {
      * @param name
      * @return
      */
-    public static String filterName(String name) {
+    private static String filterName(String name) {
         if (StringUtils.isBlank(name)) {
             return name;
         }
@@ -43,7 +143,7 @@ public class FilterHelper {
      * @param description
      * @return
      */
-    public static String filterDescription(String description) {
+    private static String filterDescription(String description) {
         if (StringUtils.isBlank(description)) {
             return description;
         }

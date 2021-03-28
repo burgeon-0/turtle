@@ -30,6 +30,11 @@ public class Parameter {
     private ParameterType type;
 
     /**
+     * 参数位置
+     */
+    private HttpParameterPosition position;
+
+    /**
      * 参数名称
      */
     private String name;

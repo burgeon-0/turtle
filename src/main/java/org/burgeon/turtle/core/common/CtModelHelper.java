@@ -1,6 +1,6 @@
 package org.burgeon.turtle.core.common;
 
-import org.burgeon.turtle.core.process.ParameterPosition;
+import org.burgeon.turtle.core.model.source.ParameterPosition;
 import spoon.reflect.declaration.*;
 
 /**

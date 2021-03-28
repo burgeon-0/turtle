@@ -19,6 +19,6 @@ public enum HttpParameterType {
     /**
      * Body参数
      */
-    BODY_PARAMETER;
+    BODY_PARAMETER
 
 }

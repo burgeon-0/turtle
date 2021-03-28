@@ -42,12 +42,12 @@ public class HttpApiDecorator extends HttpApi {
 
     @Override
     public String getName() {
-        return FilterHelper.filterName(httpApi.getName());
+        return FilterHelper.filterHttpApiName(httpApi.getName());
     }
 
     @Override
     public String getDescription() {
-        return FilterHelper.filterDescription(httpApi.getDescription());
+        return FilterHelper.filterHttpApiDescription(httpApi.getDescription());
     }
 
     @Override

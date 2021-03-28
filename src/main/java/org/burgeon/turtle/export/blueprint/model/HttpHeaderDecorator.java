@@ -19,12 +19,12 @@ public class HttpHeaderDecorator extends HttpHeader {
 
     @Override
     public String getName() {
-        return FilterHelper.filterName(httpHeader.getName());
+        return FilterHelper.filterHttpHeaderName(httpHeader.getName());
     }
 
     @Override
     public String getDescription() {
-        return FilterHelper.filterDescription(httpHeader.getDescription());
+        return FilterHelper.filterHttpHeaderDescription(httpHeader.getDescription());
     }
 
     @Override

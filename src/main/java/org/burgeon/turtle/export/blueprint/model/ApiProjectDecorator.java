@@ -35,12 +35,12 @@ public class ApiProjectDecorator extends ApiProject {
 
     @Override
     public String getName() {
-        return FilterHelper.filterName(apiProject.getName());
+        return FilterHelper.filterApiProjectName(apiProject.getName());
     }
 
     @Override
     public String getDescription() {
-        return FilterHelper.filterDescription(apiProject.getDescription());
+        return FilterHelper.filterApiProjectDescription(apiProject.getDescription());
     }
 
     @Override

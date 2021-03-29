@@ -18,7 +18,7 @@ public class ExportEventSupport {
      *
      * @param exportListener
      */
-    public static synchronized void addExportListener(BaseExportListener exportListener) {
+    public static void addExportListener(BaseExportListener exportListener) {
         exportListeners.add(exportListener);
     }
 
@@ -27,7 +27,7 @@ public class ExportEventSupport {
      *
      * @param exportListener
      */
-    public static synchronized void removeExportListener(BaseExportListener exportListener) {
+    public static void removeExportListener(BaseExportListener exportListener) {
         exportListeners.remove(exportListener);
     }
 
@@ -59,7 +59,11 @@ public class ExportEventSupport {
      * @param exportEvent
      */
     public static void fireExportEvent(ExportEvent exportEvent) {
-        for (BaseExportListener exportListener : exportListeners) {
+        List<BaseExportListener> currentListeners;
+        synchronized (exportListeners) {
+            currentListeners = new ArrayList<>(exportListeners);
+        }
+        for (BaseExportListener exportListener : currentListeners) {
             exportListener.dispatch(exportEvent);
         }
     }

@@ -14,6 +14,10 @@ import java.util.Set;
 
 /**
  * 自定义项目分析策略
+ * <ol>
+ * <li>有时候项目的依赖管理，用的既不是maven，也不是gradle，jar包的依赖可能是以自定义的方式指定的，这种类型的项目
+ * 就需要用自定义的项目分析策略进行分析，指定项目的源文件目录、依赖jar包的目录和classpath</li>
+ * </ol>
  *
  * @author luxiaocong
  * @createdOn 2021/3/4

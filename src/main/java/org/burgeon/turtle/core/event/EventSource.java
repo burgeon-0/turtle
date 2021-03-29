@@ -7,6 +7,7 @@ import java.util.Map;
 
 /**
  * 事件来源
+ * TODO 事件来源应该是可以扩展的，不应该使用Enum
  *
  * @author luxiaocong
  * @createdOn 2021/3/4

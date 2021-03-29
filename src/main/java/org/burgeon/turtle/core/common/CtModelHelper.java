@@ -5,6 +5,14 @@ import spoon.reflect.declaration.*;
 
 /**
  * spoon model helper
+ * <ol>
+ * <li>
+ * 从SourceProject将API信息收集到ApiProject，通常不是一次就能收集完成的，有时候可能需要扩展Collector，执行特定的收集规则。
+ * 比如在我接触过的项目中，错误码可能是通过异常的方式抛出的，这种情况需要使用方实现自定义的Collector才能将错误码信息收集起来。
+ * 本类提供的一系列获取CtElement的Key的方法，是为了能够方便从Http元素找到CtElement，或从CtElement找到Http元素
+ * （包含HttpRequest、HttpResponse、HttpParameter等）。
+ * </li>
+ * </ol>
  *
  * @author luxiaocong
  * @createdOn 2021/3/18

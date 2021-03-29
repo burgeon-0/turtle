@@ -16,6 +16,9 @@ public class VersionHelper {
 
     public static final String VERSION;
 
+    /**
+     * 从gradle配置指定的版本信息文件中加载项目版本
+     */
     static {
         InputStream inputStream = VersionHelper.class.getClassLoader().getResourceAsStream("version");
         Properties versionProperties = new Properties();

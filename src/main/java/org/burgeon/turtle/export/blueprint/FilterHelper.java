@@ -5,6 +5,7 @@ import org.burgeon.turtle.core.utils.StringUtils;
 
 /**
  * 过滤工具
+ * TODO 通过边界值测试，验证Filter是否将需要过滤的字符都过滤了
  *
  * @author luxiaocong
  * @createdOn 2021/3/27

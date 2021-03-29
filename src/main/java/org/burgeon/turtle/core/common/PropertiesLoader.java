@@ -22,6 +22,9 @@ public class PropertiesLoader {
 
     /**
      * 加载配置
+     * <ol>
+     * <li>输入配置文件名，加载配置文件，配置文件需要放到"turtle/conf"目录下</li>
+     * </ol>
      *
      * @param filename
      * @return

@@ -4,8 +4,8 @@ import javax.servlet.http.Cookie;
 
 /**
  * 测试 Custom Project
- * -i ./custom-project-demo/src
- * -c ./custom-project-demo/lib1;./custom-project-demo/lib2
+ * -i ./test-projects/custom-project-demo/src
+ * -c ./test-projects/custom-project-demo/lib1;./test-projects/custom-project-demo/lib2
  *
  * @author luxiaocong
  * @createdOn 2021/3/13

@@ -343,8 +343,12 @@ public class DocsBuilder {
             if (httpRequest.getHeaders() != null && httpRequest.getHeaders().size() > 0) {
                 buildHeaders(httpRequest.getHeaders());
             }
-            if (httpRequest.getBody() != null && httpRequest.getBody().size() > 0) {
-                buildAttributes(httpRequest.getBody());
+            List<Parameter> parameters = httpRequest.getBody();
+            if (parameters != null && parameters.size() > 0) {
+                if (parameters.size() == 1 && parameters.get(0).getType() == ParameterType.ARRAY) {
+                    parameters = parameters.get(0).getChildParameters();
+                }
+                buildAttributes(parameters);
             }
         }
     }
@@ -365,8 +369,22 @@ public class DocsBuilder {
             }
             if (httpResponse.getBody() != null && httpResponse.getBody().size() > 0) {
                 Parameter returnParameter = httpResponse.getBody().get(0);
-                if (returnParameter.getType() == ParameterType.OBJECT) {
-                    buildAttributes(returnParameter.getChildParameters());
+                switch (returnParameter.getType()) {
+                    case OBJECT:
+                    case ARRAY:
+                        buildAttributes(returnParameter.getChildParameters());
+                        break;
+                    case STRING:
+                        buildResponseValue("Hello, world!");
+                        break;
+                    case NUMBER:
+                        buildResponseValue(1);
+                        break;
+                    case BOOLEAN:
+                        buildResponseValue(true);
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -460,6 +478,15 @@ public class DocsBuilder {
                 }
             }
         }
+    }
+
+    /**
+     * 构建Http返回值
+     *
+     * @param obj
+     */
+    private void buildResponseValue(Object obj) {
+        builder.append(LINE_BREAK).append(TAB).append(TAB).append(obj).append(LINE_BREAK);
     }
 
     /**

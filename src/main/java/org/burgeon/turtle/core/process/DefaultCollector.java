@@ -29,6 +29,9 @@ import java.util.Set;
 @Slf4j
 public class DefaultCollector implements Collector {
 
+    /**
+     * TODO 提供通过配置方式，控制是否收集包含某个注解的类
+     */
     private static final String CONTROLLER_ANNOTATION_TYPE = "org.springframework.stereotype.Controller";
     private static final String REST_CONTROLLER_ANNOTATION_TYPE = "org.springframework.web.bind.annotation.RestController";
 

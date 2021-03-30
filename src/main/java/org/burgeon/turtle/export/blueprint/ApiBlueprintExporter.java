@@ -244,7 +244,6 @@ public class ApiBlueprintExporter extends BaseExportListener {
         try {
             writer = new BufferedWriter(new FileWriter(targetFile));
             writer.write(content);
-            System.out.println(content);
         } finally {
             if (writer != null) {
                 writer.close();

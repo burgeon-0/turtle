@@ -1,6 +1,7 @@
 package org.burgeon.turtle.export.blueprint.model;
 
 import org.burgeon.turtle.core.common.Constants;
+import org.burgeon.turtle.core.model.api.HttpParameterPosition;
 import org.burgeon.turtle.core.model.api.Parameter;
 import org.burgeon.turtle.core.model.api.ParameterType;
 import org.burgeon.turtle.export.blueprint.FilterHelper;
@@ -38,6 +39,11 @@ public class ParameterDecorator extends Parameter {
     @Override
     public ParameterType getType() {
         return parameter.getType();
+    }
+
+    @Override
+    public HttpParameterPosition getPosition() {
+        return parameter.getPosition();
     }
 
     /**

@@ -47,6 +47,7 @@ public class DefaultParameterCollector implements Collector {
     private List<String> exclusionPatterns = new ArrayList<>();
 
     {
+        exclusions.add("org.springframework.ui.**");
         exclusions.add("org.springframework.validation.*");
         exclusions.add("javax.servlet.**");
     }

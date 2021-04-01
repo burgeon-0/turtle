@@ -30,7 +30,7 @@ import java.util.Set;
 public class DefaultCollector implements Collector {
 
     /**
-     * TODO 提供通过配置方式，控制是否收集包含某个注解的类
+     * TODO 通过配置的方式，控制是否收集：包含某个注解的类
      */
     private static final String CONTROLLER_ANNOTATION_TYPE = "org.springframework.stereotype.Controller";
     private static final String REST_CONTROLLER_ANNOTATION_TYPE = "org.springframework.web.bind.annotation.RestController";
@@ -172,7 +172,7 @@ public class DefaultCollector implements Collector {
         switch (qualifiedName) {
             case REQUEST_MAPPING_ANNOTATION_TYPE:
                 String method = ctAnnotation.getValue("method").toString();
-                collectHttpMethodByRequestMethod(httpApi, method);
+                collectHttpMethodByRequestMapping(httpApi, method);
                 break;
             case DELETE_MAPPING_ANNOTATION_TYPE:
                 httpApi.setHttpMethod(HttpMethod.DELETE);
@@ -196,12 +196,12 @@ public class DefaultCollector implements Collector {
     }
 
     /**
-     * 通过RequestMethod收集HttpMethod
+     * 通过RequestMapping收集HttpMethod
      *
      * @param httpApi
      * @param method
      */
-    private void collectHttpMethodByRequestMethod(HttpApi httpApi, String method) {
+    private void collectHttpMethodByRequestMapping(HttpApi httpApi, String method) {
         switch (method) {
             case METHOD_GET:
                 httpApi.setHttpMethod(HttpMethod.GET);

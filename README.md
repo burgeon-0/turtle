@@ -6,8 +6,8 @@
 
 ![image](https://github.com/burgeon-0/turtle/blob/master/assets/architecture.png)
 
-- 通过IDE的Plugin获取源代码信息；
-- 通过Processor进行处理，其中Analyser进行源数据分析、Collector进行API数据收集，得到完整的API信息，再由Notifier通知Exporter进行导出；
+- 通过命令行或IDE的Plugin获取源代码信息；
+- 通过Processor进行处理，其中Analyzer进行源数据分析、Collector进行API数据收集，得到完整的API信息，再由Notifier发出通知；
 - 最后由Exporter导出不同的API文档（或测试用例），或将API信息（或测试用例）导出到不同的工具、系统中。
 
 ## 问题列表

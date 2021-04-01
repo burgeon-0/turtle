@@ -142,8 +142,7 @@ public class DefaultParameterCollector implements Collector {
             }
         }
 
-        HttpParameterType httpParameterType = getHttpParameterType(httpApi,
-                ctParameter.getAnnotations());
+        HttpParameterType httpParameterType = getHttpParameterType(ctParameter.getAnnotations());
         Parameter parameter;
         switch (httpParameterType) {
             case PATH_PARAMETER:
@@ -156,7 +155,6 @@ public class DefaultParameterCollector implements Collector {
                     parameter.setName(pathParameterName);
                 }
                 httpApi.getPathParameters().add(parameter);
-                resetPathParameterPosition(httpApi, parameter);
                 break;
             case URI_PARAMETER:
                 parameter = buildParameter(apiProject, sourceProject,
@@ -180,23 +178,15 @@ public class DefaultParameterCollector implements Collector {
     /**
      * 判断HTTP参数类型
      *
-     * @param httpApi
      * @param ctAnnotations
      * @return
      * @see HttpParameterType
      */
-    private HttpParameterType getHttpParameterType(HttpApi httpApi, List<CtAnnotation<?>> ctAnnotations) {
+    private HttpParameterType getHttpParameterType(List<CtAnnotation<?>> ctAnnotations) {
         boolean nullPositionMark = ctAnnotations == null || (ctAnnotations.size() == 1
                 && VALID.equals(ctAnnotations.get(0).getType().getQualifiedName()));
         if (nullPositionMark) {
-            if (httpApi.getHttpMethod().equals(HttpMethod.POST)
-                    || httpApi.getHttpMethod().equals(HttpMethod.PUT)
-                    || httpApi.getHttpMethod().equals(HttpMethod.DELETE)
-                    || httpApi.getHttpMethod().equals(HttpMethod.PATCH)) {
-                return HttpParameterType.BODY_PARAMETER;
-            } else {
-                return HttpParameterType.URI_PARAMETER;
-            }
+            return HttpParameterType.URI_PARAMETER;
         }
 
         for (CtAnnotation<?> ctAnnotation : ctAnnotations) {
@@ -213,7 +203,7 @@ public class DefaultParameterCollector implements Collector {
                     break;
             }
         }
-        return HttpParameterType.BODY_PARAMETER;
+        return HttpParameterType.URI_PARAMETER;
     }
 
     /**
@@ -247,30 +237,6 @@ public class DefaultParameterCollector implements Collector {
             }
         }
         return "";
-    }
-
-    /**
-     * 重设Path参数位置
-     * <ol>
-     * <li>
-     * 如果参数为Path参数，但是路径上又不存在该参数，则重新设置为URI参数
-     * </li>
-     * </ol>
-     *
-     * @param httpApi
-     * @param parameter
-     * @return
-     */
-    private void resetPathParameterPosition(HttpApi httpApi, Parameter parameter) {
-        String str = String.format("{%s}", parameter.getName());
-        if (!httpApi.getPath().contains(str)) {
-            httpApi.getPathParameters().remove(parameter);
-            if (httpApi.getPathParameters().size() == 0) {
-                httpApi.setPathParameters(null);
-            }
-            initUriParameters(httpApi);
-            httpApi.getUriParameters().add(parameter);
-        }
     }
 
     /**

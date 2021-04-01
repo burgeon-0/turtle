@@ -3,6 +3,8 @@ package org.burgeon.turtle.controller;
 import org.burgeon.turtle.model.HttpParameterTypeModel;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * @author luxiaocong
  * @createdOn 2021/3/31
@@ -83,9 +85,37 @@ public class HttpParameterTypeController {
         return String.format("model attribute, str: %s, model: %s", str, model);
     }
 
-    @PostMapping(value = "/request_body")
+    @PostMapping("/request_body")
     public String requestBody(@RequestBody HttpParameterTypeModel model) {
         return String.format("request body, model: %s", model);
+    }
+
+    @GetMapping("/valid/get_default")
+    public String validGetDefault(@Valid Integer num, @Valid String str, Boolean bool,
+                                  @Valid HttpParameterTypeModel model) {
+        return String.format("valid get default, num: %d, str: %s, bool: %b, model: %s", num, str, bool, model);
+    }
+
+    @GetMapping("/valid/path_variable/{str}")
+    public String validPathVariable(@Valid @PathVariable("str") String str) {
+        return String.format("valid path variable, str: %s", str);
+    }
+
+    @PostMapping("/valid/request_param")
+    public String validRequestParam(@Valid @RequestParam Integer num, @Valid @RequestParam String str,
+                                    @Valid @RequestParam Boolean bool) {
+        return String.format("valid request param, num: %d, str: %s, bool: %b", num, str, bool);
+    }
+
+    @PostMapping("/valid/model_attribute")
+    public String validModelAttribute(@Valid @ModelAttribute String str,
+                                      @Valid @ModelAttribute HttpParameterTypeModel model) {
+        return String.format("valid model attribute, str: %s, model: %s", str, model);
+    }
+
+    @PostMapping("/valid/request_body")
+    public String validRequestBody(@Valid @RequestBody HttpParameterTypeModel model) {
+        return String.format("valid request body, model: %s", model);
     }
 
 }

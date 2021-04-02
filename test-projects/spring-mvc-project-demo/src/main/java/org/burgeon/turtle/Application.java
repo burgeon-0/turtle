@@ -8,10 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @createdOn 2021/3/30
  */
 @SpringBootApplication
-public class ServingWebContentApplication {
+public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(ServingWebContentApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 
 }

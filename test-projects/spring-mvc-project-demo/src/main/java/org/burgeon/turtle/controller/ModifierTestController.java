@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @createdOn 2021/3/30
  */
 @RestController
-public class ModifierController {
+public class ModifierTestController {
 
     @GetMapping("/modifier")
     public ModifierModel modifier(@ModelAttribute ModifierModel modifierModel) {

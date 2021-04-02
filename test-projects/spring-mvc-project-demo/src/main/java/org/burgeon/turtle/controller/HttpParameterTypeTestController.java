@@ -11,7 +11,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("/http_parameter_type")
-public class HttpParameterTypeController {
+public class HttpParameterTypeTestController {
 
     @GetMapping("/get_default")
     public String getDefault(Integer num, String str, Boolean bool, HttpParameterTypeModel model) {

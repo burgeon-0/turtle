@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
  * @createdOn 2021/3/31
  */
 @RestController
-@RequestMapping("/method")
-public class MethodController {
+@RequestMapping("/http_method")
+public class HttpMethodTestController {
 
     @RequestMapping("/request_mapping/default")
     public String requestMappingDefault() {

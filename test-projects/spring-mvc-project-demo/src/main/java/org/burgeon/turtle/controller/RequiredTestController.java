@@ -14,6 +14,8 @@ import javax.validation.Valid;
 @RestController
 public class RequiredTestController {
 
+    // TODO @RequestParam->required...
+
     @GetMapping("/required")
     public RequiredModel required(@Valid @ModelAttribute RequiredModel requiredModel) {
         return requiredModel;

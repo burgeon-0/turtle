@@ -51,7 +51,7 @@ public class StringUtils {
      * @return
      */
     public static boolean isBlank(String str) {
-        if (str == null || str.trim().equals("")) {
+        if (str == null || "".equals(str.trim())) {
             return true;
         }
         return false;
@@ -64,7 +64,7 @@ public class StringUtils {
      * @return
      */
     public static boolean notBlank(String str) {
-        if (str != null && !str.trim().equals("")) {
+        if (str != null && !"".equals(str.trim())) {
             return true;
         }
         return false;

@@ -228,7 +228,7 @@ public class DefaultParameterCollector implements Collector {
     private String getPathParameterName(List<CtAnnotation<?>> ctAnnotations) {
         for (CtAnnotation<?> ctAnnotation : ctAnnotations) {
             String name = ctAnnotation.getType().getQualifiedName();
-            if (name.equals(PATH_VARIABLE)) {
+            if (PATH_VARIABLE.equals(name)) {
                 String value = ctAnnotation.getValue("value").getValueByRole(CtRole.VALUE);
                 if ("".equals(value)) {
                     value = ctAnnotation.getValue("name").getValueByRole(CtRole.VALUE);
@@ -348,7 +348,7 @@ public class DefaultParameterCollector implements Collector {
      */
     private CtTypeReference<?> getCtTypeReference(ParameterPosition parameterPosition, CtElement ctElement) {
         CtTypeReference<?> ctTypeReference;
-        if (parameterPosition.equals(ParameterPosition.ARRAY_SUB)) {
+        if (ParameterPosition.ARRAY_SUB.equals(parameterPosition)) {
             CtTypeReference<?> type = ((CtTypedElement<?>) ctElement).getType();
             if (type instanceof CtArrayTypeReferenceImpl) {
                 ctTypeReference = ((CtArrayTypeReferenceImpl) type).getArrayType();
@@ -401,14 +401,14 @@ public class DefaultParameterCollector implements Collector {
 
         for (CtAnnotation<?> ctAnnotation : ctAnnotations) {
             String qualifiedName = ctAnnotation.getType().getQualifiedName();
-            if (qualifiedName.equals(PATH_VARIABLE) || qualifiedName.equals(REQUEST_PARAM)
-                    || qualifiedName.equals(REQUEST_BODY)) {
+            if (PATH_VARIABLE.equals(qualifiedName) || REQUEST_PARAM.equals(qualifiedName)
+                    || REQUEST_BODY.equals(qualifiedName)) {
                 return ctAnnotation.getValue("required").getValueByRole(CtRole.VALUE);
             }
 
             String simpleName = ctAnnotation.getType().getSimpleName();
-            if (simpleName.equals(NOT_NULL) || simpleName.equals(NOT_BLANK)
-                    || simpleName.equals(NOT_EMPTY)) {
+            if (NOT_NULL.equals(simpleName) || NOT_BLANK.equals(simpleName)
+                    || NOT_EMPTY.equals(simpleName)) {
                 return true;
             }
         }
@@ -523,8 +523,8 @@ public class DefaultParameterCollector implements Collector {
             return true;
         } else if (ctField.getModifiers().size() == 1) {
             ModifierKind modifierKind = ctField.getModifiers().iterator().next();
-            if (modifierKind.toString().equals(PUBLIC) || modifierKind.toString().equals(PROTECTED)
-                    || modifierKind.toString().equals(PRIVATE)) {
+            if (PUBLIC.equals(modifierKind.toString()) || PROTECTED.equals(modifierKind.toString())
+                    || PRIVATE.equals(modifierKind.toString())) {
                 return true;
             }
         }

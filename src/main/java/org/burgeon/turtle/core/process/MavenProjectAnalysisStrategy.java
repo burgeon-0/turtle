@@ -67,7 +67,7 @@ public class MavenProjectAnalysisStrategy extends AbstractAnalysisStrategy {
         File directory = new File(sourcePath);
         File pom = findPom(directory);
         if (pom == null) {
-            if (directory.getName().equals(srcPath)) {
+            if (srcPath.equals(directory.getName())) {
                 sourcePath = sourcePath.substring(0, sourcePath.length() - srcPath.length());
                 directory = new File(sourcePath);
                 pom = findPom(directory);
@@ -87,7 +87,7 @@ public class MavenProjectAnalysisStrategy extends AbstractAnalysisStrategy {
      */
     private File findPom(File directory) {
         for (File file : directory.listFiles()) {
-            if (file.getName().equals(pomName)) {
+            if (pomName.equals(file.getName())) {
                 return file;
             }
         }

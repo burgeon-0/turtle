@@ -69,7 +69,7 @@ public class GradleProjectAnalysisStrategy extends AbstractAnalysisStrategy {
         File directory = new File(sourcePath);
         File gradleConfig = findGradleConfig(directory);
         if (gradleConfig == null) {
-            if (directory.getName().equals(srcPath)) {
+            if (srcPath.equals(directory.getName())) {
                 sourcePath = sourcePath.substring(0, sourcePath.length() - srcPath.length());
                 directory = new File(sourcePath);
                 gradleConfig = findGradleConfig(directory);
@@ -88,7 +88,7 @@ public class GradleProjectAnalysisStrategy extends AbstractAnalysisStrategy {
      */
     private File findGradleConfig(File directory) {
         for (File file : directory.listFiles()) {
-            if (file.getName().equals(gradleConfigName)) {
+            if (gradleConfigName.equals(file.getName())) {
                 return file;
             }
         }

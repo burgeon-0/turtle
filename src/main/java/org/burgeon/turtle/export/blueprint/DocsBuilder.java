@@ -396,7 +396,7 @@ public class DocsBuilder {
      * @param errorCodes
      */
     private void appendErrorCodes(List<ErrorCode> errorCodes) {
-        // TODO
+        // TODO append error code
     }
 
     /**

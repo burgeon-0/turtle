@@ -1,6 +1,6 @@
 package org.burgeon.turtle.controller;
 
-import org.burgeon.turtle.model.ModifierModel;
+import org.burgeon.turtle.model.ExclusionModel;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 public class ExclusionParameterTestController {
 
     @GetMapping("/exclusion")
-    public ModifierModel exclusion(@ModelAttribute ModifierModel modifierModel,
-                                   HttpServletRequest request, HttpServletResponse response,
-                                   BindingResult bindingResult,
-                                   Model model) {
-        return modifierModel;
+    public ExclusionModel exclusion(@ModelAttribute ExclusionModel exclusionModel,
+                                    HttpServletRequest request, HttpServletResponse response,
+                                    BindingResult bindingResult,
+                                    Model model) {
+        return exclusionModel;
     }
 
 }

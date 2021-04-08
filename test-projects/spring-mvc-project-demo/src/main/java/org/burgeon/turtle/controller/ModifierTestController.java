@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 测试属性修饰符
- *
  * @author luxiaocong
  * @createdOn 2021/3/30
  */

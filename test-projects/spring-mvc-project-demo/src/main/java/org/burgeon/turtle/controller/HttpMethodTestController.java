@@ -3,8 +3,6 @@ package org.burgeon.turtle.controller;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 测试Http方法类型
- *
  * @author luxiaocong
  * @createdOn 2021/3/31
  */

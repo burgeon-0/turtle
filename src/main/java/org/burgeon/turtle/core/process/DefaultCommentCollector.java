@@ -75,11 +75,11 @@ public class DefaultCommentCollector implements Collector {
     private String getGroupName(CtClass<?> ctClass, CtJavaDoc ctJavaDoc) {
         if (ctJavaDoc != null) {
             String groupName = getCommentTagValue(ctJavaDoc, COMMENT_TAG_GROUP);
-            if (groupName != null && !"".equals(groupName)) {
+            if (StringUtils.notBlank(groupName)) {
                 return groupName;
             }
             String mainComment = getMainComment(ctJavaDoc);
-            if (mainComment != null && !"".equals(mainComment)) {
+            if (StringUtils.notBlank(mainComment)) {
                 return mainComment;
             }
         }
@@ -111,7 +111,7 @@ public class DefaultCommentCollector implements Collector {
     private String getApiName(CtMethod<?> ctMethod, CtJavaDoc ctJavaDoc) {
         if (ctJavaDoc != null) {
             String mainComment = getMainComment(ctJavaDoc);
-            if (mainComment != null && !"".equals(mainComment)) {
+            if (StringUtils.notBlank(mainComment)) {
                 return mainComment;
             }
         }

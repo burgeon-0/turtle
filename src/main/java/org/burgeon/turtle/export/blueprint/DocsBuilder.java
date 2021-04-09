@@ -583,8 +583,12 @@ public class DocsBuilder {
      */
     private String getQueryString(Parameter parameter, boolean last, String suffix) {
         StringBuilder stringBuilder = new StringBuilder();
-        if (parameter.getType() == ParameterType.OBJECT) {
-            if (parameter.getParentParameter() != null) {
+        boolean isObject = parameter.getType() == ParameterType.OBJECT;
+        boolean isObjectArray = parameter.getType() == ParameterType.ARRAY
+                && parameter.getChildParameters().get(0).getType() == ParameterType.OBJECT;
+        if (isObject || isObjectArray) {
+            if (parameter.getParentParameter() != null
+                    && parameter.getParentParameter().getType() != ParameterType.ARRAY) {
                 if (suffix == null) {
                     suffix = parameter.getName();
                 } else {
@@ -592,14 +596,18 @@ public class DocsBuilder {
                 }
             }
             List<Parameter> childParameters = parameter.getChildParameters();
-            for (int i = 0; i < childParameters.size(); i++) {
-                Parameter childParameter = childParameters.get(i);
-                stringBuilder.append(getQueryString(childParameter, i == childParameters.size() - 1, suffix));
+            if (parameter.getChildParameters() == null) {
+                stringBuilder.append(suffix);
+            } else {
+                for (int i = 0; i < childParameters.size(); i++) {
+                    Parameter childParameter = childParameters.get(i);
+                    stringBuilder.append(getQueryString(childParameter, i == childParameters.size() - 1, suffix));
+                }
             }
         } else {
             String parameterName = parameter.getName();
             if (suffix != null) {
-                parameterName = String.format("%s.%s", suffix, parameter);
+                parameterName = String.format("%s.%s", suffix, parameter.getName());
             }
             stringBuilder.append(parameterName).append(EQUAL);
             stringBuilder.append(LEFT_BRACE).append(parameterName).append(RIGHT_BRACE);

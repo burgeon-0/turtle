@@ -15,8 +15,12 @@ public class ModelAttributeModel {
 
     private Boolean mBool;
 
+    private ModelAttributeModelSub obj;
+
     private ModelAttributeModelSub[] arr;
 
-    private ModelAttributeModelSub obj;
+    private ModelAttributeModel child;
+
+    private ModelAttributeModel[] children;
 
 }

@@ -7,10 +7,8 @@ import lombok.Data;
  * @createdOn 2021/4/9
  */
 @Data
-public class ModelAttributeModelSub {
+public class ModelAttributeModelSubSub {
 
     private String str;
-
-    private ModelAttributeModelSubSub sub;
 
 }

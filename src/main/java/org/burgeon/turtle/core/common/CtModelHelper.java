@@ -2,6 +2,11 @@ package org.burgeon.turtle.core.common;
 
 import org.burgeon.turtle.core.model.source.ParameterPosition;
 import spoon.reflect.declaration.*;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 
 /**
  * spoon model helper
@@ -21,6 +26,11 @@ public class CtModelHelper {
 
     private static final String METHOD_RETURN_PARAMETER_NAME = ":return";
     private static final String ARRAY_SUB_PARAMETER_NAME = "[]";
+
+    private static final Factory DEFAULT_FACTORY = new FactoryImpl(new DefaultCoreFactory(),
+            new StandardEnvironment());
+    private static final CtTypeReference<?> OBJECT_REFERENCE = DEFAULT_FACTORY
+            .createClass("java.lang.Object").getReference();
 
     /**
      * 获取CtClass的key
@@ -98,6 +108,15 @@ public class CtModelHelper {
      */
     public static String getElementKey(String parentKey, String subKey) {
         return String.format("%s.%s", parentKey, subKey);
+    }
+
+    /**
+     * 获取java.lang.Object的反射模型
+     *
+     * @return
+     */
+    public static CtTypeReference<?> getObjectReference() {
+        return OBJECT_REFERENCE;
     }
 
 }

@@ -352,8 +352,10 @@ public class DefaultParameterCollector implements Collector {
             CtTypeReference<?> type = ((CtTypedElement<?>) ctElement).getType();
             if (type instanceof CtArrayTypeReferenceImpl) {
                 ctTypeReference = ((CtArrayTypeReferenceImpl) type).getArrayType();
-            } else {
+            } else if (type.getActualTypeArguments().size() == 1) {
                 ctTypeReference = type.getActualTypeArguments().get(0);
+            } else {
+                ctTypeReference = CtModelHelper.getObjectReference();
             }
         } else {
             ctTypeReference = ((CtTypedElement<?>) ctElement).getType();

@@ -28,8 +28,14 @@ public class ParameterTestController {
         System.out.println("modelAttributeModel.mNum: " + modelAttributeModel.getMNum());
         System.out.println("modelAttributeModel.mStr: " + modelAttributeModel.getMStr());
         System.out.println("modelAttributeModel.mBool: " + modelAttributeModel.getMBool());
-        System.out.println("modelAttributeModel.mArr: " + (modelAttributeModel.getArr() == null ? null : modelAttributeModel.getArr().length));
-        System.out.println("modelAttributeModel.mObj: " + (modelAttributeModel.getObj() == null ? null : modelAttributeModel.getObj().getStr()));
+        System.out.println("modelAttributeModel.obj.str: " + (modelAttributeModel.getObj() == null ? null : modelAttributeModel.getObj().getStr()));
+        System.out.println("modelAttributeModel.obj.sub.str: " + (modelAttributeModel.getObj() == null ? null : modelAttributeModel.getObj().getSub().getStr()));
+        // objectArray的length始终为0
+        System.out.println("modelAttributeModel.arr: " + (modelAttributeModel.getArr() == null ? null : modelAttributeModel.getArr().length));
+        System.out.println("modelAttributeModel.child.mNum: " + modelAttributeModel.getChild().getMNum());
+        System.out.println("modelAttributeModel.child.mStr: " + modelAttributeModel.getChild().getMStr());
+        System.out.println("modelAttributeModel.child.mBool: " + modelAttributeModel.getChild().getMBool());
+        System.out.println("modelAttributeModel.child.obj.str: " + modelAttributeModel.getChild().getObj().getStr());
         return parameterModel;
     }
 

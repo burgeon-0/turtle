@@ -55,7 +55,7 @@ public class ParametersBuilder {
                 && parameter.getChildParameters().get(0).getType() == ParameterType.OBJECT;
         boolean object = isObject || isObjectArray;
         boolean hasChildParameters = parameter.getChildParameters() != null
-                && parameter.getChildParameters().size() > 0;
+                && !parameter.getChildParameters().isEmpty();
         if (object && hasChildParameters) {
             if (parameter.getParentParameter() != null
                     && parameter.getParentParameter().getType() != ParameterType.ARRAY) {

@@ -8,6 +8,7 @@ import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.model.api.HttpApi;
 import org.burgeon.turtle.core.model.api.HttpMethod;
 import org.burgeon.turtle.core.model.source.SourceProject;
+import org.burgeon.turtle.core.utils.StringUtils;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
@@ -244,7 +245,14 @@ public class DefaultCollector implements Collector {
         for (CtAnnotation<?> ctAnnotation : ctAnnotations) {
             String qualifiedName = ctAnnotation.getType().getQualifiedName();
             if (REQUEST_MAPPING_ANNOTATION_TYPE.equals(qualifiedName)) {
-                return getAnnotationValue(ctAnnotation, "value");
+                String path = getAnnotationValue(ctAnnotation, "value");
+                if (StringUtils.isBlank(path)) {
+                    path = getAnnotationValue(ctAnnotation, "name");
+                    if (StringUtils.isBlank(path)) {
+                        path = getAnnotationValue(ctAnnotation, "path");
+                    }
+                }
+                return path;
             }
         }
         return "";
@@ -259,6 +267,12 @@ public class DefaultCollector implements Collector {
      */
     private void collectHttpPath(String basePath, HttpApi httpApi, CtAnnotation<?> ctAnnotation) {
         String path = getAnnotationValue(ctAnnotation, "value");
+        if (StringUtils.isBlank(path)) {
+            path = getAnnotationValue(ctAnnotation, "name");
+            if (StringUtils.isBlank(path)) {
+                path = getAnnotationValue(ctAnnotation, "path");
+            }
+        }
         path = basePath + path;
         httpApi.setPath(path);
     }
@@ -271,7 +285,7 @@ public class DefaultCollector implements Collector {
      * @return
      */
     private String getAnnotationValue(CtAnnotation<?> ctAnnotation, String key) {
-        if (ctAnnotation.getValues().size() == 0) {
+        if (ctAnnotation.getValues().isEmpty()) {
             return "";
         }
         if (!ctAnnotation.getValues().containsKey(key)) {

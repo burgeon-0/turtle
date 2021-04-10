@@ -311,11 +311,11 @@ public class DocsBuilder {
             builder.append(REQUEST).append(SPACE);
             buildContentType(httpRequest.getHeaders());
             builder.append(LINE_BREAK);
-            if (httpRequest.getHeaders() != null && httpRequest.getHeaders().size() > 0) {
+            if (httpRequest.getHeaders() != null && !httpRequest.getHeaders().isEmpty()) {
                 buildHeaders(httpRequest.getHeaders());
             }
             List<Parameter> parameters = httpRequest.getBody();
-            if (parameters != null && parameters.size() > 0) {
+            if (parameters != null && !parameters.isEmpty()) {
                 if (parameters.size() == 1 && parameters.get(0).getType() == ParameterType.ARRAY) {
                     parameters = parameters.get(0).getChildParameters();
                 }
@@ -336,10 +336,10 @@ public class DocsBuilder {
             builder.append(RESPONSE).append(SPACE).append(httpResponse.getStatus()).append(SPACE);
             buildContentType(httpResponse.getHeaders());
             builder.append(LINE_BREAK);
-            if (httpResponse.getHeaders() != null && httpResponse.getHeaders().size() > 0) {
+            if (httpResponse.getHeaders() != null && !httpResponse.getHeaders().isEmpty()) {
                 buildHeaders(httpResponse.getHeaders());
             }
-            if (httpResponse.getBody() != null && httpResponse.getBody().size() > 0) {
+            if (httpResponse.getBody() != null && !httpResponse.getBody().isEmpty()) {
                 Parameter returnParameter = httpResponse.getBody().get(0);
                 switch (returnParameter.getType()) {
                     case OBJECT:

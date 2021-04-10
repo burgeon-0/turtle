@@ -4,6 +4,7 @@ import org.burgeon.turtle.core.common.CtModelHelper;
 import org.burgeon.turtle.core.model.api.*;
 import org.burgeon.turtle.core.model.source.ParameterPosition;
 import org.burgeon.turtle.core.model.source.SourceProject;
+import org.burgeon.turtle.core.utils.StringUtils;
 import spoon.reflect.declaration.*;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtFieldReference;
@@ -150,7 +151,7 @@ public class DefaultParameterCollector implements Collector {
                         httpApi, null, ctParameter, HttpParameterPosition.PATH,
                         ParameterPosition.NORMAL);
                 String pathParameterName = getPathParameterName(ctParameter.getAnnotations());
-                if (!"".equals(pathParameterName)) {
+                if (StringUtils.notBlank(pathParameterName)) {
                     parameter.setName(pathParameterName);
                 }
                 initPathParameters(httpApi);
@@ -230,7 +231,7 @@ public class DefaultParameterCollector implements Collector {
             String name = ctAnnotation.getType().getQualifiedName();
             if (PATH_VARIABLE.equals(name)) {
                 String value = ctAnnotation.getValue("value").getValueByRole(CtRole.VALUE);
-                if ("".equals(value)) {
+                if (StringUtils.isBlank(value)) {
                     value = ctAnnotation.getValue("name").getValueByRole(CtRole.VALUE);
                 }
                 return value;
@@ -525,7 +526,7 @@ public class DefaultParameterCollector implements Collector {
      * @return
      */
     private boolean needCollect(CtField<?> ctField) {
-        if (ctField.getModifiers().size() == 0) {
+        if (ctField.getModifiers().isEmpty()) {
             return true;
         } else if (ctField.getModifiers().size() == 1) {
             ModifierKind modifierKind = ctField.getModifiers().iterator().next();

@@ -459,16 +459,20 @@ public class DefaultParameterCollector implements Collector {
 
     /**
      * 子参数是否需要构建
-     * 如果本参数是Object类型，且源类型跟父参数的源类型是相同的类型，且父参数已构建过，则不继续往下构建，否则会出现无穷无尽的向下构建
+     * 如果本参数是Object类型，且源类型跟父参数的源类型是相同的类型，且父子参数均已构建过，则不继续往下构建，否则会出现无穷无尽的向下构建
      *
      * @param parameter
      * @return
      */
     private boolean needBuildChild(Parameter parameter) {
+        int buildCount = 0;
         if (parameter.getType() == ParameterType.OBJECT) {
             Parameter parentParameter = parameter.getParentParameter();
             while (parentParameter != null) {
                 if (parameter.getOriginType().equals(parentParameter.getOriginType())) {
+                    buildCount++;
+                }
+                if (buildCount > 1) {
                     return false;
                 }
                 parentParameter = parentParameter.getParentParameter();

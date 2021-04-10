@@ -19,6 +19,8 @@ public class ModelAttributeModel {
 
     private ModelAttributeModelSub[] arr;
 
+    private String[] arr2;
+
     private ModelAttributeModel child;
 
     private ModelAttributeModel[] children;

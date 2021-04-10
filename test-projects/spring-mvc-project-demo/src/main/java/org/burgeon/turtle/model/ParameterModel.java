@@ -48,13 +48,15 @@ public class ParameterModel {
 
     private Character pChar2;
 
-    private ModelAttributeModelSub[] arr;
-
     private ModelAttributeModelSub obj;
 
-    private ParameterModel[] children;
+    private ModelAttributeModelSub[] arr;
+
+    private Integer[] arr2;
 
     private ParameterModel child;
+
+    private ParameterModel[] children;
 
     private BigInteger bigInteger;
 

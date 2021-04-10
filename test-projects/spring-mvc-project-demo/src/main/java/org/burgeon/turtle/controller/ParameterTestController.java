@@ -17,17 +17,24 @@ public class ParameterTestController {
 
     @PostMapping(value = "/parameter/{path}")
     public ParameterModel parameter(@PathVariable String path,
-                                    @RequestParam String requestParam,
-                                    @RequestParam String[] requestParams,
+                                    @RequestParam Integer rpi,
+                                    @RequestParam String rps,
+                                    @RequestParam Boolean rpb,
+                                    @RequestParam String[] rpsArr,
                                     @ModelAttribute ModelAttributeModel modelAttributeModel,
                                     @RequestBody ParameterModel parameterModel) {
         System.out.println("===============================================================");
         System.out.println("path: " + path);
-        System.out.println("requestParam: " + requestParam);
-        System.out.println("requestParams[0]: " + (requestParams == null ? null : requestParams[0]));
+        System.out.println("requestParam num: " + rpi);
+        System.out.println("requestParam str: " + rps);
+        System.out.println("requestParam bool: " + rpb);
+        System.out.println("requestParams[0]: " + (rpsArr == null ? null : rpsArr[0]));
+        System.out.println("requestParams[1]: " + (rpsArr == null ? null : rpsArr[1]));
         System.out.println("modelAttributeModel.mNum: " + modelAttributeModel.getMNum());
         System.out.println("modelAttributeModel.mStr: " + modelAttributeModel.getMStr());
         System.out.println("modelAttributeModel.mBool: " + modelAttributeModel.getMBool());
+        System.out.println("modelAttributeModel.arr2[0]: " + modelAttributeModel.getArr2()[0]);
+        System.out.println("modelAttributeModel.arr2[1]: " + modelAttributeModel.getArr2()[1]);
         System.out.println("modelAttributeModel.obj.str: " + (modelAttributeModel.getObj() == null ? null : modelAttributeModel.getObj().getStr()));
         System.out.println("modelAttributeModel.obj.sub.str: " + (modelAttributeModel.getObj() == null ? null : modelAttributeModel.getObj().getSub().getStr()));
         // objectArray的length始终为0
@@ -37,6 +44,11 @@ public class ParameterTestController {
         System.out.println("modelAttributeModel.child.mBool: " + modelAttributeModel.getChild().getMBool());
         System.out.println("modelAttributeModel.child.obj.str: " + modelAttributeModel.getChild().getObj().getStr());
         return parameterModel;
+    }
+
+    @PostMapping(value = "/parameter2")
+    public Object parameter2(@RequestBody Object object) {
+        return object;
     }
 
     @GetMapping(value = "/parameter/return1")
@@ -55,8 +67,8 @@ public class ParameterTestController {
     }
 
     @GetMapping(value = "/parameter/return4")
-    public ParameterModel[] return4() {
-        return new ParameterModel[1];
+    public String[] return4() {
+        return new String[1];
     }
 
     @GetMapping(value = "/parameter/return5")

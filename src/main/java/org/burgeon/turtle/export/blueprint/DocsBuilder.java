@@ -5,10 +5,9 @@ import org.burgeon.turtle.core.common.HttpHelper;
 import org.burgeon.turtle.core.model.api.*;
 import org.burgeon.turtle.core.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static org.burgeon.turtle.export.blueprint.Constants.*;
 
 /**
  * 文档构建器
@@ -18,41 +17,11 @@ import java.util.Map;
  */
 public class DocsBuilder {
 
-    private static final String VERSION_HEADER = "FORMAT: 1A";
-    private static final String HOST_PREFIX = "HOST: ";
-
-    private static final String LINE_BREAK = Constants.SEPARATOR_LINE_BREAK;
-    private static final String SPACE = Constants.SEPARATOR_SPACE;
-    private static final String COLON = Constants.SEPARATOR_COLON;
-    private static final String COMMA = Constants.SEPARATOR_COMMA;
-    private static final String PLUS = Constants.PLUS;
-    private static final String MINUS = Constants.MINUS;
-    private static final String EQUAL = Constants.EQUAL;
-    private static final String TAB = "    ";
-    private static final String HASH_MARK = "#";
-    private static final String QUESTION_MARK = "?";
-    private static final String AND_MARK = "&";
-    private static final String LEFT_BRACE = "{";
-    private static final String RIGHT_BRACE = "}";
-    private static final String LEFT_BRACKET = "[";
-    private static final String RIGHT_BRACKET = "]";
-    private static final String LEFT_PARENTHESES = "(";
-    private static final String RIGHT_PARENTHESES = ")";
-
-    private static final String GROUP = "Group";
-    private static final String PARAMETERS = "+ Parameters";
-    private static final String REQUEST = "+ Request";
-    private static final String RESPONSE = "+ Response";
-    private static final String HEADERS = "+ Headers";
-    private static final String ATTRIBUTES = "+ Attributes";
-    private static final String REQUIRED = "required";
-    private static final String OPTIONAL = "optional";
-    private static final String FIXED_TYPE = "fixed-type";
-    private static final String OBJECT = "(object)";
-    private static final String RESOURCE = "Resource";
-    private static final String DEFAULT_CONTENT_TYPE = "application/json";
-
     private StringBuilder builder = new StringBuilder();
+
+    private ParametersBuilder parametersBuilder = new ParametersBuilder();
+
+    private AttributesBuilder attributesBuilder = new AttributesBuilder();
 
     private ApiProject apiProject;
 
@@ -317,7 +286,8 @@ public class DocsBuilder {
      * @param parameters
      */
     private void appendPathParameters(List<Parameter> parameters) {
-        buildParameters(parameters);
+        builder.append(parametersBuilder.buildParameters(parameters).build());
+        parametersBuilder.reset();
     }
 
     /**
@@ -326,7 +296,8 @@ public class DocsBuilder {
      * @param parameters
      */
     private void appendUriParameters(List<Parameter> parameters) {
-        buildParameters(parameters);
+        builder.append(parametersBuilder.buildParameters(parameters).build());
+        parametersBuilder.reset();
     }
 
     /**
@@ -348,7 +319,8 @@ public class DocsBuilder {
                 if (parameters.size() == 1 && parameters.get(0).getType() == ParameterType.ARRAY) {
                     parameters = parameters.get(0).getChildParameters();
                 }
-                buildAttributes(parameters);
+                builder.append(attributesBuilder.buildAttributes(parameters, false).build());
+                attributesBuilder.reset();
             }
         }
     }
@@ -372,7 +344,9 @@ public class DocsBuilder {
                 switch (returnParameter.getType()) {
                     case OBJECT:
                     case ARRAY:
-                        buildAttributes(returnParameter.getChildParameters());
+                        builder.append(attributesBuilder.buildAttributes(Arrays.asList(returnParameter),
+                                true).build());
+                        attributesBuilder.reset();
                         break;
                     case STRING:
                         buildResponseValue("Hello, world!");
@@ -400,26 +374,68 @@ public class DocsBuilder {
     }
 
     /**
-     * 构建Http Path和Uri参数
+     * 获取API的URI
      *
-     * @param parameters
+     * @param path
+     * @param uriParameters
+     * @return
      */
-    private void buildParameters(List<Parameter> parameters) {
-        if (parameters != null && !parameters.isEmpty()) {
-            builder.append(LINE_BREAK);
-            builder.append(PARAMETERS).append(LINE_BREAK);
-            for (Parameter parameter : parameters) {
-                if (parameter.getParentParameter() == null
-                        && parameter.getType() == ParameterType.OBJECT) {
-                    List<Parameter> childParameters = parameter.getChildParameters();
-                    for (Parameter childParameter : childParameters) {
-                        buildParameter(childParameter, 1);
-                    }
-                } else {
-                    buildParameter(parameter, 1);
-                }
+    private String getUri(String path, List<Parameter> uriParameters) {
+        StringBuilder stringBuilder = new StringBuilder(path);
+        if (uriParameters != null && !uriParameters.isEmpty()) {
+            stringBuilder.append(QUESTION_MARK);
+            for (int i = 0; i < uriParameters.size(); i++) {
+                Parameter parameter = uriParameters.get(i);
+                stringBuilder.append(getQueryString(parameter, i == uriParameters.size() - 1, null));
             }
         }
+        return stringBuilder.toString();
+    }
+
+    /**
+     * 获取API的QueryString
+     *
+     * @param parameter
+     * @param last
+     * @param suffix
+     * @return
+     */
+    private String getQueryString(Parameter parameter, boolean last, String suffix) {
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean isObject = parameter.getType() == ParameterType.OBJECT;
+        boolean isObjectArray = parameter.getType() == ParameterType.ARRAY
+                && parameter.getChildParameters().get(0).getType() == ParameterType.OBJECT;
+        if (isObject || isObjectArray) {
+            if (parameter.getParentParameter() != null
+                    && parameter.getParentParameter().getType() != ParameterType.ARRAY) {
+                if (suffix == null) {
+                    suffix = parameter.getName();
+                } else {
+                    suffix = String.format("%s.%s", suffix, parameter.getName());
+                }
+            }
+            List<Parameter> childParameters = parameter.getChildParameters();
+            if (parameter.getChildParameters() != null) {
+                for (int i = 0; i < childParameters.size(); i++) {
+                    Parameter childParameter = childParameters.get(i);
+                    stringBuilder.append(getQueryString(childParameter, i == childParameters.size() - 1, suffix));
+                }
+            } else {
+                stringBuilder.append(suffix).append(EQUAL);
+                stringBuilder.append(LEFT_BRACE).append(suffix).append(RIGHT_BRACE);
+            }
+        } else {
+            String parameterName = parameter.getName();
+            if (suffix != null) {
+                parameterName = String.format("%s.%s", suffix, parameter.getName());
+            }
+            stringBuilder.append(parameterName).append(EQUAL);
+            stringBuilder.append(LEFT_BRACE).append(parameterName).append(RIGHT_BRACE);
+        }
+        if (!last) {
+            stringBuilder.append(AND_MARK);
+        }
+        return stringBuilder.toString();
     }
 
     /**
@@ -459,163 +475,12 @@ public class DocsBuilder {
     }
 
     /**
-     * 构建Http请求和返回参数
-     *
-     * @param parameters
-     */
-    private void buildAttributes(List<Parameter> parameters) {
-        if (parameters != null && !parameters.isEmpty()) {
-            builder.append(TAB).append(ATTRIBUTES).append(LINE_BREAK);
-            for (Parameter parameter : parameters) {
-                if (parameter.getParentParameter() == null
-                        && parameter.getType() == ParameterType.OBJECT) {
-                    List<Parameter> childParameters = parameter.getChildParameters();
-                    for (Parameter childParameter : childParameters) {
-                        buildParameter(childParameter, 2);
-                    }
-                } else {
-                    buildParameter(parameter, 2);
-                }
-            }
-        }
-    }
-
-    /**
      * 构建Http返回值
      *
      * @param obj
      */
     private void buildResponseValue(Object obj) {
         builder.append(LINE_BREAK).append(TAB).append(TAB).append(obj).append(LINE_BREAK);
-    }
-
-    /**
-     * 构建Http参数
-     *
-     * @param parameter
-     * @param indent
-     */
-    private void buildParameter(Parameter parameter, int indent) {
-        if (parameter.getParentParameter() != null
-                && parameter.getParentParameter().getType() == ParameterType.ARRAY) {
-            if (parameter.getType() == ParameterType.OBJECT) {
-                indent++;
-                for (int i = 0; i < indent; i++) {
-                    builder.append(TAB);
-                }
-                builder.append(PLUS).append(SPACE).append(OBJECT).append(LINE_BREAK);
-            }
-        } else {
-            for (int i = 0; i < indent; i++) {
-                builder.append(TAB);
-            }
-            builder.append(PLUS).append(SPACE).append(parameter.getName());
-            builder.append(SPACE).append(LEFT_PARENTHESES);
-            if (parameter.isRequired()) {
-                builder.append(REQUIRED);
-            } else {
-                builder.append(OPTIONAL);
-            }
-            builder.append(COMMA).append(SPACE);
-            builder.append(parameter.getType().toString().toLowerCase());
-            if (parameter.getType() == ParameterType.ARRAY
-                    && parameter.getChildParameters().get(0).getType() == ParameterType.OBJECT) {
-                builder.append(COMMA).append(SPACE).append(FIXED_TYPE);
-            }
-            builder.append(RIGHT_PARENTHESES);
-            if (StringUtils.notBlank(parameter.getDescription())) {
-                String description = parameter.getDescription();
-                builder.append(SPACE).append(MINUS).append(SPACE).append(description);
-            }
-            builder.append(LINE_BREAK);
-        }
-
-        buildChildParameters(parameter, indent);
-    }
-
-    /**
-     * 构建Http子参数
-     *
-     * @param parameter
-     * @param indent
-     */
-    private void buildChildParameters(Parameter parameter, int indent) {
-        if (parameter.getType() == ParameterType.ARRAY
-                || parameter.getType() == ParameterType.OBJECT) {
-            List<Parameter> childParameters = parameter.getChildParameters();
-            if (childParameters != null && childParameters.size() > 0) {
-                if (parameter.getType() != ParameterType.ARRAY) {
-                    indent++;
-                }
-                for (Parameter childParameter : childParameters) {
-                    buildParameter(childParameter, indent);
-                }
-            }
-        }
-    }
-
-    /**
-     * 获取API的URI
-     *
-     * @param path
-     * @param uriParameters
-     * @return
-     */
-    private String getUri(String path, List<Parameter> uriParameters) {
-        StringBuilder stringBuilder = new StringBuilder(path);
-        if (uriParameters != null && uriParameters.size() > 0) {
-            stringBuilder.append(QUESTION_MARK);
-            for (int i = 0; i < uriParameters.size(); i++) {
-                Parameter parameter = uriParameters.get(i);
-                stringBuilder.append(getQueryString(parameter, i == uriParameters.size() - 1, null));
-            }
-        }
-        return stringBuilder.toString();
-    }
-
-    /**
-     * 获取API的QueryString
-     *
-     * @param parameter
-     * @param last
-     * @param suffix
-     * @return
-     */
-    private String getQueryString(Parameter parameter, boolean last, String suffix) {
-        StringBuilder stringBuilder = new StringBuilder();
-        boolean isObject = parameter.getType() == ParameterType.OBJECT;
-        boolean isObjectArray = parameter.getType() == ParameterType.ARRAY
-                && parameter.getChildParameters().get(0).getType() == ParameterType.OBJECT;
-        if (isObject || isObjectArray) {
-            if (parameter.getParentParameter() != null
-                    && parameter.getParentParameter().getType() != ParameterType.ARRAY) {
-                if (suffix == null) {
-                    suffix = parameter.getName();
-                } else {
-                    suffix = String.format("%s.%s", suffix, parameter.getName());
-                }
-            }
-            List<Parameter> childParameters = parameter.getChildParameters();
-            if (parameter.getChildParameters() == null) {
-                stringBuilder.append(suffix);
-            } else {
-                for (int i = 0; i < childParameters.size(); i++) {
-                    Parameter childParameter = childParameters.get(i);
-                    stringBuilder.append(getQueryString(childParameter, i == childParameters.size() - 1, suffix));
-                }
-            }
-        } else {
-            String parameterName = parameter.getName();
-            if (suffix != null) {
-                parameterName = String.format("%s.%s", suffix, parameter.getName());
-            }
-            stringBuilder.append(parameterName).append(EQUAL);
-            stringBuilder.append(LEFT_BRACE).append(parameterName).append(RIGHT_BRACE);
-        }
-        if (!last) {
-            stringBuilder.append(AND_MARK);
-        }
-        return stringBuilder.toString();
     }
 
 }

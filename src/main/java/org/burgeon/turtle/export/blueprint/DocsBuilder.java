@@ -333,11 +333,20 @@ public class DocsBuilder {
     private void appendHttpResponse(HttpResponse httpResponse) {
         if (httpResponse != null) {
             builder.append(LINE_BREAK);
-            builder.append(RESPONSE).append(SPACE).append(httpResponse.getStatus()).append(SPACE);
-            buildContentType(httpResponse.getHeaders());
-            builder.append(LINE_BREAK);
-            if (httpResponse.getHeaders() != null && !httpResponse.getHeaders().isEmpty()) {
-                buildHeaders(httpResponse.getHeaders());
+            builder.append(RESPONSE).append(SPACE).append(httpResponse.getStatus());
+            if (httpResponse.getStatus() == HttpStatus.SC_MOVED_TEMPORARILY) {
+                builder.append(LINE_BREAK);
+                if (httpResponse.getHeaders() != null && !httpResponse.getHeaders().isEmpty()) {
+                    buildHeaders(httpResponse.getHeaders());
+                }
+                return;
+            } else {
+                builder.append(SPACE);
+                buildContentType(httpResponse.getHeaders());
+                builder.append(LINE_BREAK);
+                if (httpResponse.getHeaders() != null && !httpResponse.getHeaders().isEmpty()) {
+                    buildHeaders(httpResponse.getHeaders());
+                }
             }
             if (httpResponse.getBody() != null && !httpResponse.getBody().isEmpty()) {
                 Parameter returnParameter = httpResponse.getBody().get(0);

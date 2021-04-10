@@ -34,6 +34,8 @@ public class DefaultParameterCollector implements Collector {
     private static final String MODEL_ATTRIBUTE = "org.springframework.web.bind.annotation.ModelAttribute";
     private static final String REQUEST_BODY = "org.springframework.web.bind.annotation.RequestBody";
 
+    private static final String REDIRECT_VIEW = "org.springframework.web.servlet.view.RedirectView";
+
     private static final String NOT_NULL = "NotNull";
     private static final String NOT_BLANK = "NotBlank";
     private static final String NOT_EMPTY = "NotEmpty";
@@ -282,7 +284,11 @@ public class DefaultParameterCollector implements Collector {
         Parameter parameter = buildParameter(apiProject, sourceProject,
                 httpApi, null, ctMethod, HttpParameterPosition.RESPONSE,
                 ParameterPosition.METHOD_RETURN);
-        initHttpResponse(httpApi);
+        if (REDIRECT_VIEW.equals(parameter.getOriginType())) {
+            initHttpResponse(httpApi, HttpStatus.SC_MOVED_TEMPORARILY);
+        } else {
+            initHttpResponse(httpApi, HttpStatus.SC_OK);
+        }
         httpApi.getHttpResponse().getBody().add(parameter);
     }
 
@@ -290,12 +296,13 @@ public class DefaultParameterCollector implements Collector {
      * 初始化返回Body参数
      *
      * @param httpApi
+     * @param httpStatus
      */
-    private void initHttpResponse(HttpApi httpApi) {
+    private void initHttpResponse(HttpApi httpApi, int httpStatus) {
         HttpResponse httpResponse = httpApi.getHttpResponse();
         if (httpResponse == null) {
             httpResponse = new HttpResponse();
-            httpResponse.setStatus(HttpStatus.SC_OK);
+            httpResponse.setStatus(httpStatus);
             httpApi.setHttpResponse(httpResponse);
             httpResponse.setBody(new ArrayList<>());
         } else if (httpResponse.getBody() == null) {
@@ -349,7 +356,7 @@ public class DefaultParameterCollector implements Collector {
      */
     private CtTypeReference<?> getCtTypeReference(ParameterPosition parameterPosition, CtElement ctElement) {
         CtTypeReference<?> ctTypeReference;
-        if (ParameterPosition.ARRAY_SUB.equals(parameterPosition)) {
+        if (parameterPosition == ParameterPosition.ARRAY_SUB) {
             CtTypeReference<?> type = ((CtTypedElement<?>) ctElement).getType();
             if (type instanceof CtArrayTypeReferenceImpl) {
                 ctTypeReference = ((CtArrayTypeReferenceImpl) type).getArrayType();

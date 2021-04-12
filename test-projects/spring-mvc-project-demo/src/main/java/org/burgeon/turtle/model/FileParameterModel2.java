@@ -1,0 +1,19 @@
+package org.burgeon.turtle.model;
+
+import lombok.Data;
+
+import javax.validation.constraints.NotNull;
+
+/**
+ * @author luxiaocong
+ * @createdOn 2021/4/12
+ */
+@Data
+public class FileParameterModel2 {
+
+    private Boolean bool;
+
+    @NotNull
+    private FileParameterModel model;
+
+}

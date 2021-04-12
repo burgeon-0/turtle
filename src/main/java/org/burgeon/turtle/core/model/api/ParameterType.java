@@ -27,6 +27,10 @@ public enum ParameterType {
     /**
      * 参数类型：Boolean
      */
-    BOOLEAN
+    BOOLEAN,
+    /**
+     * 参数类型：File
+     */
+    FILE
 
 }

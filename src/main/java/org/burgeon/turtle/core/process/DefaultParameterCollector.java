@@ -1,6 +1,7 @@
 package org.burgeon.turtle.core.process;
 
 import org.burgeon.turtle.core.common.CtModelHelper;
+import org.burgeon.turtle.core.common.FileHelper;
 import org.burgeon.turtle.core.model.api.*;
 import org.burgeon.turtle.core.model.source.ParameterPosition;
 import org.burgeon.turtle.core.model.source.SourceProject;
@@ -163,8 +164,13 @@ public class DefaultParameterCollector implements Collector {
                 parameter = buildParameter(apiProject, sourceProject,
                         httpApi, null, ctParameter, HttpParameterPosition.URI,
                         ParameterPosition.NORMAL);
-                initUriParameters(httpApi);
-                httpApi.getUriParameters().add(parameter);
+                if (!FileHelper.hasFile(parameter)) {
+                    initUriParameters(httpApi);
+                    httpApi.getUriParameters().add(parameter);
+                } else {
+                    initHttpRequest(httpApi);
+                    httpApi.getHttpRequest().getBody().add(parameter);
+                }
                 break;
             case BODY_PARAMETER:
                 parameter = buildParameter(apiProject, sourceProject,

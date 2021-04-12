@@ -1,6 +1,7 @@
 package org.burgeon.turtle.export.blueprint;
 
 import org.burgeon.turtle.core.common.Constants;
+import org.burgeon.turtle.core.common.FileHelper;
 import org.burgeon.turtle.core.common.HttpHelper;
 import org.burgeon.turtle.core.model.api.*;
 import org.burgeon.turtle.core.utils.StringUtils;
@@ -22,6 +23,8 @@ public class DocsBuilder {
     private ParametersBuilder parametersBuilder = new ParametersBuilder();
 
     private AttributesBuilder attributesBuilder = new AttributesBuilder();
+
+    private FileRequestBuilder fileRequestBuilder = new FileRequestBuilder();
 
     private ApiProject apiProject;
 
@@ -307,20 +310,25 @@ public class DocsBuilder {
      */
     private void appendHttpRequest(HttpRequest httpRequest) {
         if (httpRequest != null) {
-            builder.append(LINE_BREAK);
-            builder.append(REQUEST).append(SPACE);
-            buildContentType(httpRequest.getHeaders());
-            builder.append(LINE_BREAK);
-            if (httpRequest.getHeaders() != null && !httpRequest.getHeaders().isEmpty()) {
-                buildHeaders(httpRequest.getHeaders());
-            }
-            List<Parameter> parameters = httpRequest.getBody();
-            if (parameters != null && !parameters.isEmpty()) {
-                if (parameters.size() == 1 && parameters.get(0).getType() == ParameterType.ARRAY) {
-                    parameters = parameters.get(0).getChildParameters();
+            if (!FileHelper.hasFile(httpRequest.getBody())) {
+                builder.append(LINE_BREAK);
+                builder.append(REQUEST).append(SPACE);
+                buildContentType(httpRequest.getHeaders());
+                builder.append(LINE_BREAK);
+                if (httpRequest.getHeaders() != null && !httpRequest.getHeaders().isEmpty()) {
+                    buildHeaders(httpRequest.getHeaders());
                 }
-                builder.append(attributesBuilder.buildAttributes(parameters, false).build());
-                attributesBuilder.reset();
+                List<Parameter> parameters = httpRequest.getBody();
+                if (parameters != null && !parameters.isEmpty()) {
+                    if (parameters.size() == 1 && parameters.get(0).getType() == ParameterType.ARRAY) {
+                        parameters = parameters.get(0).getChildParameters();
+                    }
+                    builder.append(attributesBuilder.buildAttributes(parameters, false).build());
+                    attributesBuilder.reset();
+                }
+            } else {
+                builder.append(fileRequestBuilder.buildRequest(httpRequest).build());
+                fileRequestBuilder.reset();
             }
         }
     }

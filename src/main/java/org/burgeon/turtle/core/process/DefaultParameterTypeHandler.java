@@ -53,6 +53,10 @@ public class DefaultParameterTypeHandler implements ParameterTypeHandler {
             case "java.util.concurrent.ConcurrentHashMap":
                 type = ParameterType.OBJECT;
                 break;
+            case "org.springframework.web.multipart.MultipartFile":
+            case "org.springframework.web.multipart.commons.CommonsMultipartFile":
+                type = ParameterType.FILE;
+                break;
             default:
                 type = getSupperType(ctTypeReference);
                 break;

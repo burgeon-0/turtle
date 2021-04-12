@@ -35,6 +35,7 @@ public class Constants {
     public static final String RESPONSE = "+ Response";
     public static final String HEADERS = "+ Headers";
     public static final String ATTRIBUTES = "+ Attributes";
+    public static final String BODY = "+ Body";
     public static final String REQUIRED = "required";
     public static final String OPTIONAL = "optional";
     public static final String FIXED_TYPE = "fixed-type";

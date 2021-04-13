@@ -51,6 +51,11 @@ public class ParameterTestController {
         return object;
     }
 
+    @PostMapping(value = "/parameter3")
+    public List<ParameterModel> parameter3(@RequestBody List<ParameterModel> parameterModels) {
+        return parameterModels;
+    }
+
     @GetMapping(value = "/parameter/return1")
     public Integer return1() {
         return 255;

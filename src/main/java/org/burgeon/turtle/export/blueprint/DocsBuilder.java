@@ -320,10 +320,7 @@ public class DocsBuilder {
                 }
                 List<Parameter> parameters = httpRequest.getBody();
                 if (parameters != null && !parameters.isEmpty()) {
-                    if (parameters.size() == 1 && parameters.get(0).getType() == ParameterType.ARRAY) {
-                        parameters = parameters.get(0).getChildParameters();
-                    }
-                    builder.append(attributesBuilder.buildAttributes(parameters, false).build());
+                    builder.append(attributesBuilder.buildAttributes(parameters).build());
                     attributesBuilder.reset();
                 }
             } else {
@@ -361,8 +358,7 @@ public class DocsBuilder {
                 switch (returnParameter.getType()) {
                     case OBJECT:
                     case ARRAY:
-                        builder.append(attributesBuilder.buildAttributes(Arrays.asList(returnParameter),
-                                true).build());
+                        builder.append(attributesBuilder.buildAttributes(Arrays.asList(returnParameter)).build());
                         attributesBuilder.reset();
                         break;
                     case STRING:

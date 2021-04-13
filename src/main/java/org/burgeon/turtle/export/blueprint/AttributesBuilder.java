@@ -22,11 +22,10 @@ public class AttributesBuilder {
      * 构建Http请求和返回参数
      *
      * @param parameters
-     * @param isResponse
      */
-    public AttributesBuilder buildAttributes(List<Parameter> parameters, boolean isResponse) {
+    public AttributesBuilder buildAttributes(List<Parameter> parameters) {
         if (parameters != null && !parameters.isEmpty()) {
-            if (isResponse && parameters.get(0).getType() == ParameterType.ARRAY) {
+            if (parameters.get(0).getType() == ParameterType.ARRAY) {
                 builder.append(TAB).append(ATTRIBUTES);
                 builder.append(SPACE).append(LEFT_PARENTHESES).append(ARRAY);
                 if (parameters.get(0).getChildParameters().get(0).getType() == ParameterType.OBJECT) {
@@ -41,10 +40,10 @@ public class AttributesBuilder {
                         && parameter.getType() == ParameterType.OBJECT) {
                     List<Parameter> childParameters = parameter.getChildParameters();
                     for (Parameter childParameter : childParameters) {
-                        buildParameter(childParameter, 2, isResponse);
+                        buildParameter(childParameter, 2);
                     }
                 } else {
-                    buildParameter(parameter, 2, isResponse);
+                    buildParameter(parameter, 2);
                 }
             }
         }
@@ -56,17 +55,15 @@ public class AttributesBuilder {
      *
      * @param parameter
      * @param indent
-     * @param isResponse
      */
-    private void buildParameter(Parameter parameter, int indent, boolean isResponse) {
+    private void buildParameter(Parameter parameter, int indent) {
         if (parameter.getParentParameter() != null
                 && parameter.getParentParameter().getType() == ParameterType.ARRAY) {
             if (parameter.getType() == ParameterType.OBJECT
                     && parameter.getChildParameters() != null
                     && !parameter.getChildParameters().isEmpty()) {
-                boolean isResponseFirstParameter = isResponse && parameter.getParentParameter()
-                        .getParentParameter() == null;
-                if (!isResponseFirstParameter) {
+                boolean isFirstParameter = parameter.getParentParameter().getParentParameter() == null;
+                if (!isFirstParameter) {
                     indent++;
                 }
                 for (int i = 0; i < indent; i++) {
@@ -75,49 +72,46 @@ public class AttributesBuilder {
                 builder.append(PLUS).append(SPACE).append(LEFT_PARENTHESES).append(OBJECT);
                 builder.append(RIGHT_PARENTHESES).append(LINE_BREAK);
             }
-        } else {
-            if (!(isResponse && parameter.getType() == ParameterType.ARRAY
-                    && parameter.getParentParameter() == null)) {
+        } else if (!(parameter.getParentParameter() == null && parameter.getType() == ParameterType.ARRAY)) {
+            for (int i = 0; i < indent; i++) {
+                builder.append(TAB);
+            }
+            builder.append(PLUS).append(SPACE).append(parameter.getName());
+            builder.append(SPACE).append(LEFT_PARENTHESES);
+            if (parameter.isRequired()) {
+                builder.append(REQUIRED);
+            } else {
+                builder.append(OPTIONAL);
+            }
+            builder.append(COMMA).append(SPACE);
+            builder.append(parameter.getType().toString().toLowerCase());
+            if (parameter.getType() == ParameterType.ARRAY
+                    && parameter.getChildParameters().get(0).getType() == ParameterType.OBJECT
+                    && parameter.getChildParameters().get(0).getChildParameters() != null
+                    && !parameter.getChildParameters().get(0).getChildParameters().isEmpty()) {
+                builder.append(COMMA).append(SPACE).append(FIXED_TYPE);
+            }
+            builder.append(RIGHT_PARENTHESES);
+            if (StringUtils.notBlank(parameter.getDescription())) {
+                String description = parameter.getDescription();
+                builder.append(SPACE).append(MINUS).append(SPACE).append(description);
+            }
+            builder.append(LINE_BREAK);
+
+            // 处理没有Properties的Object
+            boolean noChildParameters = parameter.getChildParameters() == null
+                    || parameter.getChildParameters().isEmpty();
+            if (parameter.getType() == ParameterType.OBJECT && noChildParameters) {
                 for (int i = 0; i < indent; i++) {
                     builder.append(TAB);
                 }
-                builder.append(PLUS).append(SPACE).append(parameter.getName());
-                builder.append(SPACE).append(LEFT_PARENTHESES);
-                if (parameter.isRequired()) {
-                    builder.append(REQUIRED);
-                } else {
-                    builder.append(OPTIONAL);
-                }
-                builder.append(COMMA).append(SPACE);
-                builder.append(parameter.getType().toString().toLowerCase());
-                if (parameter.getType() == ParameterType.ARRAY
-                        && parameter.getChildParameters().get(0).getType() == ParameterType.OBJECT
-                        && parameter.getChildParameters().get(0).getChildParameters() != null
-                        && !parameter.getChildParameters().get(0).getChildParameters().isEmpty()) {
-                    builder.append(COMMA).append(SPACE).append(FIXED_TYPE);
-                }
-                builder.append(RIGHT_PARENTHESES);
-                if (StringUtils.notBlank(parameter.getDescription())) {
-                    String description = parameter.getDescription();
-                    builder.append(SPACE).append(MINUS).append(SPACE).append(description);
-                }
-                builder.append(LINE_BREAK);
-
-                // 处理没有Properties的Object
-                boolean noChildParameters = parameter.getChildParameters() == null
-                        || parameter.getChildParameters().isEmpty();
-                if (parameter.getType() == ParameterType.OBJECT && noChildParameters) {
-                    for (int i = 0; i < indent; i++) {
-                        builder.append(TAB);
-                    }
-                    builder.append(TAB).append(OBJECT_DEFAULT_PROPERTIES).append(LINE_BREAK);
-                }
+                builder.append(TAB).append(OBJECT_DEFAULT_PROPERTIES).append(LINE_BREAK);
             }
         }
 
         if (parameter.getType() == ParameterType.ARRAY
                 || parameter.getType() == ParameterType.OBJECT) {
-            buildChildParameters(parameter, indent, isResponse);
+            buildChildParameters(parameter, indent);
         }
     }
 
@@ -126,16 +120,15 @@ public class AttributesBuilder {
      *
      * @param parameter
      * @param indent
-     * @param isResponse
      */
-    private void buildChildParameters(Parameter parameter, int indent, boolean isResponse) {
+    private void buildChildParameters(Parameter parameter, int indent) {
         List<Parameter> childParameters = parameter.getChildParameters();
         if (childParameters != null && !childParameters.isEmpty()) {
             if (parameter.getType() != ParameterType.ARRAY) {
                 indent++;
             }
             for (Parameter childParameter : childParameters) {
-                buildParameter(childParameter, indent, isResponse);
+                buildParameter(childParameter, indent);
             }
         }
     }

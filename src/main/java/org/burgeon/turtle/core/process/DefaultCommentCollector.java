@@ -204,13 +204,13 @@ public class DefaultCommentCollector implements Collector {
                         httpHeader.setName(content);
                     }
                 } else if (COMMENT_TAG_PARAM.equalsIgnoreCase(ctJavaDocTag.getRealName())) {
-                    if (content.contains(Constants.SEPARATOR_SPACE)) {
-                        int index = content.indexOf(Constants.SEPARATOR_SPACE);
+                    if (StringUtils.notBlank(content)) {
                         String parentKey = CtModelHelper.getCtMethodKey(ctMethod);
-                        String key = CtModelHelper.getElementKey(parentKey, content.substring(0, index));
+                        String subKey = ctJavaDocTag.getParam();
+                        String key = CtModelHelper.getElementKey(parentKey, subKey);
                         Parameter parameter = apiProject.getParameter(key);
                         if (parameter != null) {
-                            parameter.setDescription(content.substring(index + 1).trim());
+                            parameter.setDescription(content);
                         }
                     }
                 }
@@ -254,8 +254,6 @@ public class DefaultCommentCollector implements Collector {
             CtElement ctElement = sourceProject.getCtElement(parameter.getId());
             if (!(ctElement instanceof CtMethod<?>)) {
                 collectParameterComment(parameter, ctElement);
-            } else if (parameter.getType() == ParameterType.OBJECT) {
-                // TODO collect returnType comment
             }
             collectParametersComment(parameter.getChildParameters(), sourceProject);
         }

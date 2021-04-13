@@ -2,6 +2,7 @@ package org.burgeon.turtle.core.process;
 
 import org.burgeon.turtle.core.common.CtModelHelper;
 import org.burgeon.turtle.core.common.FileHelper;
+import org.burgeon.turtle.core.common.ValidatorHelper;
 import org.burgeon.turtle.core.model.api.*;
 import org.burgeon.turtle.core.model.source.ParameterPosition;
 import org.burgeon.turtle.core.model.source.SourceProject;
@@ -447,8 +448,7 @@ public class DefaultParameterCollector implements Collector {
             String desc = parameter.getDescription();
             if (qualifiedName.startsWith(JAVAX_VALIDATION)
                     || qualifiedName.startsWith(HIBERNATE_VALIDATOR)) {
-                // TODO parse message
-                String str = ctAnnotation.getValue("message").getValueByRole(CtRole.VALUE);
+                String str = ValidatorHelper.getMessage(ctAnnotation);
                 desc = appendDescription(desc, str);
             }
             parameter.setDescription(desc);

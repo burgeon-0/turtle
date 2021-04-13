@@ -22,12 +22,12 @@ public class Constants {
     public static final String HASH_MARK = "#";
     public static final String QUESTION_MARK = "?";
     public static final String AND_MARK = "&";
-    public static final String LEFT_BRACE = "{";
-    public static final String RIGHT_BRACE = "}";
-    public static final String LEFT_BRACKET = "[";
-    public static final String RIGHT_BRACKET = "]";
-    public static final String LEFT_PARENTHESES = "(";
-    public static final String RIGHT_PARENTHESES = ")";
+    public static final String LEFT_BRACE = org.burgeon.turtle.core.common.Constants.LEFT_BRACE;
+    public static final String RIGHT_BRACE = org.burgeon.turtle.core.common.Constants.RIGHT_BRACE;
+    public static final String LEFT_BRACKET = org.burgeon.turtle.core.common.Constants.LEFT_BRACKET;
+    public static final String RIGHT_BRACKET = org.burgeon.turtle.core.common.Constants.RIGHT_BRACKET;
+    public static final String LEFT_PARENTHESES = org.burgeon.turtle.core.common.Constants.LEFT_PARENTHESES;
+    public static final String RIGHT_PARENTHESES = org.burgeon.turtle.core.common.Constants.RIGHT_PARENTHESES;
 
     public static final String GROUP = "Group";
     public static final String PARAMETERS = "+ Parameters";

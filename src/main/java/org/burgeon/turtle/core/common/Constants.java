@@ -36,6 +36,31 @@ public class Constants {
     public static final String SEPARATOR_LINE_BREAK = System.lineSeparator();
 
     /**
+     * 左大括号
+     */
+    public static final String LEFT_BRACE = "{";
+    /**
+     * 右大括号
+     */
+    public static final String RIGHT_BRACE = "}";
+    /**
+     * 左中括号
+     */
+    public static final String LEFT_BRACKET = "[";
+    /**
+     * 右中括号
+     */
+    public static final String RIGHT_BRACKET = "]";
+    /**
+     * 左小括号
+     */
+    public static final String LEFT_PARENTHESES = "(";
+    /**
+     * 右小括号
+     */
+    public static final String RIGHT_PARENTHESES = ")";
+
+    /**
      * 加号
      */
     public static final String PLUS = "+";

@@ -39,7 +39,7 @@ public class ApiGroupDecorator extends ApiGroup {
 
     @Override
     public String getVersion() {
-        return apiGroup.getVersion();
+        return FilterHelper.filterApiProjectVersion(apiGroup.getVersion());
     }
 
     @Override

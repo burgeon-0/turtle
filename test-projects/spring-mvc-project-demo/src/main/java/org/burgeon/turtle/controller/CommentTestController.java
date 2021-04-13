@@ -8,32 +8,33 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * 用来测试注释的收集和导出
+ * 用来测试注释的收集和导出 -_- !#$%&'()*+,/:;=?@[]\/
  *
  * @author luxiaocong
- * @version 1.0.0
- * @group 注释测试
+ * @version 1.0.0 -_- !#$%&'()*+,/:;=?@[]\/
+ * @group 注释测试 -_- !#$%&'()*+,/:;=?@[]\/
  * @createdOn 2021/4/13
  */
 @RestController
 public class CommentTestController {
 
     /**
-     * 注释方法
+     * 注释方法 -_- !#$%&'()*+,/:;=?@[]\/
      * 详细描述:
      * 1...
      * 2...
      * 3...
+     * -_- !#$%&'()*+,/:;=?@[]\/
      *
-     * @param path 路径参数00
+     * @param path 路径参数00 -_- !#$%&'()*+,/:;=?@[]\/
      * @param str uri参数00
      * @param commentModel body参数00
      * @param commentModel0.bool model的bool参数
      * @param commentModel0.model.bool model的model的bool参数
      * @return
-     * @version 1.0.1
+     * @version 1.0.1 -_- !#$%&'()*+,/:;=?@[]\/
      * @header x-appid0
-     * @header x-appid1 客户端ID
+     * @header x-appid1 客户端ID -_- !#$%&'()*+,/:;=?@[]\/
      * @header x-appid2 客户端ID 2
      */
     @PostMapping("/comment/{path}")

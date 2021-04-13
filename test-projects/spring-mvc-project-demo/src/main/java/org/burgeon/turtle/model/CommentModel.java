@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 注释模型
+ * 注释模型 -_- !#$%&'()*+,/:;=?@[]\/
  *
  * @author luxiaocong
  * @createdOn 2021/4/13
@@ -16,7 +16,7 @@ import java.util.Map;
 public class CommentModel {
 
     /**
-     * boolean参数
+     * boolean参数 -_- !#$%&'()*+,/:;=?@[]\/
      */
     @NotNull
     private boolean bool;

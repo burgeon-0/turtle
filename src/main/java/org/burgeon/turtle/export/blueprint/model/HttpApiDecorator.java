@@ -52,7 +52,7 @@ public class HttpApiDecorator extends HttpApi {
 
     @Override
     public String getVersion() {
-        return httpApi.getVersion();
+        return FilterHelper.filterHttpApiVersion(httpApi.getVersion());
     }
 
     @Override

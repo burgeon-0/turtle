@@ -5,7 +5,6 @@ import org.burgeon.turtle.core.utils.StringUtils;
 
 /**
  * 过滤工具
- * TODO 通过边界值测试，验证Filter是否将需要过滤的字符都过滤了
  *
  * @author luxiaocong
  * @createdOn 2021/3/27
@@ -84,11 +83,6 @@ public class FilterHelper {
 
     /**
      * 过滤API描述
-     * <ol>
-     * <li>
-     * API Blueprint的API描述中不能有"/"，如果存在"/"会解析出错，因此，将"/"过滤掉
-     * </li>
-     * </ol>
      *
      * @param description
      * @return
@@ -114,11 +108,6 @@ public class FilterHelper {
 
     /**
      * 过滤HTTP参数描述
-     * <ol>
-     * <li>
-     * API Blueprint的参数描述中不能有"_"，如果存在"_"会解析出错，因此，将"_"转换为"-"
-     * </li>
-     * </ol>
      *
      * @param description
      * @return
@@ -133,11 +122,30 @@ public class FilterHelper {
     }
 
     /**
+     * 过滤API项目版本
+     *
+     * @param version
+     * @return
+     */
+    public static String filterApiProjectVersion(String version) {
+        return filterName(version);
+    }
+
+    /**
+     * 过滤API版本
+     *
+     * @param version
+     * @return
+     */
+    public static String filterHttpApiVersion(String version) {
+        return filterName(version);
+    }
+
+    /**
      * 过滤名称
      * <ol>
-     * <li>
-     * API Blueprint的API名称和API群组名称不允许出现"()"
-     * </li>
+     * <li>过滤名字中的换行符</li>
+     * <li>过滤字符的参考资料：https://en.wikipedia.org/wiki/Percent-encoding</li>
      * </ol>
      *
      * @param name
@@ -148,8 +156,25 @@ public class FilterHelper {
             return name;
         }
         name = StringUtils.strip(name, Constants.SEPARATOR_LINE_BREAK);
-        name = name.replaceAll("\\(", " ");
-        name = name.replaceAll("\\)", " ");
+        name = name.replaceAll("!", "");
+        name = name.replaceAll("#", "");
+        name = name.replaceAll("\\$", "");
+        name = name.replaceAll("%", "");
+        name = name.replaceAll("&", "");
+        name = name.replaceAll("'", "");
+        name = name.replaceAll("\\(", "");
+        name = name.replaceAll("\\)", "");
+        name = name.replaceAll("\\*", "");
+        name = name.replaceAll("\\+", "");
+        name = name.replaceAll(",", "");
+        name = name.replaceAll("/", "");
+        name = name.replaceAll(":", "");
+        name = name.replaceAll(";", "");
+        name = name.replaceAll("=", "");
+        name = name.replaceAll("\\?", "");
+        name = name.replaceAll("@", "");
+        name = name.replaceAll("\\[", "");
+        name = name.replaceAll("]", "");
         return name;
     }
 

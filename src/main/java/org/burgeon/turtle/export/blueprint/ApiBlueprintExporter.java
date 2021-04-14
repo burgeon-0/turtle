@@ -6,6 +6,7 @@ import org.burgeon.turtle.core.event.BaseExportListener;
 import org.burgeon.turtle.core.event.EventTarget;
 import org.burgeon.turtle.core.event.ExportEvent;
 import org.burgeon.turtle.core.model.api.*;
+import org.burgeon.turtle.core.utils.CommandLineUtils;
 import org.burgeon.turtle.core.utils.EnvUtils;
 import org.burgeon.turtle.export.blueprint.model.*;
 
@@ -229,6 +230,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
         }
 
         writeToFile(docsBuilder.build());
+        generateDocs();
     }
 
     /**
@@ -248,6 +250,19 @@ public class ApiBlueprintExporter extends BaseExportListener {
             if (writer != null) {
                 writer.close();
             }
+        }
+    }
+
+    /**
+     * 生成API文档
+     */
+    private void generateDocs() {
+        String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH);
+        try {
+            CommandLineUtils.executeCommands(new String[]{"cd " + targetPath,
+                    "aglio -i api-blueprint.apib -o api-bludprint.html"});
+        } catch (Exception e) {
+            log.error("Generate docs fail.", e);
         }
     }
 

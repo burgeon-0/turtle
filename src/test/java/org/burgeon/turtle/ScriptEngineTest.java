@@ -7,6 +7,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 /**
+ * 测试使用ScriptEngine解析表达式
+ *
  * @author luxiaocong
  * @createdOn 2021/4/13
  */

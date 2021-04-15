@@ -2,7 +2,45 @@
 
 ## 项目说明
 
-本项目的主要目的，是提供一个生成API文档和测试用例的工具，其总体架构如下：
+本项目的主要目的，是提供一个生成API文档和测试用例的工具。
+
+## 如何使用
+
+### 安装依赖
+
+- [安装并配置gradle](https://docs.gradle.org/current/userguide/installation.html)
+- [安装并配置aglio](https://www.npmjs.com/package/aglio)
+
+### 手动编译
+
+```sh
+gradle build
+```
+
+- 使用上述脚本编译后，在./build/distributions目录下，可以看到编译出来的压缩包`turtle-1.0.2.tar`和`turtle-1.0.2.zip`。
+- 将任意一个压缩包放到你想放到的任意目录下。
+- 解压并配置环境变量：
+
+如果是Mac系统，将以下内容添加到`~/.bash_profile`配置文件中：
+
+```sh
+export TURTLE_HOME=你的目录/turtle
+export PATH=$PATH:$TURTLE_HOME/bin
+```
+
+重新加载配置：
+
+```sh
+source  ~/.bash_profile
+```
+
+- 在你的项目目录中执行如下脚本，即可将项目的API文档导出到`./out`目录下。
+
+```sh
+turtle
+```
+
+## 代码架构
 
 ![image](https://github.com/burgeon-0/turtle/blob/master/assets/architecture.png)
 

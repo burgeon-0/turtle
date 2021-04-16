@@ -34,10 +34,16 @@ export PATH=$PATH:$TURTLE_HOME/bin
 source  ~/.bash_profile
 ```
 
-- 在你的项目目录中执行如下脚本，即可将项目的API文档导出到`./out`目录下。
+执行如下命令，返回字符串`Turtle version 1.0.2`，说明配置成功：
 
 ```sh
-turtle
+turtle -v
+```
+
+- 在你的项目目录中执行如下命令，即可将项目的API文档导出到`./out`目录下。
+
+```sh
+turtle -e blueprint
 ```
 
 ## 代码架构

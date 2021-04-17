@@ -13,6 +13,8 @@ import org.burgeon.turtle.plugin.idea.ConfigInitializer;
 import org.burgeon.turtle.plugin.idea.NotificationHelper;
 import org.burgeon.turtle.plugin.idea.notifier.IdeaApiBlueprintNotifier;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.concurrent.*;
 
 /**
@@ -25,7 +27,8 @@ import java.util.concurrent.*;
 public class ApiBlueprintExportAction extends AnAction {
 
     private DefaultExporterConfig exporterConfig = new DefaultExporterConfig();
-    private Boolean init = false;
+    private volatile boolean init;
+    private volatile boolean running;
 
     /**
      * 每次调出菜单的时候触发
@@ -50,20 +53,37 @@ public class ApiBlueprintExportAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         log.debug("Receive an [Export API Blueprint] action.");
 
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1,
-                0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<>());
-        executor.submit(() -> {
-            // 进行处理
-            Processor processor = new DefaultProcessor();
-            Notifier notifier = new IdeaApiBlueprintNotifier();
-            processor.setNotifier(notifier);
-            processor.process();
+        if (!running) {
+            running = true;
 
-            String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH);
-            NotificationHelper.info(e.getProject(), "导出成功", "API文档已导出到：" + targetPath);
-        });
-        executor.shutdown();
+            ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1,
+                    0L, TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<>());
+            executor.submit(() -> {
+                try {
+                    // 进行处理
+                    Processor processor = new DefaultProcessor();
+                    Notifier notifier = new IdeaApiBlueprintNotifier();
+                    processor.setNotifier(notifier);
+                    processor.process();
+
+                    String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH);
+                    NotificationHelper.info(e.getProject(), "导出成功", "API文档已导出到：" + targetPath);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    ex.printStackTrace(pw);
+                    NotificationHelper.error(e.getProject(), "导出失败", sw.toString());
+                } finally {
+                    running = false;
+                }
+            });
+            executor.shutdown();
+        } else {
+            NotificationHelper.info(e.getProject(), "正在导出", "API文档正在导出，请稍后");
+        }
     }
 
 }

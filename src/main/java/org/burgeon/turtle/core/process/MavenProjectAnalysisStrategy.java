@@ -39,6 +39,9 @@ public class MavenProjectAnalysisStrategy extends AbstractAnalysisStrategy {
         // 检查项目pom文件是否存在
         sourcePath = checkPomExists(sourcePath);
 
+        // 清除目标文件夹
+        cleanTargetDirectory(targetPath);
+
         // analyze by spoon
         // 分析依赖于spoon
         // spoon在元数据封装、类文件分析和查询上都是比较优秀的

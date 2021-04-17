@@ -1,6 +1,7 @@
 package org.burgeon.turtle.core.process;
 
 import java.io.File;
+import java.nio.file.Files;
 
 /**
  * 分析策略抽象类
@@ -20,6 +21,35 @@ public abstract class AbstractAnalysisStrategy implements AnalysisStrategy {
         if (!directory.exists() || !directory.isDirectory()) {
             throw new RuntimeException("Project directory not exists: " + sourcePath + ".");
         }
+    }
+
+    /**
+     * 清除目标文件夹
+     *
+     * @param targetPath
+     */
+    protected void cleanTargetDirectory(String targetPath) {
+        File directory = new File(targetPath);
+        if (directory.exists() && directory.isDirectory()) {
+            deleteDir(directory);
+        }
+    }
+
+    /**
+     * 删除文件夹
+     *
+     * @param file
+     */
+    private void deleteDir(File file) {
+        File[] contents = file.listFiles();
+        if (contents != null) {
+            for (File f : contents) {
+                if (!Files.isSymbolicLink(f.toPath())) {
+                    deleteDir(f);
+                }
+            }
+        }
+        file.delete();
     }
 
 }

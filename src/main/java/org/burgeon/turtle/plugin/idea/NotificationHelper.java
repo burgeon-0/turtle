@@ -15,6 +15,8 @@ import com.intellij.openapi.ui.MessageType;
 public class NotificationHelper {
 
     private static final String DISPLAY_ID = "Turtle Plugin";
+    private static final NotificationGroup NOTIFICATION_GROUP = new NotificationGroup(DISPLAY_ID,
+            NotificationDisplayType.BALLOON, true);
 
     /**
      * 提示信息
@@ -24,8 +26,8 @@ public class NotificationHelper {
      * @param content
      */
     public static void info(Project project, String title, String content) {
-        Notification notification = new NotificationGroup(DISPLAY_ID, NotificationDisplayType.BALLOON, true)
-                .createNotification(title, content, MessageType.INFO.toNotificationType(), null);
+        Notification notification = NOTIFICATION_GROUP.createNotification(title, content,
+                MessageType.INFO.toNotificationType(), null);
         notification.notify(project);
     }
 
@@ -37,8 +39,8 @@ public class NotificationHelper {
      * @param content
      */
     public static void warn(Project project, String title, String content) {
-        Notification notification = new NotificationGroup(DISPLAY_ID, NotificationDisplayType.BALLOON, true)
-                .createNotification(title, content, MessageType.WARNING.toNotificationType(), null);
+        Notification notification = NOTIFICATION_GROUP.createNotification(title, content,
+                MessageType.WARNING.toNotificationType(), null);
         notification.notify(project);
     }
 
@@ -50,8 +52,8 @@ public class NotificationHelper {
      * @param content
      */
     public static void error(Project project, String title, String content) {
-        Notification notification = new NotificationGroup(DISPLAY_ID, NotificationDisplayType.BALLOON, true)
-                .createNotification(title, content, MessageType.ERROR.toNotificationType(), null);
+        Notification notification = NOTIFICATION_GROUP.createNotification(title, content,
+                MessageType.ERROR.toNotificationType(), null);
         notification.notify(project);
     }
 

@@ -6,7 +6,6 @@ import spoon.reflect.path.CtRole;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -88,16 +87,17 @@ public class ValidatorHelper {
      */
     private static String parseMessage(ScriptEngine engine, CtAnnotation<?> ctAnnotation, Matcher matcher,
                                        String result) {
-        String text = matcher.group();
-        String script = text.substring(1, text.length() - 1);
-        String key = getKey(script);
-        Object value = ctAnnotation.getValue(key).getValueByRole(CtRole.VALUE).toString();
         try {
+            // TODO @Length(min = 1, max = 2)解析错误
+            String text = matcher.group();
+            String script = text.substring(1, text.length() - 1);
+            String key = getKey(script);
+            Object value = ctAnnotation.getValue(key).getValueByRole(CtRole.VALUE).toString();
             String init = String.format("var %s = '%s'", key, value);
             engine.eval(init);
             value = engine.eval(script).toString();
             result = result.replace(text, value.toString());
-        } catch (ScriptException e) {
+        } catch (Exception e) {
             log.error("Parse validation message fail.", e);
         }
         return result;

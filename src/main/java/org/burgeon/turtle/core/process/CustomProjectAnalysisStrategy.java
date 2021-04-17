@@ -42,6 +42,9 @@ public class CustomProjectAnalysisStrategy extends AbstractAnalysisStrategy {
         // 检查项目根目录是否存在
         checkDirectoryExists(sourcePath);
 
+        // 清除目标文件夹
+        cleanTargetDirectory(targetPath);
+
         // analyze by spoon
         Set<File> inputResources = new HashSet<>();
         inputResources.add(new File(sourcePath));

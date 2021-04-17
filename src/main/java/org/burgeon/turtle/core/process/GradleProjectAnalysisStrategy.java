@@ -44,6 +44,9 @@ public class GradleProjectAnalysisStrategy extends AbstractAnalysisStrategy {
         // 检查项目gradle配置文件是否存在
         checkGradleConfigExists(sourcePath);
 
+        // 清除目标文件夹
+        cleanTargetDirectory(targetPath);
+
         // analyze by spoon
         Set<File> inputResources = new HashSet<>();
         inputResources.add(new File(sourcePath));

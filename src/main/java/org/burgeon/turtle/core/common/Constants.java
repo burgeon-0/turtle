@@ -11,11 +11,6 @@ import java.io.File;
 public class Constants {
 
     /**
-     * 项目名
-     */
-    public static final String PROJECT_NAME = "turtle";
-
-    /**
      * 空格分隔符
      */
     public static final String SEPARATOR_SPACE = " ";
@@ -81,6 +76,11 @@ public class Constants {
      * 下划线
      */
     public static final String UNDERLINE = "_";
+
+    /**
+     * 项目名
+     */
+    public static final String PROJECT_NAME = "turtle";
 
     /**
      * turtle安装目录key

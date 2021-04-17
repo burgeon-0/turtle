@@ -2,6 +2,10 @@ package org.burgeon.turtle.plugin.idea.action;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator;
 import lombok.extern.slf4j.Slf4j;
 import org.burgeon.turtle.core.common.Constants;
 import org.burgeon.turtle.core.process.DefaultProcessor;
@@ -12,10 +16,10 @@ import org.burgeon.turtle.export.DefaultExporterConfig;
 import org.burgeon.turtle.plugin.idea.ConfigInitializer;
 import org.burgeon.turtle.plugin.idea.NotificationHelper;
 import org.burgeon.turtle.plugin.idea.notifier.IdeaApiBlueprintNotifier;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.concurrent.*;
 
 /**
  * 菜单[导出API Blueprint文档]
@@ -56,33 +60,36 @@ public class ApiBlueprintExportAction extends AnAction {
         if (!running) {
             running = true;
 
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1,
-                    0L, TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<>());
-            executor.submit(() -> {
-                try {
-                    // 进行处理
-                    Processor processor = new DefaultProcessor();
-                    Notifier notifier = new IdeaApiBlueprintNotifier();
-                    processor.setNotifier(notifier);
-                    processor.process();
+            Task.Backgroundable task = new Task.Backgroundable(e.getProject(), "正在导出") {
+                @Override
+                public void run(@NotNull ProgressIndicator indicator) {
+                    try {
+                        indicator.setText("正在导出API文档，请稍后...");
 
-                    String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH);
-                    NotificationHelper.info(e.getProject(), "导出成功", "API文档已导出到：" + targetPath);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                        // 进行处理
+                        Processor processor = new DefaultProcessor();
+                        Notifier notifier = new IdeaApiBlueprintNotifier();
+                        processor.setNotifier(notifier);
+                        processor.process();
 
-                    StringWriter sw = new StringWriter();
-                    PrintWriter pw = new PrintWriter(sw);
-                    ex.printStackTrace(pw);
-                    NotificationHelper.error(e.getProject(), "导出失败", sw.toString());
-                } finally {
-                    running = false;
+                        String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH);
+                        NotificationHelper.info(e.getProject(), "导出成功", "API文档已导出到：" + targetPath);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+
+                        StringWriter sw = new StringWriter();
+                        PrintWriter pw = new PrintWriter(sw);
+                        ex.printStackTrace(pw);
+                        NotificationHelper.error(e.getProject(), "导出失败", sw.toString());
+                    } finally {
+                        running = false;
+                    }
                 }
-            });
-            executor.shutdown();
+            };
+            ProgressManager.getInstance().runProcessWithProgressAsynchronously(task,
+                    new BackgroundableProcessIndicator(task));
         } else {
-            NotificationHelper.info(e.getProject(), "正在导出", "API文档正在导出，请稍后");
+            NotificationHelper.info(e.getProject(), "正在导出", "正在导出API文档，请稍后");
         }
     }
 

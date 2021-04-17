@@ -40,7 +40,7 @@ public class ValidatorHelper {
      * @return
      */
     public static String getMessage(CtAnnotation<?> ctAnnotation) {
-        String result = ctAnnotation.getValue("message").getValueByRole(CtRole.VALUE);
+        String result = ctAnnotation.getValue("message").partiallyEvaluate().getValueByRole(CtRole.VALUE);
         if (result.startsWith(Constants.LEFT_BRACE) && result.endsWith(Constants.RIGHT_BRACE)) {
             result = result.substring(1, result.length() - 1);
             String message = VALIDATION_MESSAGES.getProperty(result);
@@ -88,11 +88,10 @@ public class ValidatorHelper {
     private static String parseMessage(ScriptEngine engine, CtAnnotation<?> ctAnnotation, Matcher matcher,
                                        String result) {
         try {
-            // TODO @Length(min = 1, max = 2)解析错误
             String text = matcher.group();
             String script = text.substring(1, text.length() - 1);
             String key = getKey(script);
-            Object value = ctAnnotation.getValue(key).getValueByRole(CtRole.VALUE).toString();
+            Object value = ctAnnotation.getValue(key).partiallyEvaluate().getValueByRole(CtRole.VALUE).toString();
             String init = String.format("var %s = '%s'", key, value);
             engine.eval(init);
             value = engine.eval(script).toString();

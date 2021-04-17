@@ -239,9 +239,9 @@ public class DefaultParameterCollector implements Collector {
         for (CtAnnotation<?> ctAnnotation : ctAnnotations) {
             String name = ctAnnotation.getType().getQualifiedName();
             if (PATH_VARIABLE.equals(name)) {
-                String value = ctAnnotation.getValue("value").getValueByRole(CtRole.VALUE);
+                String value = ctAnnotation.getValue("value").partiallyEvaluate().getValueByRole(CtRole.VALUE);
                 if (StringUtils.isBlank(value)) {
-                    value = ctAnnotation.getValue("name").getValueByRole(CtRole.VALUE);
+                    value = ctAnnotation.getValue("name").partiallyEvaluate().getValueByRole(CtRole.VALUE);
                 }
                 return value;
             }
@@ -420,7 +420,7 @@ public class DefaultParameterCollector implements Collector {
             String qualifiedName = ctAnnotation.getType().getQualifiedName();
             if (PATH_VARIABLE.equals(qualifiedName) || REQUEST_PARAM.equals(qualifiedName)
                     || REQUEST_BODY.equals(qualifiedName)) {
-                return ctAnnotation.getValue("required").getValueByRole(CtRole.VALUE);
+                return ctAnnotation.getValue("required").partiallyEvaluate().getValueByRole(CtRole.VALUE);
             }
 
             String simpleName = ctAnnotation.getType().getSimpleName();

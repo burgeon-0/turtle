@@ -57,7 +57,7 @@ public class Bootstrap {
             if (line.getOptions().length == 0 || line.hasOption(OPTION_H)) {
                 // display help information
                 HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("turtle", options);
+                formatter.printHelp(Constants.PROJECT_NAME, options);
             } else if (line.hasOption(OPTION_V)) {
                 // display version information
                 info("Turtle version " + VersionHelper.VERSION);

@@ -35,7 +35,7 @@ public class CustomProjectAnalysisStrategy extends AbstractAnalysisStrategy {
         log.debug("Analyze by custom strategy.");
 
         String sourcePath = EnvUtils.getStringProperty(Constants.SOURCE_PATH);
-        String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH);
+        String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH) + Constants.SPOON_DIR;
         String[] classpath = EnvUtils.getStringArrayProperty(Constants.CLASSPATH,
                 Constants.SEPARATOR_SEMICOLON, new String[]{"."});
 

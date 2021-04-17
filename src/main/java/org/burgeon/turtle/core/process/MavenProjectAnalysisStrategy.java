@@ -31,7 +31,7 @@ public class MavenProjectAnalysisStrategy extends AbstractAnalysisStrategy {
         log.debug("Analyze by maven strategy.");
 
         String sourcePath = EnvUtils.getStringProperty(Constants.SOURCE_PATH);
-        String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH);
+        String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH) + Constants.SPOON_DIR;
 
         // 检查项目根目录是否存在
         checkDirectoryExists(sourcePath);

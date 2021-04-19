@@ -1,9 +1,11 @@
 package org.burgeon.turtle.plugin.idea.notifier;
 
-import org.burgeon.turtle.core.event.EventSource;
-import org.burgeon.turtle.core.event.EventTarget;
-import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.event.ExportEvent;
+import org.burgeon.turtle.core.event.source.EventSource;
+import org.burgeon.turtle.core.event.source.IdeaEventSource;
+import org.burgeon.turtle.core.event.target.BlueprintEventTarget;
+import org.burgeon.turtle.core.event.target.EventTarget;
+import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.process.Notifier;
 
 /**
@@ -23,8 +25,8 @@ public class IdeaApiBlueprintNotifier implements Notifier {
     @Override
     public ExportEvent notice(ApiProject apiProject) {
         ExportEvent exportEvent = new ExportEvent();
-        exportEvent.setSourceCode(EventSource.IDEA.getCode());
-        exportEvent.setTargetCodes(new int[]{EventTarget.BLUEPRINT.getCode()});
+        exportEvent.setSourceCode(EventSource.fromClass(IdeaEventSource.class).getCode());
+        exportEvent.setTargetCodes(new int[]{EventTarget.fromClass(BlueprintEventTarget.class).getCode()});
         exportEvent.setApiProject(apiProject);
         return exportEvent;
     }

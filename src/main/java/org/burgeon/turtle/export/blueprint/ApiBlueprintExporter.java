@@ -3,14 +3,17 @@ package org.burgeon.turtle.export.blueprint;
 import lombok.extern.slf4j.Slf4j;
 import org.burgeon.turtle.core.common.Constants;
 import org.burgeon.turtle.core.event.BaseExportListener;
-import org.burgeon.turtle.core.event.EventTarget;
 import org.burgeon.turtle.core.event.ExportEvent;
+import org.burgeon.turtle.core.event.target.BlueprintEventTarget;
+import org.burgeon.turtle.core.event.target.EventTarget;
 import org.burgeon.turtle.core.model.api.*;
 import org.burgeon.turtle.core.utils.CommandLineUtils;
 import org.burgeon.turtle.core.utils.EnvUtils;
 import org.burgeon.turtle.export.blueprint.model.*;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +38,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
 
     @Override
     public int targetCode() {
-        return EventTarget.BLUEPRINT.getCode();
+        return EventTarget.fromClass(BlueprintEventTarget.class).getCode();
     }
 
     @Override
@@ -113,7 +116,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
      * @param parameters
      */
     private List<Parameter> buildParameterProxyList(Map<String, Parameter> parameterMap,
-                                                     List<Parameter> parameters) {
+                                                    List<Parameter> parameters) {
         if (parameters == null) {
             return null;
         }
@@ -192,7 +195,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
      * @param parameter
      */
     private Parameter buildParameterProxy(Map<String, Parameter> parameterMap, Parameter parentParameter,
-                                              Parameter parameter) {
+                                          Parameter parameter) {
         Parameter parameterProxy = new ParameterProxy(parameter);
         parameterProxy.setParentParameter(parentParameter);
         List<Parameter> childParameterProxyList = null;

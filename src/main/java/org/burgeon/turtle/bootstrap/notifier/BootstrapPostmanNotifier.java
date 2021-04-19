@@ -1,8 +1,10 @@
 package org.burgeon.turtle.bootstrap.notifier;
 
-import org.burgeon.turtle.core.event.EventSource;
-import org.burgeon.turtle.core.event.EventTarget;
 import org.burgeon.turtle.core.event.ExportEvent;
+import org.burgeon.turtle.core.event.source.BootstrapEventSource;
+import org.burgeon.turtle.core.event.source.EventSource;
+import org.burgeon.turtle.core.event.target.EventTarget;
+import org.burgeon.turtle.core.event.target.PostmanEventTarget;
 import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.process.Notifier;
 
@@ -23,8 +25,8 @@ public class BootstrapPostmanNotifier implements Notifier {
     @Override
     public ExportEvent notice(ApiProject apiProject) {
         ExportEvent exportEvent = new ExportEvent();
-        exportEvent.setSourceCode(EventSource.BOOTSTRAP.getCode());
-        exportEvent.setTargetCodes(new int[]{EventTarget.POSTMAN.getCode()});
+        exportEvent.setSourceCode(EventSource.fromClass(BootstrapEventSource.class).getCode());
+        exportEvent.setTargetCodes(new int[]{EventTarget.fromClass(PostmanEventTarget.class).getCode()});
         exportEvent.setApiProject(apiProject);
         return exportEvent;
     }

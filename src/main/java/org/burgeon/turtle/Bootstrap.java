@@ -8,7 +8,10 @@ import org.burgeon.turtle.bootstrap.notifier.BootstrapPostmanNotifier;
 import org.burgeon.turtle.core.common.ConfigInitializer;
 import org.burgeon.turtle.core.common.Constants;
 import org.burgeon.turtle.core.common.VersionHelper;
-import org.burgeon.turtle.core.event.EventTarget;
+import org.burgeon.turtle.core.event.target.BlueprintEventTarget;
+import org.burgeon.turtle.core.event.target.EventTarget;
+import org.burgeon.turtle.core.event.target.JMeterEventTarget;
+import org.burgeon.turtle.core.event.target.PostmanEventTarget;
 import org.burgeon.turtle.core.process.DefaultProcessor;
 import org.burgeon.turtle.core.process.Notifier;
 import org.burgeon.turtle.core.process.Processor;
@@ -219,21 +222,21 @@ public class Bootstrap {
      * @throws BootstrapException
      */
     private static void doExecute(String export) throws BootstrapException {
+        DefaultExporterConfig exporterConfig = new DefaultExporterConfig();
+        exporterConfig.init();
+
         if (!EventTarget.contains(export)) {
             throw new BootstrapException("Unknown export type: " + export);
         }
 
-        DefaultExporterConfig exporterConfig = new DefaultExporterConfig();
-        exporterConfig.init();
-
         // 进行处理
         Processor processor = new DefaultProcessor();
         Notifier notifier = null;
-        if (EventTarget.fromName(export) == EventTarget.BLUEPRINT) {
+        if (EventTarget.fromName(export) instanceof BlueprintEventTarget) {
             notifier = new BootstrapApiBlueprintNotifier();
-        } else if (EventTarget.fromName(export) == EventTarget.POSTMAN) {
+        } else if (EventTarget.fromName(export) instanceof PostmanEventTarget) {
             notifier = new BootstrapPostmanNotifier();
-        } else if (EventTarget.fromName(export) == EventTarget.JMETER) {
+        } else if (EventTarget.fromName(export) instanceof JMeterEventTarget) {
             notifier = new BootstrapJmeterNotifier();
         }
         processor.setNotifier(notifier);

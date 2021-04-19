@@ -4,16 +4,16 @@ import org.burgeon.turtle.core.model.api.HttpHeader;
 import org.burgeon.turtle.export.blueprint.FilterHelper;
 
 /**
- * HTTP头【装饰器】
+ * HTTP头【代理】
  *
  * @author luxiaocong
  * @createdOn 2021/3/27
  */
-public class HttpHeaderDecorator extends HttpHeader {
+public class HttpHeaderProxy extends HttpHeader {
 
     private HttpHeader httpHeader;
 
-    public HttpHeaderDecorator(HttpHeader httpHeader) {
+    public HttpHeaderProxy(HttpHeader httpHeader) {
         this.httpHeader = httpHeader;
     }
 

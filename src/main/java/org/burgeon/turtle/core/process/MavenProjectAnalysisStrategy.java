@@ -49,7 +49,7 @@ public class MavenProjectAnalysisStrategy extends AbstractAnalysisStrategy {
         // TODO 后期需要把spoon研究透，从spoon fork一份代码，做编译策略的改进
         MavenLauncher launcher = new MavenLauncher(sourcePath, MavenLauncher.SOURCE_TYPE.APP_SOURCE);
         launcher.run(new String[]{
-                "--input", sourcePath,
+                "--input", sourcePath + Constants.SEPARATOR_FILE + srcPath,
                 "--output", targetPath,
                 "--level", "error",
                 "--no-copy-resources"});

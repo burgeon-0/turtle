@@ -9,12 +9,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * HTTP接口【装饰器】
+ * HTTP接口【代理】
  *
  * @author luxiaocong
  * @createdOn 2021/3/27
  */
-public class HttpApiDecorator extends HttpApi {
+public class HttpApiProxy extends HttpApi {
 
     private static final String PATH_PARAMETER_REGEX = "\\{.*?-.*?\\}";
 
@@ -26,8 +26,8 @@ public class HttpApiDecorator extends HttpApi {
 
     private String path;
 
-    public HttpApiDecorator(HttpApi httpApi, List<Parameter> pathParameters, List<Parameter> uriParameters,
-                            HttpRequest httpRequest, HttpResponse httpResponse) {
+    public HttpApiProxy(HttpApi httpApi, List<Parameter> pathParameters, List<Parameter> uriParameters,
+                        HttpRequest httpRequest, HttpResponse httpResponse) {
         this.httpApi = httpApi;
         this.pathParameters = pathParameters;
         this.uriParameters = uriParameters;

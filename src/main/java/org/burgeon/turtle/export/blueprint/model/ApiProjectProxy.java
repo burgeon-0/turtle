@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * API项目【装饰器】
+ * API项目【代理】
  *
  * @author luxiaocong
  * @createdOn 2021/3/27
  */
-public class ApiProjectDecorator extends ApiProject {
+public class ApiProjectProxy extends ApiProject {
 
     private static final String DEFAULT_PROJECT_NAME = "API Docs";
 
@@ -27,8 +27,8 @@ public class ApiProjectDecorator extends ApiProject {
     private Map<String, HttpApi> httpApiMap;
     private Map<String, Parameter> parameterMap;
 
-    public ApiProjectDecorator(ApiProject apiProject, List<ApiGroup> apiGroups, Map<String, ApiGroup> apiGroupMap,
-                               Map<String, HttpApi> httpApiMap, Map<String, Parameter> parameterMap) {
+    public ApiProjectProxy(ApiProject apiProject, List<ApiGroup> apiGroups, Map<String, ApiGroup> apiGroupMap,
+                           Map<String, HttpApi> httpApiMap, Map<String, Parameter> parameterMap) {
         this.apiProject = apiProject;
         this.apiGroups = apiGroups;
         this.apiGroupMap = apiGroupMap;

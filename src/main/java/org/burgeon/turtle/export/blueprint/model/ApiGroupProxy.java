@@ -7,17 +7,17 @@ import org.burgeon.turtle.export.blueprint.FilterHelper;
 import java.util.List;
 
 /**
- * API群组【装饰器】
+ * API群组【代理】
  *
  * @author luxiaocong
  * @createdOn 2021/3/27
  */
-public class ApiGroupDecorator extends ApiGroup {
+public class ApiGroupProxy extends ApiGroup {
 
     private ApiGroup apiGroup;
     private List<HttpApi> httpApis;
 
-    public ApiGroupDecorator(ApiGroup apiGroup, List<HttpApi> httpApis) {
+    public ApiGroupProxy(ApiGroup apiGroup, List<HttpApi> httpApis) {
         this.apiGroup = apiGroup;
         this.httpApis = httpApis;
     }

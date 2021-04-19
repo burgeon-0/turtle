@@ -43,7 +43,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
         log.info("Export API Blueprint docs.");
 
         ApiProject apiProject = exportEvent.getApiProject();
-        apiProject = buildApiProjectDecorator(apiProject);
+        apiProject = buildApiProjectProxy(apiProject);
 
         List<ApiGroup> apiGroups = apiProject.getGroups();
         log.debug("Export {} group.", apiGroups.size());
@@ -65,149 +65,149 @@ public class ApiBlueprintExporter extends BaseExportListener {
     }
 
     /**
-     * 构建【API项目-装饰器】
+     * 构建【API项目-代理】
      *
      * @param apiProject
      * @return
      */
-    private ApiProject buildApiProjectDecorator(ApiProject apiProject) {
-        List<ApiGroup> apiGroupDecorators = null;
-        Map<String, ApiGroup> apiGroupDecoratorMap = new HashMap<>(apiProject.getApiGroupMap().size());
-        Map<String, HttpApi> httpApiDecoratorMap = new HashMap<>(apiProject.getHttpApiMap().size());
-        Map<String, Parameter> parameterDecoratorMap = new HashMap<>(apiProject.getParameterMap().size());
+    private ApiProject buildApiProjectProxy(ApiProject apiProject) {
+        List<ApiGroup> apiGroupProxyList = null;
+        Map<String, ApiGroup> apiGroupProxyMap = new HashMap<>(apiProject.getApiGroupMap().size());
+        Map<String, HttpApi> httpApiProxyMap = new HashMap<>(apiProject.getHttpApiMap().size());
+        Map<String, Parameter> parameterProxyMap = new HashMap<>(apiProject.getParameterMap().size());
         if (apiProject.getGroups() != null) {
-            apiGroupDecorators = new ArrayList<>(apiProject.getGroups().size());
+            apiGroupProxyList = new ArrayList<>(apiProject.getGroups().size());
             for (ApiGroup apiGroup : apiProject.getGroups()) {
-                List<HttpApi> httpApiDecorators = null;
+                List<HttpApi> httpApiProxyList = null;
                 if (apiGroup.getHttpApis() != null) {
-                    httpApiDecorators = new ArrayList<>(apiGroup.getHttpApis().size());
+                    httpApiProxyList = new ArrayList<>(apiGroup.getHttpApis().size());
                     for (HttpApi httpApi : apiGroup.getHttpApis()) {
-                        List<Parameter> pathParameterDecorators = buildParameterDecorators(parameterDecoratorMap,
+                        List<Parameter> pathParameterProxyList = buildParameterProxyList(parameterProxyMap,
                                 httpApi.getPathParameters());
-                        List<Parameter> uriParameterDecorators = buildParameterDecorators(parameterDecoratorMap,
+                        List<Parameter> uriParameterProxyList = buildParameterProxyList(parameterProxyMap,
                                 httpApi.getUriParameters());
-                        HttpRequest httpRequestDecorator = buildRequestDecorator(parameterDecoratorMap,
+                        HttpRequest httpRequestProxy = buildRequestProxy(parameterProxyMap,
                                 httpApi.getHttpRequest());
-                        HttpResponse httpResponseDecorator = buildResponseDecorator(parameterDecoratorMap,
+                        HttpResponse httpResponseProxy = buildResponseProxy(parameterProxyMap,
                                 httpApi.getHttpResponse());
-                        HttpApi httpApiDecorator = new HttpApiDecorator(httpApi, pathParameterDecorators,
-                                uriParameterDecorators, httpRequestDecorator, httpResponseDecorator);
-                        httpApiDecorators.add(httpApiDecorator);
-                        httpApiDecoratorMap.put(httpApiDecorator.getId(), httpApiDecorator);
+                        HttpApi httpApiProxy = new HttpApiProxy(httpApi, pathParameterProxyList,
+                                uriParameterProxyList, httpRequestProxy, httpResponseProxy);
+                        httpApiProxyList.add(httpApiProxy);
+                        httpApiProxyMap.put(httpApiProxy.getId(), httpApiProxy);
                     }
                 }
-                ApiGroup apiGroupDecorator = new ApiGroupDecorator(apiGroup, httpApiDecorators);
-                apiGroupDecorators.add(apiGroupDecorator);
-                apiGroupDecoratorMap.put(apiGroupDecorator.getId(), apiGroupDecorator);
+                ApiGroup apiGroupProxy = new ApiGroupProxy(apiGroup, httpApiProxyList);
+                apiGroupProxyList.add(apiGroupProxy);
+                apiGroupProxyMap.put(apiGroupProxy.getId(), apiGroupProxy);
             }
         }
-        ApiProject apiProjectDecorator = new ApiProjectDecorator(apiProject, apiGroupDecorators,
-                apiGroupDecoratorMap, httpApiDecoratorMap, parameterDecoratorMap);
-        return apiProjectDecorator;
+        ApiProject apiProjectProxy = new ApiProjectProxy(apiProject, apiGroupProxyList,
+                apiGroupProxyMap, httpApiProxyMap, parameterProxyMap);
+        return apiProjectProxy;
     }
 
     /**
-     * 构建参数列表的装饰器
+     * 构建参数列表的代理
      *
      * @param parameterMap
      * @param parameters
      */
-    private List<Parameter> buildParameterDecorators(Map<String, Parameter> parameterMap,
+    private List<Parameter> buildParameterProxyList(Map<String, Parameter> parameterMap,
                                                      List<Parameter> parameters) {
         if (parameters == null) {
             return null;
         }
-        List<Parameter> parameterDecorators = new ArrayList<>(parameters.size());
+        List<Parameter> parameterProxyList = new ArrayList<>(parameters.size());
         for (Parameter parameter : parameters) {
-            Parameter parameterDecorator = buildParameterDecorator(parameterMap, null, parameter);
-            parameterDecorators.add(parameterDecorator);
+            Parameter parameterProxy = buildParameterProxy(parameterMap, null, parameter);
+            parameterProxyList.add(parameterProxy);
         }
-        return parameterDecorators;
+        return parameterProxyList;
     }
 
     /**
-     * 构建HttpRequest的Header和Parameter的装饰器
+     * 构建HttpRequest的Header和Parameter的代理
      *
      * @param parameterMap
      * @param httpRequest
      */
-    private HttpRequest buildRequestDecorator(Map<String, Parameter> parameterMap, HttpRequest httpRequest) {
+    private HttpRequest buildRequestProxy(Map<String, Parameter> parameterMap, HttpRequest httpRequest) {
         if (httpRequest == null) {
             return null;
         }
-        HttpRequest httpHttpRequestDecorator = new HttpRequest();
-        httpHttpRequestDecorator.setHeaders(buildHeaderDecorators(httpRequest.getHeaders()));
-        httpHttpRequestDecorator.setBody(buildParameterDecorators(parameterMap, httpRequest.getBody()));
-        return httpHttpRequestDecorator;
+        HttpRequest httpHttpRequestProxy = new HttpRequest();
+        httpHttpRequestProxy.setHeaders(buildHeaderProxyList(httpRequest.getHeaders()));
+        httpHttpRequestProxy.setBody(buildParameterProxyList(parameterMap, httpRequest.getBody()));
+        return httpHttpRequestProxy;
     }
 
     /**
-     * 构建HttpResponse的Header和Parameter的装饰器
+     * 构建HttpResponse的Header和Parameter的代理
      *
      * @param parameterMap
      * @param httpResponse
      */
-    private HttpResponse buildResponseDecorator(Map<String, Parameter> parameterMap, HttpResponse httpResponse) {
+    private HttpResponse buildResponseProxy(Map<String, Parameter> parameterMap, HttpResponse httpResponse) {
         if (httpResponse == null) {
             return null;
         }
-        HttpResponse httpResponseDecorator = new HttpResponse();
-        httpResponseDecorator.setHeaders(buildHeaderDecorators(httpResponse.getHeaders()));
-        httpResponseDecorator.setBody(buildParameterDecorators(parameterMap, httpResponse.getBody()));
-        httpResponseDecorator.setStatus(httpResponse.getStatus());
-        return httpResponseDecorator;
+        HttpResponse httpResponseProxy = new HttpResponse();
+        httpResponseProxy.setHeaders(buildHeaderProxyList(httpResponse.getHeaders()));
+        httpResponseProxy.setBody(buildParameterProxyList(parameterMap, httpResponse.getBody()));
+        httpResponseProxy.setStatus(httpResponse.getStatus());
+        return httpResponseProxy;
     }
 
     /**
-     * 构建HTTP头列表的装饰器
+     * 构建HTTP头列表的代理
      *
      * @param headers
      */
-    private List<HttpHeader> buildHeaderDecorators(List<HttpHeader> headers) {
+    private List<HttpHeader> buildHeaderProxyList(List<HttpHeader> headers) {
         if (headers == null) {
             return null;
         }
-        List<HttpHeader> headersDecorators = new ArrayList<>(headers.size());
+        List<HttpHeader> headersProxyList = new ArrayList<>(headers.size());
         for (HttpHeader header : headers) {
-            HttpHeader headerDecorator = buildHeaderDecorator(header);
-            headersDecorators.add(headerDecorator);
+            HttpHeader headerProxy = buildHeaderProxy(header);
+            headersProxyList.add(headerProxy);
         }
-        return headersDecorators;
+        return headersProxyList;
     }
 
     /**
-     * 构建【HTTP头-装饰器】
+     * 构建【HTTP头-代理】
      *
      * @param header
      */
-    private HttpHeader buildHeaderDecorator(HttpHeader header) {
-        return new HttpHeaderDecorator(header);
+    private HttpHeader buildHeaderProxy(HttpHeader header) {
+        return new HttpHeaderProxy(header);
     }
 
     /**
-     * 构建【参数-装饰器】
+     * 构建【参数-代理】
      *
      * @param parameterMap
      * @param parentParameter
      * @param parameter
      */
-    private Parameter buildParameterDecorator(Map<String, Parameter> parameterMap, Parameter parentParameter,
+    private Parameter buildParameterProxy(Map<String, Parameter> parameterMap, Parameter parentParameter,
                                               Parameter parameter) {
-        Parameter parameterDecorator = new ParameterDecorator(parameter);
-        parameterDecorator.setParentParameter(parentParameter);
-        List<Parameter> childParameterDecorators = null;
+        Parameter parameterProxy = new ParameterProxy(parameter);
+        parameterProxy.setParentParameter(parentParameter);
+        List<Parameter> childParameterProxyList = null;
         if (parameter.getChildParameters() != null) {
-            childParameterDecorators = new ArrayList<>(parameter.getChildParameters().size());
+            childParameterProxyList = new ArrayList<>(parameter.getChildParameters().size());
             for (Parameter childParameter : parameter.getChildParameters()) {
-                Parameter childParameterDecorator = buildParameterDecorator(parameterMap, parameterDecorator,
+                Parameter childParameterProxy = buildParameterProxy(parameterMap, parameterProxy,
                         childParameter);
-                childParameterDecorators.add(childParameterDecorator);
-                parameterMap.put(childParameterDecorator.getId(), childParameterDecorator);
+                childParameterProxyList.add(childParameterProxy);
+                parameterMap.put(childParameterProxy.getId(), childParameterProxy);
             }
         }
-        parameterDecorator.setChildParameters(childParameterDecorators);
-        parameterMap.put(parameterDecorator.getId(), parameterDecorator);
-        return parameterDecorator;
+        parameterProxy.setChildParameters(childParameterProxyList);
+        parameterMap.put(parameterProxy.getId(), parameterProxy);
+        return parameterProxy;
     }
 
     /**

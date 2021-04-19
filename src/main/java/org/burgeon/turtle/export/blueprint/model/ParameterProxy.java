@@ -9,12 +9,12 @@ import org.burgeon.turtle.export.blueprint.FilterHelper;
 import java.util.List;
 
 /**
- * 参数【装饰器】
+ * 参数【代理】
  *
  * @author luxiaocong
  * @createdOn 2021/3/27
  */
-public class ParameterDecorator extends Parameter {
+public class ParameterProxy extends Parameter {
 
     private Parameter parameter;
     private Parameter parentParameter;
@@ -22,7 +22,7 @@ public class ParameterDecorator extends Parameter {
 
     private String name;
 
-    public ParameterDecorator(Parameter parameter) {
+    public ParameterProxy(Parameter parameter) {
         this.parameter = parameter;
     }
 

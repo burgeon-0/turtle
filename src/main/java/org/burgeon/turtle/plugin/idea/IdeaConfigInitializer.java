@@ -20,7 +20,7 @@ public class IdeaConfigInitializer {
      *
      * @param project
      */
-    public static void init(Project project) throws Exception {
+    public static synchronized void init(Project project) throws Exception {
         Map<String, String> parentEnvironment = new GeneralCommandLine().getParentEnvironment();
         if (parentEnvironment.get(Constants.TURTLE_HOME) == null) {
             NotificationHelper.error(project, "配置错误", "请配置Turtle运行环境");

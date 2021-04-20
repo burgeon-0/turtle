@@ -1,13 +1,13 @@
 package org.burgeon.turtle.export.blueprint;
 
 import lombok.extern.slf4j.Slf4j;
+import org.burgeon.turtle.core.command.CommandExecutorFactory;
 import org.burgeon.turtle.core.common.Constants;
 import org.burgeon.turtle.core.event.BaseExportListener;
 import org.burgeon.turtle.core.event.ExportEvent;
 import org.burgeon.turtle.core.event.target.BlueprintEventTarget;
 import org.burgeon.turtle.core.event.target.EventTarget;
 import org.burgeon.turtle.core.model.api.*;
-import org.burgeon.turtle.core.utils.CommandLineUtils;
 import org.burgeon.turtle.core.utils.EnvUtils;
 import org.burgeon.turtle.export.blueprint.model.*;
 
@@ -58,7 +58,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
         log.debug("Export {} api.", apiSize);
 
         try {
-            export(apiProject);
+            export(exportEvent);
         } catch (Exception e) {
             if (EnvUtils.getBooleanProperty(Constants.DEBUG, false)) {
                 e.printStackTrace();
@@ -216,9 +216,10 @@ public class ApiBlueprintExporter extends BaseExportListener {
     /**
      * 导出API文档
      *
-     * @param apiProject
+     * @param exportEvent
      */
-    private void export(ApiProject apiProject) throws IOException {
+    private void export(ExportEvent exportEvent) throws IOException {
+        ApiProject apiProject = exportEvent.getApiProject();
         DocsBuilder docsBuilder = new DocsBuilder();
         docsBuilder.preAnalyze(apiProject);
         docsBuilder.appendHost(apiProject.getHost());
@@ -233,7 +234,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
         }
 
         writeToFile(docsBuilder.build());
-        generateDocs();
+        generateDocs(exportEvent.getSourceCode());
     }
 
     /**
@@ -258,11 +259,14 @@ public class ApiBlueprintExporter extends BaseExportListener {
 
     /**
      * 生成API文档
+     *
+     * @param sourceCode
      */
-    private void generateDocs() {
+    private void generateDocs(int sourceCode) {
         String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH);
         try {
-            CommandLineUtils.executeCommands(new String[]{"cd " + targetPath,
+            CommandExecutorFactory.getCommandExecutor(sourceCode)
+                    .execute(new String[]{"cd " + targetPath,
                     "aglio -i api-blueprint.apib -o api-bludprint.html"});
         } catch (Exception e) {
             log.error("Generate docs fail.", e);

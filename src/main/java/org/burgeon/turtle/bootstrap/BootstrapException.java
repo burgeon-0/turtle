@@ -8,11 +8,6 @@ package org.burgeon.turtle.bootstrap;
  */
 public class BootstrapException extends Exception {
 
-    /**
-     * 命令行处理异常
-     *
-     * @param message
-     */
     public BootstrapException(String message) {
         super(message);
     }

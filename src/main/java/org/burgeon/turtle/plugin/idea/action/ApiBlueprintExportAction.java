@@ -8,13 +8,17 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator;
 import com.intellij.openapi.project.Project;
 import lombok.extern.slf4j.Slf4j;
+import org.burgeon.turtle.core.command.CommandExecutorFactory;
 import org.burgeon.turtle.core.common.ConfigInitializer;
 import org.burgeon.turtle.core.common.Constants;
+import org.burgeon.turtle.core.event.source.EventSource;
+import org.burgeon.turtle.core.event.source.IdeaEventSource;
 import org.burgeon.turtle.core.process.DefaultProcessor;
 import org.burgeon.turtle.core.process.Notifier;
 import org.burgeon.turtle.core.process.Processor;
 import org.burgeon.turtle.core.utils.EnvUtils;
 import org.burgeon.turtle.export.DefaultExporterConfig;
+import org.burgeon.turtle.plugin.idea.IdeaCommandExecutor;
 import org.burgeon.turtle.plugin.idea.IdeaConfigInitializer;
 import org.burgeon.turtle.plugin.idea.NotificationHelper;
 import org.burgeon.turtle.plugin.idea.notifier.IdeaApiBlueprintNotifier;
@@ -50,6 +54,9 @@ public class ApiBlueprintExportAction extends AnAction {
                 IdeaConfigInitializer.init(e.getProject());
                 ConfigInitializer.init();
                 exporterConfig.init();
+                CommandExecutorFactory.registerCommandExecutor(
+                        EventSource.fromClass(IdeaEventSource.class).getCode(),
+                        new IdeaCommandExecutor());
                 configSuccess = true;
             } catch (Exception ex) {
                 ex.printStackTrace();

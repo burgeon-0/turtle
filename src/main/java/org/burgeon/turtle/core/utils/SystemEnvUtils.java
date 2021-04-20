@@ -18,6 +18,7 @@ public class SystemEnvUtils {
      * @param newEnv
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     public static void setEnv(Map<String, String> newEnv) throws Exception {
         try {
             Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");

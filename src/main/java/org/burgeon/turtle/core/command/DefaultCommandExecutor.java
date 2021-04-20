@@ -1,4 +1,4 @@
-package org.burgeon.turtle.core.utils;
+package org.burgeon.turtle.core.command;
 
 import com.sun.javafx.PlatformUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -6,22 +6,31 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 
 /**
- * 命令行工具
+ * 默认命令执行器
  *
  * @author luxiaocong
- * @createdOn 2021/4/14
+ * @createdOn 2021/4/20
  */
 @Slf4j
-public class CommandLineUtils {
+public class DefaultCommandExecutor implements CommandExecutor {
+
+    @Override
+    public void execute(String[] commands) throws ExecuteException {
+        try {
+            executeCommands(commands);
+        } catch (Exception e) {
+            throw new ExecuteException(e);
+        }
+    }
 
     /**
-     * 运行命令行的命令
+     * 批量执行命令
      *
      * @param commands
      * @throws IOException
      * @throws InterruptedException
      */
-    public static void executeCommands(String[] commands) throws IOException, InterruptedException {
+    public void executeCommands(String[] commands) throws IOException, InterruptedException {
         ProcessBuilder builder = new ProcessBuilder(getBaseCommand());
         Process process = builder.start();
 
@@ -45,7 +54,7 @@ public class CommandLineUtils {
      *
      * @return
      */
-    private static String getBaseCommand() {
+    private String getBaseCommand() {
         if (PlatformUtil.isWindows()) {
             return "C:/Windows/System32/cmd.exe";
         } else {
@@ -54,13 +63,13 @@ public class CommandLineUtils {
     }
 
     /**
-     * 运行命令行的命令
+     * 执行命令
      *
      * @param writer
      * @param command
      * @throws IOException
      */
-    private static void executeCommand(BufferedWriter writer, String command) throws IOException {
+    private void executeCommand(BufferedWriter writer, String command) throws IOException {
         writer.write(command);
         writer.newLine();
         writer.flush();

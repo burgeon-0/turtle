@@ -13,7 +13,7 @@ public class ConfigInitializer {
     /**
      * 初始化项目配置，各配置项的含义可参阅配置文件（turtle.conf）的描述
      */
-    public static void init() {
+    public static synchronized void init() {
         // conf file path: turtle/build/resources/main/conf/turtle.conf or turtle/conf/turtle.conf
         Properties properties = PropertiesLoader.loadProperties("turtle.conf");
 

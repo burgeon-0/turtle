@@ -14,7 +14,7 @@ public class CommandLineTest {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         executeCommands(new String[]{"cd out", "pwd",
-                "aglio -i api-blueprint.apib -o api-bludprint.html", "ls -al"});
+                "aglio -i api-blueprint.apib -o api-blueprint.html", "ls -al"});
     }
 
     public static void executeCommands(String[] commands) throws IOException, InterruptedException {

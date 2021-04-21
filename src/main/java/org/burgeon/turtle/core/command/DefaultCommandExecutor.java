@@ -15,9 +15,9 @@ import java.io.*;
 public class DefaultCommandExecutor implements CommandExecutor {
 
     @Override
-    public void execute(String[] commands) throws ExecuteException {
+    public void execute(String command) throws ExecuteException {
         try {
-            executeCommands(commands);
+            executeCommands(new String[]{command});
         } catch (Exception e) {
             throw new ExecuteException(e);
         }

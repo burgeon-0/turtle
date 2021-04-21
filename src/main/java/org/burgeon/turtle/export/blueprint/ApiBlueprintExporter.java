@@ -264,10 +264,11 @@ public class ApiBlueprintExporter extends BaseExportListener {
      */
     private void generateDocs(int sourceCode) {
         String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH);
+        String command = String.format("aglio -i %s/api-blueprint.apib -o %s/api-blueprint.html",
+                targetPath, targetPath);
         try {
             CommandExecutorFactory.getCommandExecutor(sourceCode)
-                    .execute(new String[]{"cd " + targetPath,
-                    "aglio -i api-blueprint.apib -o api-bludprint.html"});
+                    .execute(command);
         } catch (Exception e) {
             log.error("Generate docs fail.", e);
         }

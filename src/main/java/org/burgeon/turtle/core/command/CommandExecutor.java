@@ -11,9 +11,9 @@ public interface CommandExecutor {
     /**
      * 执行命令
      *
-     * @param commands
+     * @param command
      * @throws ExecuteException
      */
-    void execute(String[] commands) throws ExecuteException;
+    void execute(String command) throws ExecuteException;
 
 }

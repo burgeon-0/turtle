@@ -9,7 +9,9 @@ import org.burgeon.turtle.core.common.Constants;
 import org.burgeon.turtle.core.utils.EnvUtils;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * IDEA命令执行器
@@ -20,10 +22,14 @@ import java.util.Arrays;
 public class IdeaCommandExecutor implements CommandExecutor {
 
     @Override
-    public void execute(String[] commands) throws ExecuteException {
+    public void execute(String command) throws ExecuteException {
         try {
+            String[] arr = command.split(" ");
+            List<String> commandList = new ArrayList<>();
+            commandList.addAll(Arrays.asList(arr));
+
             String sourcePath = EnvUtils.getStringProperty(Constants.SOURCE_PATH);
-            GeneralCommandLine generalCommandLine = new GeneralCommandLine(Arrays.asList(commands));
+            GeneralCommandLine generalCommandLine = new GeneralCommandLine(commandList);
             generalCommandLine.setCharset(Charset.forName("UTF-8"));
             generalCommandLine.setWorkDirectory(sourcePath);
 

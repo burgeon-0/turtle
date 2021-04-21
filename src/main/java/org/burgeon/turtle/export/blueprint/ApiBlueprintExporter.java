@@ -58,7 +58,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
         log.debug("Export {} api.", apiSize);
 
         try {
-            export(exportEvent);
+            export(apiProject, exportEvent.getSourceCode());
         } catch (Exception e) {
             if (EnvUtils.getBooleanProperty(Constants.DEBUG, false)) {
                 e.printStackTrace();
@@ -216,10 +216,10 @@ public class ApiBlueprintExporter extends BaseExportListener {
     /**
      * 导出API文档
      *
-     * @param exportEvent
+     * @param apiProject
+     * @param sourceCode
      */
-    private void export(ExportEvent exportEvent) throws IOException {
-        ApiProject apiProject = exportEvent.getApiProject();
+    private void export(ApiProject apiProject, int sourceCode) throws IOException {
         DocsBuilder docsBuilder = new DocsBuilder();
         docsBuilder.preAnalyze(apiProject);
         docsBuilder.appendHost(apiProject.getHost());
@@ -234,7 +234,7 @@ public class ApiBlueprintExporter extends BaseExportListener {
         }
 
         writeToFile(docsBuilder.build());
-        generateDocs(exportEvent.getSourceCode());
+        generateDocs(sourceCode);
     }
 
     /**

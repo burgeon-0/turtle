@@ -24,8 +24,8 @@ public class IdeaCommandExecutor implements CommandExecutor {
     @Override
     public void execute(String command) throws ExecuteException {
         try {
-            String[] arr = command.split(" ");
             List<String> commandList = new ArrayList<>();
+            String[] arr = command.split(" ");
             commandList.addAll(Arrays.asList(arr));
 
             String sourcePath = EnvUtils.getStringProperty(Constants.SOURCE_PATH);

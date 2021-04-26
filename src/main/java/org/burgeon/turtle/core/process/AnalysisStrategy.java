@@ -5,7 +5,7 @@ import org.burgeon.turtle.core.model.source.SourceProject;
 /**
  * 分析策略
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/6
  */
 public interface AnalysisStrategy {

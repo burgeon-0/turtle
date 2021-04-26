@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 /**
  * HTTP接口【代理】
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/27
  */
 public class HttpApiProxy extends HttpApi {

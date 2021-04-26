@@ -11,7 +11,7 @@ import java.util.Properties;
 /**
  * 配置加载器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/9
  */
 @Slf4j

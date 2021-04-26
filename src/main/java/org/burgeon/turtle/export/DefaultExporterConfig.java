@@ -13,7 +13,7 @@ import org.burgeon.turtle.export.blueprint.ApiBlueprintExporter;
 /**
  * 导出器默认配置
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/5
  */
 public class DefaultExporterConfig {

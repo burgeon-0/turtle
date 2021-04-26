@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/30
  */
 @SpringBootApplication

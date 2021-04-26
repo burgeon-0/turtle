@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/4/2
  */
 @RestController

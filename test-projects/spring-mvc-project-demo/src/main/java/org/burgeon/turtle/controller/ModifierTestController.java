@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/30
  */
 @RestController

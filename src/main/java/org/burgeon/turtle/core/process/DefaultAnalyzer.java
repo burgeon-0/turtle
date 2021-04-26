@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * 默认分析器：先分析是什么类型的项目，再使用具体的项目分析策略进行分析
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/4
  */
 @Slf4j

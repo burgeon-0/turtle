@@ -7,7 +7,7 @@ import javax.servlet.http.Cookie;
  * -i ./test-projects/custom-project-demo/src
  * -c ./test-projects/custom-project-demo/lib1;./test-projects/custom-project-demo/lib2
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/13
  */
 public class CustomProjectTest {

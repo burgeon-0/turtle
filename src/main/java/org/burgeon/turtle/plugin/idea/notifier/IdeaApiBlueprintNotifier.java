@@ -11,7 +11,7 @@ import org.burgeon.turtle.core.process.Notifier;
 /**
  * IDEA - API Blueprint通知器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/2/27
  */
 public class IdeaApiBlueprintNotifier implements Notifier {

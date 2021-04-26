@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * 收集器上下文
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/6
  */
 public class CollectorContext {

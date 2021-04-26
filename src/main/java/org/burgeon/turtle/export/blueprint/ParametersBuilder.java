@@ -11,7 +11,7 @@ import static org.burgeon.turtle.export.blueprint.Constants.*;
 /**
  * Http Path和Uti参数构建器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/4/9
  */
 public class ParametersBuilder {

@@ -3,7 +3,7 @@ package org.burgeon.turtle.core.model.api;
 /**
  * HTTP状态码
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/2/26
  */
 public class HttpStatus {

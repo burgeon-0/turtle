@@ -6,7 +6,7 @@ import org.burgeon.turtle.core.utils.StringUtils;
 /**
  * 过滤工具
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/27
  */
 public class FilterHelper {

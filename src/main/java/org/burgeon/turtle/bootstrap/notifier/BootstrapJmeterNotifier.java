@@ -11,7 +11,7 @@ import org.burgeon.turtle.core.process.Notifier;
 /**
  * Bootstrap - Apache JMeter通知器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/4
  */
 public class BootstrapJmeterNotifier implements Notifier {

@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * 事件目标
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/4/19
  */
 public abstract class EventTarget {

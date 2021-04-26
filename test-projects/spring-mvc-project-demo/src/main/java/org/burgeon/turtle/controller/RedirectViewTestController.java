@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/4/7
  */
 @RestController

@@ -3,7 +3,7 @@ package org.burgeon.turtle.core.event.source;
 /**
  * 事件来源：Eclipse
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/4/19
  */
 public class EclipseEventSource extends EventSource {

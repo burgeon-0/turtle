@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 /**
  * 验证器工具
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/4/13
  */
 @Slf4j

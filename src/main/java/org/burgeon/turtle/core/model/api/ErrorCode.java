@@ -5,7 +5,7 @@ import lombok.Data;
 /**
  * 错误码
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/2/26
  */
 @Data

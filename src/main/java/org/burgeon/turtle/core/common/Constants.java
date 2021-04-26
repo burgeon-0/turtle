@@ -5,7 +5,7 @@ import java.io.File;
 /**
  * 常量
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/4
  */
 public class Constants {

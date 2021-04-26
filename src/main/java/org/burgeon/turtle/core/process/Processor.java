@@ -3,7 +3,7 @@ package org.burgeon.turtle.core.process;
 /**
  * 处理器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/18
  */
 public interface Processor {

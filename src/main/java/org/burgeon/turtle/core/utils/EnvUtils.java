@@ -3,7 +3,7 @@ package org.burgeon.turtle.core.utils;
 /**
  * 环境配置工具类
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/1
  */
 public class EnvUtils {

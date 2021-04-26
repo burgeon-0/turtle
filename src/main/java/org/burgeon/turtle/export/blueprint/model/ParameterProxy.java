@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * 参数【代理】
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/27
  */
 public class ParameterProxy extends Parameter {

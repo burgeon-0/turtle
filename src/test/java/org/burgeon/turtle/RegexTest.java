@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 /**
  * 测试匹配"{xxx}"的正则表达式
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/27
  */
 public class RegexTest {

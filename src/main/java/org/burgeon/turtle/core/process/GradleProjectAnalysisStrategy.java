@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * Gradle项目分析策略
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/4
  */
 @Slf4j

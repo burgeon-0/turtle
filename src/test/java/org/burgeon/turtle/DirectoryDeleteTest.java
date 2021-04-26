@@ -6,7 +6,7 @@ import java.nio.file.Files;
 /**
  * 测试删除目录
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/4/17
  */
 public class DirectoryDeleteTest {

@@ -6,7 +6,7 @@ import org.burgeon.turtle.core.model.source.SourceProject;
 /**
  * 收集器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/2/27
  */
 public interface Collector {

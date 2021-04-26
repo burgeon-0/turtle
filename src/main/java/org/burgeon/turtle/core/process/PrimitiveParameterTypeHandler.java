@@ -6,7 +6,7 @@ import spoon.reflect.reference.CtTypeReference;
 /**
  * 【Java基础类型】参数类型推断器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/17
  */
 public class PrimitiveParameterTypeHandler implements ParameterTypeHandler {

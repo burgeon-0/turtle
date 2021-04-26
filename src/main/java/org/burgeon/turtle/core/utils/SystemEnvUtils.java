@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 /**
  * 系统环境变量工具类
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/4/17
  */
 @Slf4j

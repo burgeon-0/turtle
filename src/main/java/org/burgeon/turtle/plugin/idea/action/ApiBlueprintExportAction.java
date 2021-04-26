@@ -30,7 +30,7 @@ import java.io.StringWriter;
 /**
  * 菜单[导出API Blueprint文档]
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/2/10
  */
 @Slf4j

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 /**
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/31
  */
 @RestController

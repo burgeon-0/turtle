@@ -3,7 +3,7 @@ package org.burgeon.turtle.core.model.api;
 /**
  * 参数类型
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/2/26
  */
 public enum ParameterType {

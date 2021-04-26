@@ -6,7 +6,7 @@ import java.nio.file.Files;
 /**
  * 分析策略抽象类
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/13
  */
 public abstract class AbstractAnalysisStrategy implements AnalysisStrategy {

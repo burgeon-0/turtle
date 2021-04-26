@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 /**
  * 默认参数收集器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/14
  */
 public class DefaultParameterCollector implements Collector {

@@ -6,7 +6,7 @@ import spoon.reflect.reference.CtTypeReference;
 /**
  * 参数类型推断器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/17
  */
 public interface ParameterTypeHandler {

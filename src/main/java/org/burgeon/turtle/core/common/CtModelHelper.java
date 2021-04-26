@@ -19,7 +19,7 @@ import spoon.support.StandardEnvironment;
  * </li>
  * </ol>
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/18
  */
 public class CtModelHelper {

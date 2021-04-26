@@ -9,7 +9,7 @@ import com.intellij.openapi.ui.MessageType;
 /**
  * IDEA通知工具
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/4/16
  */
 public class NotificationHelper {

@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Http工具
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/24
  */
 public class HttpHelper {

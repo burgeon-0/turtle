@@ -24,7 +24,7 @@ import java.util.Set;
 /**
  * 默认收集器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/2/27
  */
 @Slf4j

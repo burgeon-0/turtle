@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * 配置初始化程序
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/4/16
  */
 public class IdeaConfigInitializer {

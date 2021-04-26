@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * 参数类型推断器职责链
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/17
  */
 public class ParameterTypeHandlerChain {

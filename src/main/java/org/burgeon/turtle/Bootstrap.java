@@ -23,7 +23,7 @@ import java.util.Properties;
 /**
  * 启动程序
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/4
  */
 public class Bootstrap {

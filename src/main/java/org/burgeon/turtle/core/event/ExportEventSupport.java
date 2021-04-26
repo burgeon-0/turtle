@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * 导出事件管理器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/2/26
  */
 public class ExportEventSupport {

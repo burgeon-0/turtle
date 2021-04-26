@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * API群组，属于同一个类的接口则属于同一个群组
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/14
  */
 @Data

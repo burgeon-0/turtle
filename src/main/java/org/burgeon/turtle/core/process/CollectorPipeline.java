@@ -6,7 +6,7 @@ import org.burgeon.turtle.core.model.source.SourceProject;
 /**
  * 收集器管道
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/6
  */
 public class CollectorPipeline {

@@ -19,7 +19,7 @@ import java.util.Set;
  * 就需要用自定义的项目分析策略进行分析，指定项目的源文件目录、依赖jar包的目录和classpath</li>
  * </ol>
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/4
  */
 @Slf4j

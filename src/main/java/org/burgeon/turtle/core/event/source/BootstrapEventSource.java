@@ -3,7 +3,7 @@ package org.burgeon.turtle.core.event.source;
 /**
  * 事件来源：Bootstrap
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/4/19
  */
 public class BootstrapEventSource extends EventSource {

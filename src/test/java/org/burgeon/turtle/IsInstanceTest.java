@@ -11,7 +11,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 /**
  * 测试class.isInstance()
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/16
  */
 public class IsInstanceTest {

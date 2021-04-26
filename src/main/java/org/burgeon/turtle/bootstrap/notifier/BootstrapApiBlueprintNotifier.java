@@ -11,7 +11,7 @@ import org.burgeon.turtle.core.process.Notifier;
 /**
  * Bootstrap - API Blueprint通知器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/4
  */
 public class BootstrapApiBlueprintNotifier implements Notifier {

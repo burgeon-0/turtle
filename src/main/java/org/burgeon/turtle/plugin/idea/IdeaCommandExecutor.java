@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * IDEA命令执行器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/4/20
  */
 public class IdeaCommandExecutor implements CommandExecutor {

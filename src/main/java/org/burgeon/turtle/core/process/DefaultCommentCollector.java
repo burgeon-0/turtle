@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * 默认注释收集器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/14
  */
 public class DefaultCommentCollector implements Collector {

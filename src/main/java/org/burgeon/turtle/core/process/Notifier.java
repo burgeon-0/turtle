@@ -6,7 +6,7 @@ import org.burgeon.turtle.core.event.ExportEvent;
 /**
  * 通知器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/2/27
  */
 public interface Notifier {

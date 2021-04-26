@@ -8,7 +8,7 @@ import java.util.Properties;
 /**
  * Version工具
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/5
  */
 @Slf4j

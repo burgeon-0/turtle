@@ -13,7 +13,7 @@ import static org.burgeon.turtle.export.blueprint.Constants.*;
 /**
  * 文件请求构建器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/4/12
  */
 public class FileRequestBuilder {

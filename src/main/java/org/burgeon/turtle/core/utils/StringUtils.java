@@ -3,7 +3,7 @@ package org.burgeon.turtle.core.utils;
 /**
  * 字符串工具
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/14
  */
 public class StringUtils {

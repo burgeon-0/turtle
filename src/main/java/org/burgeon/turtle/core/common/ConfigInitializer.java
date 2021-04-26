@@ -5,7 +5,7 @@ import java.util.Properties;
 /**
  * 配置初始化器
  *
- * @author luxiaocong
+ * @author Sam Lu
  * @createdOn 2021/3/9
  */
 public class ConfigInitializer {

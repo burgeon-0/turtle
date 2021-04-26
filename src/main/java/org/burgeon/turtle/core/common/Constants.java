@@ -87,6 +87,11 @@ public class Constants {
      */
     public static final String TURTLE_HOME = "TURTLE_HOME";
 
+    /**
+     * maven安装目录key
+     */
+    public static final String M2_HOME = "M2_HOME";
+
     public static final String BIN_DIR = SEPARATOR_FILE + "bin";
     public static final String CONF_DIR = SEPARATOR_FILE + "conf";
     public static final String OUT_DIR = SEPARATOR_FILE + "out";

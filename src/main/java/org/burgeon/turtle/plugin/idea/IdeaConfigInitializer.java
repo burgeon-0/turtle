@@ -3,6 +3,7 @@ package org.burgeon.turtle.plugin.idea;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.project.Project;
 import org.burgeon.turtle.core.common.Constants;
+import org.burgeon.turtle.core.utils.SystemEnvUtils;
 
 import java.util.Map;
 
@@ -27,6 +28,7 @@ public class IdeaConfigInitializer {
 
         System.setProperty(Constants.TURTLE_HOME, parentEnvironment.get(Constants.TURTLE_HOME));
         System.setProperty(Constants.CONF_PATH, Constants.CONF_DIR);
+        SystemEnvUtils.setenv(Constants.M2_HOME, parentEnvironment.get(Constants.M2_HOME));
     }
 
 }

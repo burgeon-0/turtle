@@ -12,8 +12,9 @@ import org.burgeon.turtle.core.utils.EnvUtils;
 import org.burgeon.turtle.export.blueprint.model.*;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -248,7 +249,8 @@ public class ApiBlueprintExporter extends BaseExportListener {
         String targetFile = targetPath + Constants.SEPARATOR_FILE + "api-blueprint.apib";
         BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(new FileWriter(targetFile));
+            writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(targetFile), EnvUtils.getStringProperty("file.encoding")));
             writer.write(content);
         } finally {
             if (writer != null) {

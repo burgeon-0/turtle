@@ -12,13 +12,16 @@
 
 ### 手动编译
 
-- [安装并配置gradle](https://docs.gradle.org/current/userguide/installation.html)
+- [安装并配置gradle](https://docs.gradle.org/current/userguide/installation.html)，建议使用gradle 6.8版本。
 
 ```sh
 gradle build
 ```
 
 - 使用上述脚本编译后，在./build/distributions目录下，可以看到编译出来的压缩包`turtle-1.0.2.tar`和`turtle-1.0.2.zip`。
+
+> `turtle-1.0.2.zip`可以导入到IDEA中，作为IDEA的插件使用。
+
 - 将任意一个压缩包放到你想放到的任意目录下。
 - 解压并配置环境变量：
 

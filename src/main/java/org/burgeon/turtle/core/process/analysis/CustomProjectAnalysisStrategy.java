@@ -1,4 +1,4 @@
-package org.burgeon.turtle.core.process;
+package org.burgeon.turtle.core.process.analysis;
 
 import lombok.extern.slf4j.Slf4j;
 import org.burgeon.turtle.core.common.Constants;
@@ -13,25 +13,26 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Gradle项目分析策略
+ * 自定义项目分析策略
+ * <ol>
+ * <li>有时候项目的依赖管理，用的既不是maven，也不是gradle，jar包的依赖可能是以自定义的方式指定的，这种类型的项目
+ * 就需要用自定义的项目分析策略进行分析，指定项目的源文件目录、依赖jar包的目录和classpath</li>
+ * </ol>
  *
  * @author Sam Lu
  * @createdOn 2021/3/4
  */
 @Slf4j
-public class GradleProjectAnalysisStrategy extends AbstractAnalysisStrategy {
-
-    private String srcPath = "src";
-    private String gradleConfigName = "build.gradle";
+public class CustomProjectAnalysisStrategy extends AbstractAnalysisStrategy {
 
     @Override
     public String name() {
-        return "gradle";
+        return "custom";
     }
 
     @Override
     public SourceProject analyze() throws AnalysisException {
-        log.debug("Analyze by gradle strategy.");
+        log.debug("Analyze by custom strategy.");
 
         String sourcePath = EnvUtils.getStringProperty(Constants.SOURCE_PATH);
         String targetPath = EnvUtils.getStringProperty(Constants.TARGET_PATH) + Constants.SPOON_DIR;
@@ -40,9 +41,6 @@ public class GradleProjectAnalysisStrategy extends AbstractAnalysisStrategy {
 
         // 检查项目根目录是否存在
         checkDirectoryExists(sourcePath);
-
-        // 检查项目gradle配置文件是否存在
-        checkGradleConfigExists(sourcePath);
 
         // 清除目标文件夹
         cleanTargetDirectory(targetPath);
@@ -60,42 +58,6 @@ public class GradleProjectAnalysisStrategy extends AbstractAnalysisStrategy {
         sourceProject.setModel(model);
 
         return sourceProject;
-    }
-
-    /**
-     * 检查项目gradle配置文件是否存在
-     *
-     * @param sourcePath
-     * @throws AnalysisException
-     */
-    private void checkGradleConfigExists(String sourcePath) throws AnalysisException {
-        File directory = new File(sourcePath);
-        File gradleConfig = findGradleConfig(directory);
-        if (gradleConfig == null) {
-            if (srcPath.equals(directory.getName())) {
-                sourcePath = sourcePath.substring(0, sourcePath.length() - srcPath.length());
-                directory = new File(sourcePath);
-                gradleConfig = findGradleConfig(directory);
-            }
-        }
-        if (gradleConfig == null) {
-            throw new AnalysisException("Gradle config file not found.");
-        }
-    }
-
-    /**
-     * 查找项目gradle配置文件
-     *
-     * @param directory
-     * @return
-     */
-    private File findGradleConfig(File directory) {
-        for (File file : directory.listFiles()) {
-            if (gradleConfigName.equals(file.getName())) {
-                return file;
-            }
-        }
-        return null;
     }
 
 }

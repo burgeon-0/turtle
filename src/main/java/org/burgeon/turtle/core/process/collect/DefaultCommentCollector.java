@@ -1,4 +1,4 @@
-package org.burgeon.turtle.core.process;
+package org.burgeon.turtle.core.process.collect;
 
 import org.burgeon.turtle.core.common.Constants;
 import org.burgeon.turtle.core.common.CtModelHelper;

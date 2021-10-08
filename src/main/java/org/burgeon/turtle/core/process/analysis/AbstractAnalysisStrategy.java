@@ -1,4 +1,4 @@
-package org.burgeon.turtle.core.process;
+package org.burgeon.turtle.core.process.analysis;
 
 import java.io.File;
 import java.nio.file.Files;

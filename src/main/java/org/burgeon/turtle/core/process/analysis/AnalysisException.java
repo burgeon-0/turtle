@@ -1,4 +1,4 @@
-package org.burgeon.turtle.core.process;
+package org.burgeon.turtle.core.process.analysis;
 
 /**
  * 分析异常

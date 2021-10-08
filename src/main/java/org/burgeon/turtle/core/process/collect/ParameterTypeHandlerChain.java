@@ -1,4 +1,4 @@
-package org.burgeon.turtle.core.process;
+package org.burgeon.turtle.core.process.collect;
 
 import org.burgeon.turtle.core.model.api.ParameterType;
 import spoon.reflect.reference.CtTypeReference;

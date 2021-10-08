@@ -5,6 +5,9 @@ import org.burgeon.turtle.core.event.ExportEvent;
 import org.burgeon.turtle.core.event.ExportEventSupport;
 import org.burgeon.turtle.core.model.api.ApiProject;
 import org.burgeon.turtle.core.model.source.SourceProject;
+import org.burgeon.turtle.core.process.analysis.Analyzer;
+import org.burgeon.turtle.core.process.collect.Collector;
+import org.burgeon.turtle.core.process.collect.CollectorPipeline;
 
 /**
  * 处理器抽象类

@@ -3,11 +3,11 @@ plugins {
     id 'org.jetbrains.intellij' version '0.6.5'
 }
 
-group 'org.burgeon'
+group 'org.bg181'
 version '1.0.2'
 
 sourceCompatibility = 1.8
-mainClassName = 'org.burgeon.turtle.Bootstrap'
+mainClassName = 'Bootstrap'
 
 task createProperties(dependsOn: processResources) {
     doLast {

@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>org.burgeon.turtle</id>
+    <id>org.bg181.turtle</id>
     <name>Turtle</name>
     <vendor email="376052450@qq.com" url="https://github.com/burgeon-0/turtle">Burgeon</vendor>
 
@@ -19,12 +19,12 @@
 
     <actions>
         <!-- Tools菜单、项目右键菜单 -->
-        <group id="org.burgeon.turtle.plugin.idea.action.ApiActionGroup"
+        <group id="org.bg181.turtle.plugin.idea.action.ApiActionGroup"
                text="Turtle" icon="/icons/turtle.png" popup="true">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
-            <action id="org.burgeon.turtle.plugin.idea.action.ApiBlueprintExportAction"
-                    class="org.burgeon.turtle.plugin.idea.action.ApiBlueprintExportAction"
+            <action id="org.bg181.turtle.plugin.idea.action.ApiBlueprintExportAction"
+                    class="org.bg181.turtle.plugin.idea.action.ApiBlueprintExportAction"
                     text="导出API Blueprint文档">
             </action>
             <separator/>
